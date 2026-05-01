@@ -23,9 +23,7 @@ def home():
 
 @app.route('/products')
 def get_products():
-    return jsonify([
-        {"name": "Bracelet", "price": 699, "image": "https://yourimageurl.com"}
-    ])
+    return jsonify(products)
 
 if __name__ == '__main__':
     app.run(debug=True)
