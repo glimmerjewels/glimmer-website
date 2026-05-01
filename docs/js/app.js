@@ -3,7 +3,7 @@ function shopNow() {
 }
 
 // Fetch products from backend
-fetch("http://127.0.0.1:5000/products")
+fetch("https://glimmer-backend-y9a9.onrender.com/products")
 .then(res => res.json())
 .then(data => {
   let container = document.getElementById("products-container");
