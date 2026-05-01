@@ -17,9 +17,15 @@ products = [
     }
 ]
 
+@app.route('/')
+def home():
+    return "Glimmer Backend Running ✨"
+
 @app.route('/products')
 def get_products():
-    return jsonify(products)
+    return jsonify([
+        {"name": "Bracelet", "price": 699, "image": "https://yourimageurl.com"}
+    ])
 
 if __name__ == '__main__':
     app.run(debug=True)
