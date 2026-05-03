@@ -110,3 +110,15 @@ nav a:hover {
     margin:10% auto;
     padding:20px;
 }
+
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+    }
+
+    nav {
+        margin-top: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
