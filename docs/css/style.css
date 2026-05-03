@@ -28,13 +28,13 @@ header {
 .logo-container {
     display: flex;
     align-items: center;
-    width: 350px;   /* reserve enough space on left */
+    width: 320px;   /* reserve enough space on left */
 }
 
 /* logo image */
 .logo {
     width: 100%;
-    max-width: 350px;
+    max-width: 320px;
     height: auto;
     object-fit: contain;
 }
