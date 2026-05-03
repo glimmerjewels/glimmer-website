@@ -28,7 +28,7 @@ header {
 .logo-container {
     display: flex;
     align-items: center;
-    width: 320px;   /* reserve enough space on left */
+    width: 350px;   /* reserve enough space on left */
 }
 
 /* logo image */
