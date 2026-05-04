@@ -78,7 +78,7 @@ header{
 .dropdown-content{
     display:none;
     position:absolute;
-    top:40px;
+    top:100%;
     left:0;
     background:white;
     min-width:220px;
