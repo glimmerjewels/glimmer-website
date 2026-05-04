@@ -68,3 +68,52 @@ function filterProducts(category){
             document.getElementById("categoryTitle").innerText =
             selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1);
         }
+const filterButtons = document.querySelectorAll(".filter-btn");
+const productCards = document.querySelectorAll(".product-card");
+const collectionTitle = document.querySelector(".collection-title");
+
+filterButtons.forEach(button => {
+    button.addEventListener("click", () => {
+
+        const category = button.dataset.category;
+
+        // remove previous active state
+        filterButtons.forEach(btn => btn.classList.remove("active"));
+
+        // add active class
+        button.classList.add("active");
+
+        // update heading
+        if(category === "all"){
+            collectionTitle.textContent = "All Products";
+        } else {
+            collectionTitle.textContent =
+                category.charAt(0).toUpperCase() + category.slice(1);
+        }
+
+        // filter products
+        productCards.forEach(card => {
+            if(
+                category === "all" ||
+                card.dataset.category === category
+            ){
+                card.style.display = "block";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    });
+});
+
+const params = new URLSearchParams(window.location.search);
+const selectedCategory = params.get("category");
+
+if(selectedCategory){
+    const targetBtn = document.querySelector(
+        `.filter-btn[data-category="${selectedCategory}"]`
+    );
+
+    if(targetBtn){
+        targetBtn.click();
+    }
+}
