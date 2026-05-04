@@ -8,125 +8,124 @@
 </head>
 <body>
 
-    <!-- HEADER (same as index page) -->
-    <header>
-        <div class="logo-section">
-            <img src="assets/logo1.png" alt="Glimmer Logo">
-        </div>
+<!-- HEADER -->
+<header>
+    <div class="logo-section">
+        <img src="assets/logo1.png" alt="Glimmer Logo">
+    </div>
 
-        <nav class="navbar">
-            <a href="index.html">Home</a>
+    <nav class="navbar">
+        <a href="index.html">Home</a>
 
-            <div class="dropdown">
-                <button class="dropbtn">Products ▼</button>
-                <div class="dropdown-content">
-                    <a href="products.html?category=all">All</a>
-                    <a href="products.html?category=earrings">Earrings</a>
-                    <a href="products.html?category=necklace">Necklace & Chains</a>
-                    <a href="products.html?category=bracelets">Bracelets</a>
-                    <a href="products.html?category=rings">Rings</a>
-                </div>
+        <div class="dropdown">
+            <button class="dropbtn">Products ▼</button>
+            <div class="dropdown-content">
+                <a href="products.html?category=all">All</a>
+                <a href="products.html?category=earrings">Earrings</a>
+                <a href="products.html?category=bracelets">Bracelets</a>
+                <a href="products.html?category=necklace">Necklace & Chains</a>
+                <a href="products.html?category=rings">Rings</a>
             </div>
-
-            <a href="contact.html">Contact</a>
-            <a href="admin.html">Admin</a>
-            <a href="myCart.html">🛒 My Cart</a>
-        </nav>
-    </header>
-
-
-    <!-- COLLECTION HEADER -->
-    <section class="products-header">
-        <h5>COLLECTION</h5>
-        <h1 id="categoryTitle">All Products</h1>
-
-        <div class="filter-buttons">
-            <button onclick="filterProducts('all')">All</button>
-            <button onclick="filterProducts('earrings')">Earrings</button>
-            <button onclick="filterProducts('bracelets')">Bracelets</button>
-            <button onclick="filterProducts('necklace')">Necklaces & Chains</button>
-            <button onclick="filterProducts('rings')">Rings</button>
-        </div>
-    </section>
-
-
-    <!-- PRODUCTS GRID -->
-    <section class="products-grid" id="productsGrid">
-
-        <!-- Product 1 -->
-        <div class="product-card"
-             onclick="openPopup(
-             'assets/home_images/earrings.jpg',
-             'Earrings',
-             'Petite Pearl Studs',
-             '649',
-             'Minimal pearl studs — subtle sparkle all day.')">
-
-            <img src="assets/home_images/earrings.jpg">
-            <h3>Petite Pearl Studs</h3>
         </div>
 
+        <a href="contact.html">Contact</a>
+        <a href="admin.html">Admin</a>
+        <a href="myCart.html">🛒 My Cart</a>
+    </nav>
+</header>
 
-        <!-- Product 2 -->
-        <div class="product-card"
-             onclick="openPopup(
-             'assets/home_images/bracelets.jpg',
-             'Bracelets',
-             'Golden Charm Bracelet',
-             '699',
-             'Elegant anti-tarnish bracelet for daily wear.')">
+<!-- COLLECTION SECTION -->
+<section class="collection-section">
+    <h5 class="collection-label">COLLECTION</h5>
+    <h1 class="collection-title" id="categoryTitle">All Products</h1>
 
-            <img src="assets/home_images/bracelets.jpg">
-            <h3>Golden Charm Bracelet</h3>
+    <div class="category-filters">
+        <button class="filter-btn active" data-category="all">All</button>
+        <button class="filter-btn" data-category="earrings">Earrings</button>
+        <button class="filter-btn" data-category="bracelets">Bracelets</button>
+        <button class="filter-btn" data-category="necklace">Necklace & Chains</button>
+        <button class="filter-btn" data-category="rings">Rings</button>
+    </div>
+</section>
+
+<!-- PRODUCTS GRID -->
+<section class="products-grid">
+
+    <div class="product-card" data-category="earrings"
+         onclick="openPopup(
+         'assets/home_images/earrings.jpg',
+         'Earrings',
+         'Petite Pearl Studs',
+         '649',
+         'Minimal pearl studs — subtle sparkle all day.'
+         )">
+
+        <img src="assets/home_images/earrings.jpg">
+        <h3>Petite Pearl Studs</h3>
+    </div>
+
+
+    <div class="product-card" data-category="bracelets"
+         onclick="openPopup(
+         'assets/home_images/bracelets.jpg',
+         'Bracelets',
+         'Golden Charm Bracelet',
+         '699',
+         'Elegant anti-tarnish bracelet for daily wear.'
+         )">
+
+        <img src="assets/home_images/bracelets.jpg">
+        <h3>Golden Charm Bracelet</h3>
+    </div>
+
+
+    <div class="product-card" data-category="necklace"
+         onclick="openPopup(
+         'assets/home_images/necklace.jpg',
+         'Necklace',
+         'Layered Gold Necklace',
+         '799',
+         'Premium layered necklace for every outfit.'
+         )">
+
+        <img src="assets/home_images/necklace.jpg">
+        <h3>Layered Gold Necklace</h3>
+    </div>
+
+
+    <div class="product-card" data-category="rings"
+         onclick="openPopup(
+         'assets/home_images/rings.jpg',
+         'Rings',
+         'Diamond Ring',
+         '599',
+         'Stylish anti-tarnish ring for special occasions.'
+         )">
+
+        <img src="assets/home_images/rings.jpg">
+        <h3>Diamond Ring</h3>
+    </div>
+
+</section>
+
+
+<!-- PRODUCT POPUP -->
+<div class="popup-overlay" id="popupOverlay">
+    <div class="popup-box">
+
+        <span class="close-btn" onclick="closePopup()">✖</span>
+
+        <div class="popup-left">
+            <img id="popupImage">
         </div>
 
+        <div class="popup-right">
+            <h5 id="popupCategory"></h5>
+            <h1 id="popupName"></h1>
+            <h2 id="popupPrice"></h2>
+            <p id="popupDescription"></p>
 
-        <!-- Product 3 -->
-        <div class="product-card"
-             onclick="openPopup(
-             'assets/home_images/necklace.jpg',
-             'Necklace',
-             'Layered Gold Necklace',
-             '799',
-             'Premium layered necklace for every outfit.')">
-
-            <img src="assets/home_images/necklace.jpg">
-            <h3>Layered Gold Necklace</h3>
-        </div>
-
-
-        <!-- Product 4 -->
-        <div class="product-card"
-             onclick="openPopup(
-             'assets/home_images/rings.jpg',
-             'Rings',
-             'Diamond Ring',
-             '599',
-             'Stylish anti-tarnish ring for special occasions.')">
-
-            <img src="assets/home_images/rings.jpg">
-            <h3>Diamond Ring</h3>
-        </div>
-
-    </section>
-
-
-    <!-- PRODUCT POPUP -->
-    <div class="popup-overlay" id="popupOverlay">
-        <div class="popup-box">
-
-            <span class="close-btn" onclick="closePopup()">✖</span>
-
-            <div class="popup-left">
-                <img id="popupImage" src="">
-            </div>
-
-            <div class="popup-right">
-                <h5 id="popupCategory"></h5>
-                <h1 id="popupName"></h1>
-                <h2 id="popupPrice"></h2>
-                <p id="popupDescription"></p>
-
+            <div class="popup-actions">
                 <div class="quantity-box">
                     <button>-</button>
                     <span>1</span>
@@ -135,32 +134,31 @@
 
                 <button class="add-cart-btn">Add to Cart</button>
             </div>
-
         </div>
+
     </div>
+</div>
 
 
-    <!-- GLIMMER PROMISE -->
-    <section class="promise-section">
-        <h5>THE GLIMMER PROMISE</h5>
-        <h2>Jewellery that lasts as long as your moments do.</h2>
+<!-- GLIMMER PROMISE -->
+<section class="promise-section">
+    <h5>THE GLIMMER PROMISE</h5>
+    <h2>Jewellery that lasts as long as your moments do.</h2>
 
-        <p>
-            Every piece is finished with our signature anti-tarnish coating
-            and tested against sweat, water, and time.
-        </p>
+    <p>
+        Every piece is finished with our signature anti-tarnish coating
+        and tested against sweat, water and time.
+    </p>
 
-        <p>
-            Fall in love — we'll keep the shine.
-        </p>
+    <p>Fall in love — we'll keep the shine.</p>
 
-        <a href="contact.html">
-            <button class="talk-btn">Talk to us</button>
-        </a>
-    </section>
+    <a href="contact.html">
+        <button class="talk-btn">Talk to us</button>
+    </a>
+</section>
 
 
-    <!-- FOOTER -->
+ <!-- FOOTER -->
     <footer>
         <div class="footer-grid">
 
@@ -188,6 +186,7 @@
 
         </div>
     </footer>
+
 <script src="js/products.js"></script>
 </body>
 </html>
