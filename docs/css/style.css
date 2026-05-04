@@ -9,7 +9,12 @@
 body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
-  background: var(--bg-light);
+  background-image: url('../assets/bg_logo.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 500px;
+    background-attachment: fixed;
+    opacity: 0.98;
 }
 
 header {
