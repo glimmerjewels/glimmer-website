@@ -41,3 +41,30 @@ function quickView(name, image, price){
     document.getElementById("modal-name").innerText=name;
     document.getElementById("modal-price").innerText="₹"+price;
 }
+
+
+function openPopup(img, category, name, price, description) {
+            document.getElementById("popupOverlay").style.display = "flex";
+            document.getElementById("popupImage").src = img;
+            document.getElementById("popupCategory").innerText = category;
+            document.getElementById("popupName").innerText = name;
+            document.getElementById("popupPrice").innerText = "₹" + price;
+            document.getElementById("popupDescription").innerText = description;
+        }
+function closePopup() {
+            document.getElementById("popupOverlay").style.display = "none";
+        }
+
+function filterProducts(category){
+            document.getElementById("categoryTitle").innerText =
+                category.charAt(0).toUpperCase() + category.slice(1);
+        }
+
+        // URL category detection
+        const params = new URLSearchParams(window.location.search);
+        const selectedCategory = params.get("category");
+
+        if(selectedCategory){
+            document.getElementById("categoryTitle").innerText =
+            selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1);
+        }
