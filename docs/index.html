@@ -1,46 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Glimmer | Stay Sparkling</title>
-<link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glimmer | Stay Sparkling</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script defer src="js/homeSlider.js"></script>
 </head>
-
 <body>
 
+<!-- HEADER -->
 <header>
-  <div class="logo-container">
-    <a href="index.html">
-        <img src="assets/logo1.png" alt="Glimmer Logo" class="logo">
-    </a>
-</div>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="products.html">Products</a>
-    <a href="offers.html">Offers</a>
-    <a href="myCart.html">Cart 🛒</a>
-    <a href="contact.html">Contact</a>
-  </nav>
+    <div class="brand-section">
+        <img src="assets/logo1.png" class="logo">
+        <h2>Glimmer</h2>
+    </div>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="contact.html">Contact</a>
+        <a href="admin.html">Admin</a>
+        <a href="myCart.html">🛒 My Cart</a>
+    </nav>
 </header>
 
-<section class="hero">
-  <h1>Glimmer</h1>
-  <p>Stay Sparkling ✨</p>
-  <button onclick="shopNow()">Shop Now</button>
+
+<!-- HERO SECTION -->
+<section class="hero-section">
+
+    <div class="hero-left">
+        <h5>ANTI-TARNISH. HYPOALLERGENIC. EVERYDAY WEAR</h5>
+        <h1>Stay Sparkling Every Day.</h1>
+
+        <p>
+            Artificial jewellery that refuses to dull.
+            Crafted in India, finished to last — pieces designed for every moment you shine.
+        </p>
+
+        <a href="products.html?category=all">
+            <button class="shop-btn">Shop The Collection →</button>
+        </a>
+    </div>
+
+    <div class="hero-right">
+        <img id="slider-image" src="assets/home_images/img1.jpg">
+    </div>
+
 </section>
 
-<section class="featured">
-  <h2>Trending Collections</h2>
-  <div id="products-container"></div>
-</section>
 
-<footer>
-  <p>Follow us: 
-    <a href="https://instagram.com/glimmer_staysparkling">@glimmer_staysparkling</a>
-  </p>
-  <p>WhatsApp: 9404458374</p>
-</footer>
+<!-- FEATURES -->
+<section class="features-section">
 
-<script src="js/app.js"></script>
-</body>
+    <div>
+        <h3>✨ Anti-Tarnish Guarantee</h3>
 </html>
