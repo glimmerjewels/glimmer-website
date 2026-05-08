@@ -174,20 +174,23 @@ const supabaseClient = supabase.createClient(
 
 
 // LOGIN LOGIC
-function login() {
+async function login() {
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
 
-    // temporary hardcoded login
-    if(username === "admin" && password === "glimmer123") {
+    const { data, error } = await supabaseClient
+        .from("admin_users")
+        .select("*")
+        .eq("username", username)
+        .eq("password", password);
+
+    if(data.length > 0){
         document.getElementById("loginOverlay").style.display = "none";
         document.getElementById("adminContent").classList.remove("hidden");
-
         fetchProducts();
-    } 
-    else {
+    } else {
         document.getElementById("loginError").innerText =
-            "Invalid username/password";
+            "Invalid credentials";
     }
 }
 
