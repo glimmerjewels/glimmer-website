@@ -110,7 +110,7 @@
 
         <input type="text" id="productName" placeholder="Product Name">
 
-        <input type="text" id="productImage" placeholder="Image URL">
+        <input type="file" id="productImage" accept="image/*">
 
         <select id="productCategory">
             <option value="">Select Category</option>
@@ -252,9 +252,39 @@ function closePopup(){
 // SAVE PRODUCT
 async function saveProduct(){
 
+    const imageFile = document.getElementById("productImage").files[0];
+
+    if(!imageFile){
+        alert("Please upload product image");
+        return;
+    }
+
+    // create unique file name
+    const fileName = Date.now() + "_" + imageFile.name;
+
+    // upload image to Supabase storage
+    const { data: imageData, error: imageError } =
+        await supabaseClient.storage
+        .from("product-images")
+        .upload(fileName, imageFile);
+
+    if(imageError){
+        console.log(imageError);
+        alert("Image upload failed");
+        return;
+    }
+
+    // get public image URL
+    const { data: publicUrlData } =
+        supabaseClient.storage
+        .from("product-images")
+        .getPublicUrl(fileName);
+
+    const imageUrl = publicUrlData.publicUrl;
+
     const product = {
         name: document.getElementById("productName").value,
-        image: document.getElementById("productImage").value,
+        image: imageUrl,
         category: document.getElementById("productCategory").value,
         actual_price: document.getElementById("actualPrice").value,
         offer_price: document.getElementById("offerPrice").value,
@@ -268,16 +298,15 @@ async function saveProduct(){
 
     if(error){
         console.log(error);
-        alert("Error saving product");
+        alert("Product save failed");
         return;
     }
 
-    alert("Product Added Successfully");
+    alert("Product added successfully ✨");
 
     closePopup();
     fetchProducts();
 }
-
 
 
 // DELETE PRODUCT
