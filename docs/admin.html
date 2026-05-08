@@ -175,25 +175,46 @@ const supabaseClient = supabase.createClient(
 
 // LOGIN LOGIC
 async function login() {
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
+    const usernameInput = document.getElementById("username").value.trim();
+    const passwordInput = document.getElementById("password").value.trim();
 
-    const { data, error } = await supabaseClient
-        .from("admin_users")
-        .select("*")
-        .eq("username", username)
-        .eq("password", password);
-
-    if(data.length > 0){
-        document.getElementById("loginOverlay").style.display = "none";
-        document.getElementById("adminContent").classList.remove("hidden");
-        fetchProducts();
-    } else {
+    if (!usernameInput || !passwordInput) {
         document.getElementById("loginError").innerText =
-            "Invalid credentials";
+            "Please enter username and password";
+        return;
+    }
+
+    try {
+        const { data, error } = await supabaseClient
+            .from("admin_users")
+            .select("*")
+            .eq("username", usernameInput)
+            .eq("password", passwordInput);
+
+        if (error) {
+            console.log(error);
+            document.getElementById("loginError").innerText =
+                "Login failed. Please try again.";
+            return;
+        }
+
+        if (data.length > 0) {
+            // successful login
+            document.getElementById("loginOverlay").style.display = "none";
+            document.getElementById("adminContent").classList.remove("hidden");
+
+            fetchProducts();
+        } else {
+            document.getElementById("loginError").innerText =
+                "Invalid username or password";
+        }
+
+    } catch (err) {
+        console.log(err);
+        document.getElementById("loginError").innerText =
+            "Something went wrong";
     }
 }
-
 
 
 // FETCH PRODUCTS
