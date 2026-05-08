@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Glimmer</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="docs/css/admin.css">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body>
+
+<!-- Background Logo -->
+<div class="bg-logo"></div>
+
+<!-- HEADER -->
+<header>
+    <div class="logo-section">
+        <a href="index.html">
+            <img src="docs/assets/logo1.png" alt="Glimmer Logo">
+        </a>
+    </div>
+
+    <nav>
+        <a href="index.html">Home</a>
+
+        <div class="dropdown">
+            <a href="#">Products ▼</a>
+
+            <div class="dropdown-content">
+                <a href="products.html?category=all">All</a>
+                <a href="products.html?category=earrings">Earrings</a>
+                <a href="products.html?category=necklace">Necklace & Chains</a>
+                <a href="products.html?category=bracelets">Bracelets</a>
+                <a href="products.html?category=rings">Rings</a>
+            </div>
+        </div>
+
+        <a href="contact.html">Contact</a>
+        <a href="admin.html">Admin</a>
+        <a href="myCart.html">🛒 My Cart</a>
+    </nav>
+</header>
+
+
+<!-- LOGIN POPUP -->
+<div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+        <h3>Admin Login</h3>
+
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+
+        <button onclick="login()">Login</button>
+
+        <p id="loginError"></p>
+    </div>
+</div>
+
+
+<!-- ADMIN CONTENT -->
+<section class="admin-section hidden" id="adminContent">
+
+    <div class="admin-header">
+        <div>
+            <p class="small-heading">ADMIN</p>
+            <h1>Inventory</h1>
+        </div>
+
+        <button class="add-btn" onclick="openAddProductPopup()">
+            + Add Product
+        </button>
+    </div>
+
+
+    <!-- Inventory Table -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Product Image</th>
+                    <th>Category</th>
+                    <th>Actual Price</th>
+                    <th>Offer Price</th>
+                    <th>Stock</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody id="inventoryTableBody">
+                <!-- Supabase data -->
+            </tbody>
+        </table>
+    </div>
+</section>
+
+
+
+<!-- ADD PRODUCT POPUP -->
+<div class="popup-overlay hidden" id="productPopup">
+    <div class="popup-box">
+
+        <h2>Add Product</h2>
+
+        <input type="text" id="productName" placeholder="Product Name">
+
+        <input type="text" id="productImage" placeholder="Image URL">
+
+        <select id="productCategory">
+            <option value="">Select Category</option>
+            <option value="earrings">Earrings</option>
+            <option value="necklace">Necklace & Chains</option>
+            <option value="bracelets">Bracelets</option>
+            <option value="rings">Rings</option>
+        </select>
+
+        <input type="number" id="actualPrice" placeholder="Actual Price">
+        <input type="number" id="offerPrice" placeholder="Offer Price">
+
+        <textarea id="description" placeholder="Product Description"></textarea>
+
+        <input type="number" id="stock" placeholder="Stock">
+
+        <div class="popup-buttons">
+            <button onclick="saveProduct()">Save</button>
+            <button onclick="closePopup()" class="cancel-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-grid">
+        <div>
+            <h3>Glimmer</h3>
+            <p>Stay sparkling everyday ✨</p>
+        </div>
+
+        <div>
+            <h3>Quick Links</h3>
+            <a href="index.html">Home</a><br>
+            <a href="products.html">Products</a><br>
+            <a href="contact.html">Contact</a>
+        </div>
+
+        <div>
+            <h3>Contact</h3>
+            <p>Email: glimmer@gmail.com</p>
+            <p>Instagram: @glimmer</p>
+        </div>
+    </div>
+</footer>
+
+
+
+<script>
+
+const SUPABASE_URL = "https://bwgcnxaedxfoaoivfqlz.supabase.co";
+const SUPABASE_KEY = "sb_publishable_8E-vrDNIauQ-pGxG0CuOOQ_kcqTnbJJ";
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+
+// LOGIN LOGIC
+function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    // temporary hardcoded login
+    if(username === "admin" && password === "glimmer123") {
+        document.getElementById("loginOverlay").style.display = "none";
+        document.getElementById("adminContent").classList.remove("hidden");
+
+        fetchProducts();
+    } 
+    else {
+        document.getElementById("loginError").innerText =
+            "Invalid username/password";
+    }
+}
+
+
+
+// FETCH PRODUCTS
+async function fetchProducts() {
+    const { data, error } = await supabaseClient
+        .from("products")
+        .select("*");
+
+    if(error){
+        console.log(error);
+        return;
+    }
+
+    const tableBody = document.getElementById("inventoryTableBody");
+    tableBody.innerHTML = "";
+
+    data.forEach(product => {
+        tableBody.innerHTML += `
+            <tr>
+                <td>${product.name}</td>
+                <td>
+                    <img src="${product.image}" class="table-img">
+                </td>
+                <td>${product.category}</td>
+                <td>₹${product.actual_price}</td>
+                <td>₹${product.offer_price}</td>
+                <td>${product.stock}</td>
+                <td>
+                    <button class="delete-btn"
+                        onclick="deleteProduct(${product.id})">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+
+
+// OPEN POPUP
+function openAddProductPopup(){
+    document.getElementById("productPopup")
+        .classList.remove("hidden");
+}
+
+
+// CLOSE POPUP
+function closePopup(){
+    document.getElementById("productPopup")
+        .classList.add("hidden");
+}
+
+
+
+// SAVE PRODUCT
+async function saveProduct(){
+
+    const product = {
+        name: document.getElementById("productName").value,
+        image: document.getElementById("productImage").value,
+        category: document.getElementById("productCategory").value,
+        actual_price: document.getElementById("actualPrice").value,
+        offer_price: document.getElementById("offerPrice").value,
+        description: document.getElementById("description").value,
+        stock: document.getElementById("stock").value
+    };
+
+    const { error } = await supabaseClient
+        .from("products")
+        .insert([product]);
+
+    if(error){
+        console.log(error);
+        alert("Error saving product");
+        return;
+    }
+
+    alert("Product Added Successfully");
+
+    closePopup();
+    fetchProducts();
+}
+
+
+
+// DELETE PRODUCT
+async function deleteProduct(id){
+
+    await supabaseClient
+        .from("products")
+        .delete()
+        .eq("id", id);
+
+    fetchProducts();
+}
+
+</script>
+
+</body>
+</html>
