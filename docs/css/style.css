@@ -327,38 +327,137 @@ footer a{
 }
 
 /* POPUP */
-/* ADD PRODUCT POPUP */
-.popup-overlay{
+/* ================= ADMIN ADD PRODUCT POPUP ================= */
+
+.popup-overlay {
     position: fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background: rgba(0,0,0,0.5);
-    justify-content:center;
-    align-items:center;
-    z-index:2000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.55);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
 }
 
 /* hidden state */
-.hidden{
-    display:none !important;
+.hidden {
+    display: none !important;
 }
 
 /* visible popup */
 .popup-overlay:not(.hidden){
-    display:flex;
+    display: flex;
 }
 
-.popup-box{
-    width:80%;
-    background:white;
-    border-radius:25px;
-    display:flex;
-    padding:30px;
-    position:relative;
+.popup-box {
+    width: 550px;
+    max-width: 90%;
+    background: white;
+    padding: 35px;
+    border-radius: 25px;
+    box-shadow: 0px 15px 40px rgba(0,0,0,0.2);
+    animation: popupFade 0.3s ease;
 }
 
+.popup-box h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    color: #4b145f;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.popup-box input,
+.popup-box textarea,
+.popup-box select {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 15px;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    outline: none;
+}
+
+.popup-box input:focus,
+.popup-box textarea:focus,
+.popup-box select:focus {
+    border-color: #ff4e8b;
+}
+
+.popup-box textarea {
+    min-height: 100px;
+    resize: none;
+}
+
+.popup-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.popup-buttons button {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.popup-buttons button:first-child {
+    background: linear-gradient(135deg, #8E2DE2, #FF4E8B);
+    color: white;
+}
+
+.popup-buttons button:first-child:hover {
+    transform: translateY(-2px);
+}
+
+.cancel-btn {
+    background: #f1f1f1;
+    color: #333;
+}
+
+.cancel-btn:hover {
+    background: #ddd;
+}
+
+/* file upload styling */
+input[type="file"] {
+    background: #fff7fb;
+    border: 2px dashed #ffb6d5;
+    cursor: pointer;
+}
+
+/* popup animation */
+@keyframes popupFade {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* mobile */
+@media(max-width:768px){
+    .popup-box{
+        width: 95%;
+        padding: 25px;
+    }
+
+    .popup-buttons{
+        flex-direction: column;
+    }
+}
 .popup-left{
     width:50%;
 }
