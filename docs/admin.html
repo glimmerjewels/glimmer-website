@@ -8,7 +8,7 @@
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="docs/css/style.css">
+    <link rel="stylesheet" href="css/style.css">
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
@@ -22,16 +22,15 @@
 <header>
     <div class="logo-section">
         <a href="index.html">
-            <img src="docs/assets/logo1.png" alt="Glimmer Logo">
+            <img src="assets/logo1.png" alt="Glimmer Logo">
         </a>
     </div>
 
-    <nav>
+    <nav class="navbar">
         <a href="index.html">Home</a>
 
-        <div class="dropdown">
-            <a href="#">Products ▼</a>
-
+       <div class="dropdown">
+        <button class="dropbtn">Products ▼</button>
             <div class="dropdown-content">
                 <a href="products.html?category=all">All</a>
                 <a href="products.html?category=earrings">Earrings</a>
