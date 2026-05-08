@@ -1,15 +1,46 @@
-const products = [
-  {
-    name: "Charm Bracelet",
-    price: 699,
-    image: "assets/images/bracelet.jpg"
-  },
-  {
-    name: "Necklace",
-    price: 799,
-    image: "assets/images/necklace.jpg"
-  }
-];
+const SUPABASE_URL = "https://bwgcnxaedxfoaoivfqlz.supabase.co";
+const SUPABASE_KEY = "YOUR_PUBLISHABLE_KEY";
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+async function loadProducts() {
+    const { data, error } = await supabaseClient
+        .from("products")
+        .select("*");
+
+    if(error){
+        console.log(error);
+        return;
+    }
+
+    const container = document.getElementById("products-container");
+    container.innerHTML = "";
+
+    data.forEach(product => {
+        container.innerHTML += `
+            <div class="product-card" data-category="${product.category}">
+                <img src="${product.image}">
+                <h3>${product.name}</h3>
+                <p>₹${product.offer_price}</p>
+
+                <button onclick="openPopup(
+                    '${product.image}',
+                    '${product.category}',
+                    '${product.name}',
+                    '${product.offer_price}',
+                    '${product.description}'
+                )">
+                    Quick View
+                </button>
+            </div>
+        `;
+    });
+}
+
+loadProducts();
 
 const container = document.getElementById("products-container");
 
