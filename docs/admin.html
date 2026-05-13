@@ -281,7 +281,7 @@ function closePopup(){
 
 // SAVE PRODUCT
 async function saveProduct(){
-
+/*
     const imageFile = document.getElementById("productImage").files[0];
 
     if(!imageFile){
@@ -336,6 +336,30 @@ async function saveProduct(){
 
     closePopup();
     fetchProducts();
+    */
+    const imageFile = document.getElementById("productImage").files[0];
+
+if (!imageFile) {
+    alert("Please upload product image");
+    return;
+}
+
+console.log("Selected file:", imageFile);
+
+const fileName = Date.now() + "_" + imageFile.name;
+
+const { data: imageData, error: imageError } =
+    await supabaseClient.storage
+        .from("product-images")
+        .upload(fileName, imageFile);
+
+console.log("Upload success response:", imageData);
+console.log("Upload error response:", imageError);
+
+if (imageError) {
+    alert("Image upload failed: " + imageError.message);
+    return;
+}
 }
 
 
