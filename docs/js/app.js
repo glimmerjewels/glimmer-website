@@ -1,7 +1,7 @@
 function shopNow() {
   window.location.href = "products.html";
 }
-
+/*
 // Fetch products from backend
 fetch("https://glimmer-backend-y9a9.onrender.com/products")
 .then(res => res.json())
@@ -18,3 +18,4 @@ fetch("https://glimmer-backend-y9a9.onrender.com/products")
     `;
   });
 });
+*/
