@@ -8,20 +8,31 @@
 </head>
 <body>
 
-<header>
-    <div class="logo-container">
-    <a href="index.html">
-        <img src="assets/logo1.png" alt="Glimmer Logo" class="logo">
-    </a>
-    </div>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="products.html">Products</a>
-        <a href="offers.html">Offers</a>
-        <a href="myCart.html">Cart 🛒</a>
-        <a href="contact.html">Contact</a>
-    </nav>
-</header>
+ <header>
+        <div class="logo-section">
+            <img src="assets/logo1.png" alt="Glimmer Logo">
+        </div>
+
+        <nav class="navbar">
+            <a href="index.html">Home</a>
+
+            <div class="dropdown">
+                <button class="dropbtn">Products ▼</button>
+
+                <div class="dropdown-content">
+                    <a href="products.html?category=all">All</a>
+                    <a href="products.html?category=earrings">Earrings</a>
+                    <a href="products.html?category=necklace">Necklace & Chains</a>
+                    <a href="products.html?category=bracelets">Bracelets</a>
+                    <a href="products.html?category=rings">Rings</a>
+                </div>
+            </div>
+
+            <a href="contact.html">Contact</a>
+            <a href="admin.html">Admin</a>
+            <a href="myCart.html">🛒 My Cart</a>
+        </nav>
+    </header>
 
 <section class="contact-section">
     <h2>Stay Connected ✨</h2>
@@ -45,6 +56,36 @@
         <button type="submit">Send Message</button>
     </form>
 </section>
+
+     <!-- FOOTER -->
+    <footer>
+        <div class="footer-grid">
+
+            <div>
+                <h3>Glimmer</h3>
+                <p>
+                    Anti Tarnish artificial jewellery crafted
+                    to help you stay sparkling every single day.
+                </p>
+            </div>
+
+            <div>
+                <h3>Company</h3>
+                <a href="contact.html">Contact</a><br>
+                <a href="products.html">All Products</a><br>
+                <a href="myCart.html">My Cart</a>
+            </div>
+
+            <div>
+                <h3>Reach Us</h3>
+                <p>📞 +91 9404458374</p>
+                <p>✉ glimmer.jewels2000@gmail.com</p>
+                <p>📸 @glimmer_staysparkling</p>
+            </div>
+
+        </div>
+    </footer>
+
 
 </body>
 </html>
