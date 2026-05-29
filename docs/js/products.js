@@ -160,4 +160,78 @@ async function loadProducts(){
                 <img src="${product.image}"
                 onclick="openPopup(${product.id})">
 
+                <h3>${product.name}</h3>
+
+                <p>
+                    <del>₹${product.actual_price}</del>
+                    ₹${product.offer_price}
+                </p>
+
+            </div>
+            `;
+        }
+    });
+}
+
+function openPopup(id){
+
+    const product =
+    window.allProducts.find(p => p.id === id);
+
+    document.getElementById("popupOverlay")
+    .style.display = "flex";
+
+    document.getElementById("popupImage")
+    .src = product.image;
+
+    document.getElementById("popupCategory")
+    .innerText = product.category;
+
+    document.getElementById("popupName")
+    .innerText = product.name;
+
+    document.getElementById("popupPrice")
+    .innerText = `₹${product.offer_price}`;
+
+    document.getElementById("popupDescription")
+    .innerText = product.description;
+
+    document.getElementById("addToCartBtn")
+    .setAttribute("data-id", product.id);
+}
+
+function closePopup(){
+    document.getElementById("popupOverlay")
+    .style.display = "none";
+}
+
+function addToCart(){
+
+    const id = Number(
+        document.getElementById("addToCartBtn")
+        .dataset.id
+    );
+
+    const product =
+    window.allProducts.find(p => p.id === id);
+
+    const existing = cart.find(item => item.id === id);
+
+    if(existing){
+        existing.quantity += 1;
+    } else {
+        cart.push({
+            ...product,
+            quantity:1
+        });
+    }
+
+    localStorage.setItem(
+        "glimmerCart",
+        JSON.stringify(cart)
+    );
+
+    alert("Added To Cart");
+}
+
 loadProducts();
