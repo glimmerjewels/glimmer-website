@@ -1,4 +1,56 @@
 let cart = JSON.parse(localStorage.getItem("glimmerCart")) || [];
+
+function loadCart(){
+
+    const container =
+    document.getElementById("cartItems");
+
+    let total = 0;
+
+    container.innerHTML = "";
+
+    cart.forEach(item => {
+
+        total += item.offer_price * item.quantity;
+
+        container.innerHTML += `
+
+        <div class="cart-item">
+
+            <img src="${item.image}">
+
+            <div>
+                <h3>${item.name}</h3>
+                <p>Quantity: ${item.quantity}</p>
+                <p>₹${item.offer_price}</p>
+            </div>
+
+        </div>
+        `;
+    });
+
+    document.getElementById("cartTotal")
+    .innerText = total;
+}
+
+async function payNow(){
+
+    let total = 0;
+
+    cart.forEach(item => {
+        total += item.offer_price * item.quantity;
+    });
+
+    const options = {
+
+        key: "YOUR_RAZORPAY_KEY",
+
+        amount: total * 100,
+
+        currency: "INR",
+
+        name: "Glimmer",
+
         description: "Jewelry Purchase",
 
         handler: async function(response){
