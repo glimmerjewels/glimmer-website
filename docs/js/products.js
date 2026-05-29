@@ -1,3 +1,4 @@
+/*
 const SUPABASE_URL = "https://bwgcnxaedxfoaoivfqlz.supabase.co";
 const SUPABASE_KEY = "YOUR_PUBLISHABLE_KEY";
 
@@ -100,5 +101,63 @@ document.querySelectorAll(".filter-btn").forEach(button => {
     });
 });
 
+
+loadProducts();
+*/
+const container = document.getElementById("products-container");
+const collectionTitle = document.getElementById("categoryTitle");
+
+let cart = JSON.parse(localStorage.getItem("glimmerCart")) || [];
+
+async function loadProducts(){
+
+    const { data, error } = await supabaseClient
+    .from("products")
+    .select("*")
+    .order("created_at", { ascending:false });
+
+    if(error){
+        console.log(error);
+        return;
+    }
+
+    container.innerHTML = "";
+
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const selectedCategory =
+    urlParams.get("category") || "all";
+
+    document.querySelectorAll(".filter-btn")
+    .forEach(btn => {
+
+        btn.classList.remove("active");
+
+        if(btn.dataset.category === selectedCategory){
+            btn.classList.add("active");
+        }
+    });
+
+    if(selectedCategory === "all"){
+        collectionTitle.innerText = "All Products";
+    } else {
+        collectionTitle.innerText = selectedCategory;
+    }
+
+    window.allProducts = data;
+
+    data.forEach(product => {
+
+        if(
+            selectedCategory === "all" ||
+            product.category === selectedCategory
+        ){
+
+            container.innerHTML += `
+
+            <div class="product-card">
+
+                <img src="${product.image}"
+                onclick="openPopup(${product.id})">
 
 loadProducts();
