@@ -1,7 +1,7 @@
 const loginOverlay = document.getElementById("loginOverlay");
 const adminPanel = document.getElementById("adminPanel");
 
-async function adminLogin(){
+async function login(){
 
     const email =
     document.getElementById("email").value;
@@ -45,7 +45,7 @@ window.onload = async () => {
     }
 };
 
-async function loadInventory(){
+async function fetchProducts(){
 
     const tableBody =
     document.getElementById("inventoryBody");
@@ -88,7 +88,7 @@ async function loadInventory(){
     });
 }
 
-async function addProduct(){
+async function saveProduct(){
 
     const name =
     document.getElementById("productName").value;
