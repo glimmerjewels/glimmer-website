@@ -1,237 +1,461 @@
 /*
 const SUPABASE_URL = "https://bwgcnxaedxfoaoivfqlz.supabase.co";
 const SUPABASE_KEY = "YOUR_PUBLISHABLE_KEY";
+*/
+// ======================================
+// GLOBALS
+// ======================================
 
-const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
+let allProducts = [];
+
+let selectedProduct = null;
+
+let currentQuantity = 1;
+
+// ======================================
+// PAGE LOAD
+// ======================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        loadProducts();
+
+        initializeFilters();
+
+    }
 );
 
-const container = document.getElementById("products-container");
-const collectionTitle = document.getElementById("categoryTitle");
-
-
+// ======================================
 // LOAD PRODUCTS
+// ======================================
+
 async function loadProducts() {
 
-    const { data, error } = await supabaseClient
-        .from("products")
-        .select("*");
+    const { data, error } =
+        await supabaseClient
+            .from("products")
+            .select("*")
+            .order("created_at", {
+                ascending: false
+            });
 
-    if(error){
-        console.log(error);
+    if (error) {
+
+        console.error(error);
+
         return;
     }
 
-    container.innerHTML = "";
+    allProducts = data;
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const selectedCategory = urlParams.get("category") || "all";
+    renderProducts("all");
+}
 
-    // activate selected button
-    document.querySelectorAll(".filter-btn").forEach(btn => {
-        btn.classList.remove("active");
+// ======================================
+// FILTERS
+// ======================================
 
-        if(btn.dataset.category === selectedCategory){
-            btn.classList.add("active");
-        }
-    });
+function initializeFilters() {
 
-    // update title
-    if(selectedCategory === "all"){
-        collectionTitle.innerText = "All Products";
-    } else {
-        collectionTitle.innerText =
-            selectedCategory.charAt(0).toUpperCase() +
-            selectedCategory.slice(1);
+    document
+        .querySelectorAll(".filter-btn")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    document
+                        .querySelectorAll(".filter-btn")
+                        .forEach(btn => {
+
+                            btn.classList.remove(
+                                "active"
+                            );
+
+                        });
+
+                    button.classList.add(
+                        "active"
+                    );
+
+                    const category =
+                        button.dataset.category;
+
+                    renderProducts(
+                        category
+                    );
+
+                }
+            );
+
+        });
+}
+
+// ======================================
+// RENDER PRODUCTS
+// ======================================
+
+async function renderProducts(category) {
+
+    const grid =
+        document.getElementById(
+            "productsGrid"
+        );
+
+    const title =
+        document.getElementById(
+            "categoryTitle"
+        );
+
+    grid.innerHTML = "";
+
+    let productsToShow =
+        allProducts;
+
+    if (category !== "all") {
+
+        productsToShow =
+            allProducts.filter(
+                product =>
+                product.category ===
+                category
+            );
     }
 
-    data.forEach(product => {
+    title.innerText =
+        category === "all"
+            ? "All Products"
+            : category.charAt(0)
+                .toUpperCase() +
+              category.slice(1);
 
-        if(
-            selectedCategory === "all" ||
-            product.category === selectedCategory
-        ){
-            container.innerHTML += `
-                <div class="product-card">
-                    <img src="${product.image}"
-                    onclick="openPopup(
-                        '${product.image}',
-                        '${product.category}',
-                        '${product.name}',
-                        '${product.offer_price}',
-                        '${product.description}'
-                    )">
+    for (const product of productsToShow) {
 
-                    <h3>${product.name}</h3>
-                    <p>₹${product.offer_price}</p>
-                </div>
-            `;
-        }
-    });
+        const images =
+            await getImages(
+                product.id
+            );
+
+        const coverImage =
+            images.length > 0
+                ? images[0].image_url
+                : "assets/no-image.png";
+
+        grid.innerHTML += `
+
+        <div
+        class="product-card"
+        onclick="openProductPopup(${product.id})">
+
+            <img
+            src="${coverImage}"
+            alt="${product.name}">
+
+            <h3>
+                ${product.name}
+            </h3>
+
+        </div>
+
+        `;
+    }
 }
 
+// ======================================
+// GET PRODUCT IMAGES
+// ======================================
 
-// POPUP OPEN
-function openPopup(img, category, name, price, description){
-    document.getElementById("popupOverlay").style.display = "flex";
+async function getImages(
+    productId
+) {
 
-    document.getElementById("popupImage").src = img;
-    document.getElementById("popupCategory").innerText = category;
-    document.getElementById("popupName").innerText = name;
-    document.getElementById("popupPrice").innerText = "₹" + price;
-    document.getElementById("popupDescription").innerText = description;
+    const { data } =
+        await supabaseClient
+            .from("product_images")
+            .select("*")
+            .eq(
+                "product_id",
+                productId
+            );
+
+    return data || [];
 }
 
+// ======================================
+// PRODUCT POPUP
+// ======================================
 
-// POPUP CLOSE
-function closePopup(){
-    document.getElementById("popupOverlay").style.display = "none";
-}
+async function openProductPopup(
+    productId
+) {
 
+    selectedProduct =
+        allProducts.find(
+            p => p.id === productId
+        );
 
-// FILTER BUTTON CLICK
-document.querySelectorAll(".filter-btn").forEach(button => {
-    button.addEventListener("click", function(){
-
-        const category = this.dataset.category;
-
-        window.location.href =
-            `products.html?category=${category}`;
-    });
-});
-
-
-loadProducts();
-*/
-const container = document.getElementById("products-container");
-const collectionTitle = document.getElementById("categoryTitle");
-
-let cart = JSON.parse(localStorage.getItem("glimmerCart")) || [];
-
-async function loadProducts(){
-
-    const { data, error } = await supabaseClient
-    .from("products")
-    .select("*")
-    .order("created_at", { ascending:false });
-
-    if(error){
-        console.log(error);
+    if (!selectedProduct)
         return;
-    }
 
-    container.innerHTML = "";
+    currentQuantity = 1;
 
-    const urlParams = new URLSearchParams(window.location.search);
+    document
+        .getElementById(
+            "quantityValue"
+        )
+        .innerText =
+        currentQuantity;
 
-    const selectedCategory =
-    urlParams.get("category") || "all";
+    const images =
+        await getImages(
+            productId
+        );
 
-    document.querySelectorAll(".filter-btn")
-    .forEach(btn => {
-
-        btn.classList.remove("active");
-
-        if(btn.dataset.category === selectedCategory){
-            btn.classList.add("active");
-        }
-    });
-
-    if(selectedCategory === "all"){
-        collectionTitle.innerText = "All Products";
-    } else {
-        collectionTitle.innerText = selectedCategory;
-    }
-
-    window.allProducts = data;
-
-    data.forEach(product => {
-
-        if(
-            selectedCategory === "all" ||
-            product.category === selectedCategory
-        ){
-
-            container.innerHTML += `
-
-            <div class="product-card">
-
-                <img src="${product.image}"
-                onclick="openPopup(${product.id})">
-
-                <h3>${product.name}</h3>
-
-                <p>
-                    <del>₹${product.actual_price}</del>
-                    ₹${product.offer_price}
-                </p>
-
-            </div>
-            `;
-        }
-    });
-}
-
-function openPopup(id){
-
-    const product =
-    window.allProducts.find(p => p.id === id);
-
-    document.getElementById("popupOverlay")
-    .style.display = "flex";
-
-    document.getElementById("popupImage")
-    .src = product.image;
-
-    document.getElementById("popupCategory")
-    .innerText = product.category;
-
-    document.getElementById("popupName")
-    .innerText = product.name;
-
-    document.getElementById("popupPrice")
-    .innerText = `₹${product.offer_price}`;
-
-    document.getElementById("popupDescription")
-    .innerText = product.description;
-
-    document.getElementById("addToCartBtn")
-    .setAttribute("data-id", product.id);
-}
-
-function closePopup(){
-    document.getElementById("popupOverlay")
-    .style.display = "none";
-}
-
-function addToCart(){
-
-    const id = Number(
-        document.getElementById("addToCartBtn")
-        .dataset.id
+    populatePopup(
+        selectedProduct,
+        images
     );
 
-    const product =
-    window.allProducts.find(p => p.id === id);
+    document
+        .getElementById(
+            "productPopup"
+        )
+        .classList.remove(
+            "hidden"
+        );
+}
 
-    const existing = cart.find(item => item.id === id);
+// ======================================
+// POPULATE POPUP
+// ======================================
 
-    if(existing){
-        existing.quantity += 1;
+function populatePopup(
+    product,
+    images
+) {
+
+    document
+        .getElementById(
+            "popupName"
+        )
+        .innerText =
+        product.name;
+
+    document
+        .getElementById(
+            "popupDescription"
+        )
+        .innerText =
+        product.description || "";
+
+    document
+        .getElementById(
+            "popupActualPrice"
+        )
+        .innerText =
+        `₹${product.actual_price}`;
+
+    document
+        .getElementById(
+            "popupOfferPrice"
+        )
+        .innerText =
+        `₹${product.offer_price}`;
+
+    document
+        .getElementById(
+            "popupStock"
+        )
+        .innerText =
+        product.stock;
+
+    const mainImage =
+        document.getElementById(
+            "mainPopupImage"
+        );
+
+    if (images.length > 0) {
+
+        mainImage.src =
+            images[0].image_url;
+
     } else {
+
+        mainImage.src =
+            "assets/no-image.png";
+    }
+
+    const strip =
+        document.getElementById(
+            "thumbnailStrip"
+        );
+
+    strip.innerHTML = "";
+
+    images.forEach(img => {
+
+        strip.innerHTML += `
+
+        <img
+        src="${img.image_url}"
+        onclick="changeMainImage('${img.image_url}')">
+
+        `;
+
+    });
+}
+
+// ======================================
+// CHANGE MAIN IMAGE
+// ======================================
+
+function changeMainImage(
+    imageUrl
+) {
+
+    document
+        .getElementById(
+            "mainPopupImage"
+        )
+        .src =
+        imageUrl;
+}
+
+// ======================================
+// CLOSE POPUP
+// ======================================
+
+function closePopup() {
+
+    document
+        .getElementById(
+            "productPopup"
+        )
+        .classList.add(
+            "hidden"
+        );
+}
+
+// ======================================
+// QUANTITY
+// ======================================
+
+function increaseQty() {
+
+    if (!selectedProduct)
+        return;
+
+    if (
+        currentQuantity <
+        selectedProduct.stock
+    ) {
+
+        currentQuantity++;
+
+        document
+            .getElementById(
+                "quantityValue"
+            )
+            .innerText =
+            currentQuantity;
+    }
+}
+
+function decreaseQty() {
+
+    if (
+        currentQuantity > 1
+    ) {
+
+        currentQuantity--;
+
+        document
+            .getElementById(
+                "quantityValue"
+            )
+            .innerText =
+            currentQuantity;
+    }
+}
+
+// ======================================
+// ADD TO CART
+// ======================================
+
+async function addToCart() {
+
+    if (!selectedProduct)
+        return;
+
+    const images =
+        await getImages(
+            selectedProduct.id
+        );
+
+    const cart =
+        JSON.parse(
+            localStorage.getItem(
+                "glimmerCart"
+            )
+        ) || [];
+
+    const existing =
+        cart.find(
+            item =>
+            item.id ===
+            selectedProduct.id
+        );
+
+    if (existing) {
+
+        existing.quantity +=
+            currentQuantity;
+
+    } else {
+
         cart.push({
-            ...product,
-            quantity:1
+
+            id:
+                selectedProduct.id,
+
+            name:
+                selectedProduct.name,
+
+            image:
+                images.length > 0
+                    ? images[0]
+                        .image_url
+                    : "",
+
+            actual_price:
+                selectedProduct.actual_price,
+
+            offer_price:
+                selectedProduct.offer_price,
+
+            stock:
+                selectedProduct.stock,
+
+            quantity:
+                currentQuantity
+
         });
     }
 
     localStorage.setItem(
+
         "glimmerCart",
+
         JSON.stringify(cart)
+
     );
 
-    alert("Added To Cart");
-}
+    alert(
+        "Added To Cart"
+    );
 
-loadProducts();
+    closePopup();
+}
