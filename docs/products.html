@@ -24,51 +24,44 @@ href="css/style.css">
 
 <!-- HEADER -->
 
-<header>
+ <!-- HEADER -->
+    <header>
+        <div class="logo-section">
+            <img src="assets/logo1.png" alt="Glimmer Logo">
+        </div>
 
-    <div class="logo-section">
+        <nav class="navbar">
+            <a href="index.html">Home</a>
 
-        <img
-        src="assets/logo1.png"
-        alt="Glimmer">
+            <div class="dropdown">
+                <button class="dropbtn">Products ▼</button>
 
-        <h2>Glimmer</h2>
+                <div class="dropdown-content">
+                    <a href="products.html?category=all">All</a>
+                    <a href="products.html?category=earrings">Earrings</a>
+                    <a href="products.html?category=necklace">Necklace & Chains</a>
+                    <a href="products.html?category=bracelets">Bracelets</a>
+                    <a href="products.html?category=rings">Rings</a>
+                </div>
+            </div>
 
-    </div>
-
-    <nav>
-
-        <a href="index.html">
-            Home
-        </a>
-
-        <a href="products.html">
-            Products
-        </a>
-
-        <a href="contact.html">
-            Contact
-        </a>
-
-        <a href="myCart.html">
-            My Cart
-        </a>
-
-    </nav>
-
-</header>
+            <a href="contact.html">Contact</a>
+            <a href="admin.html">Admin</a>
+            <a href="myCart.html">🛒 My Cart</a>
+        </nav>
+    </header>
 
 <!-- HERO -->
 
-<section class="products-hero">
+<section class="collection-section">
 
-    <h1>
+    <h5 class="collection-label">
+        DISCOVER ELEGANCE IN EVERY PIECE
+    </h5>
+
+    <h1 class="collection-title" id="categoryTitle">
         Glimmer Collection
     </h1>
-
-    <p>
-        Discover elegance in every piece
-    </p>
 
 </section>
 
