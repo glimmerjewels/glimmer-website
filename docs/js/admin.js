@@ -1,186 +1,546 @@
-const loginOverlay = document.getElementById("loginOverlay");
-const adminPanel = document.getElementById("adminPanel");
+// ==============================
+// GLOBALS
+// ==============================
 
-async function login(){
+let products = [];
 
-    const email =
-    document.getElementById("email").value;
+let currentPage = 1;
 
-    const password =
-    document.getElementById("password").value;
+const PRODUCTS_PER_PAGE = 25;
 
-    const { data, error } =
-    await supabaseClient.auth.signInWithPassword({
-        email,
-        password
-    });
+// ==============================
+// INIT
+// ==============================
 
-    if(error){
+document.addEventListener("DOMContentLoaded", async () => {
 
-        document.getElementById("loginError")
-        .innerText = "Invalid Credentials";
+    const {
+        data: { session }
+    } = await supabaseClient.auth.getSession();
 
-        return;
-    }
+    if (session) {
 
-    loginOverlay.style.display = "none";
+        document
+            .getElementById("loginOverlay")
+            .classList.add("hidden");
 
-    adminPanel.classList.remove("hidden");
-
-    loadInventory();
-}
-
-window.onload = async () => {
-
-    const { data } =
-    await supabaseClient.auth.getSession();
-
-    if(data.session){
-
-        loginOverlay.style.display = "none";
-
-        adminPanel.classList.remove("hidden");
+        document
+            .getElementById("adminPanel")
+            .classList.remove("hidden");
 
         loadInventory();
+
     }
-};
+});
 
-async function fetchProducts(){
+// ==============================
+// LOGIN
+// ==============================
 
-    const tableBody =
-    document.getElementById("inventoryBody");
+async function login() {
 
-    const { data, error } = await supabaseClient
-    .from("products")
-    .select("*")
-    .order("created_at", { ascending:false });
+    const email =
+        document.getElementById("adminEmail").value;
 
-    if(error){
-        console.log(error);
+    const password =
+        document.getElementById("adminPassword").value;
+
+    const errorBox =
+        document.getElementById("loginError");
+
+    errorBox.innerText = "";
+
+    const { error } =
+        await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+        });
+
+    if (error) {
+
+        errorBox.innerText =
+            "Invalid Email or Password";
+
         return;
     }
 
-    tableBody.innerHTML = "";
+    document
+        .getElementById("loginOverlay")
+        .classList.add("hidden");
 
-    data.forEach(product => {
-
-        tableBody.innerHTML += `
-
-        <tr>
-            <td>
-                <img src="${product.image}"
-                class="table-img">
-            </td>
-
-            <td>${product.name}</td>
-            <td>${product.category}</td>
-            <td>₹${product.offer_price}</td>
-            <td>${product.stock}</td>
-
-            <td>
-                <button class="delete-btn"
-                onclick="deleteProduct(${product.id})">
-                Delete
-                </button>
-            </td>
-        </tr>
-        `;
-    });
-}
-
-async function saveProduct(){
-
-    const name =
-    document.getElementById("productName").value;
-
-    const category =
-    document.getElementById("productCategory").value;
-
-    const actual_price =
-    document.getElementById("actualPrice").value;
-
-    const offer_price =
-    document.getElementById("offerPrice").value;
-
-    const stock =
-    document.getElementById("stock").value;
-
-    const description =
-    document.getElementById("description").value;
-
-    const imageFile =
-    document.getElementById("productImage").files[0];
-
-    const fileName = `${Date.now()}-${imageFile.name}`;
-
-    const { error:uploadError } =
-    await supabaseClient.storage
-    .from("product-images")
-    .upload(fileName, imageFile);
-
-    if(uploadError){
-        console.log(uploadError);
-        return;
-    }
-
-    const imageUrl =
-    `${SUPABASE_URL}/storage/v1/object/public/product-images/${fileName}`;
-
-    const { error } = await supabaseClient
-    .from("products")
-    .insert([
-        {
-            name,
-            category,
-            actual_price,
-            offer_price,
-            stock,
-            description,
-            image:imageUrl
-        }
-    ]);
-
-    if(error){
-        console.log(error);
-        alert("Failed To Add Product");
-        return;
-    }
-
-    alert("Product Added Successfully");
-
-    closePopup();
+    document
+        .getElementById("adminPanel")
+        .classList.remove("hidden");
 
     loadInventory();
 }
 
-async function deleteProduct(id){
+// ==============================
+// LOGOUT
+// ==============================
 
-    const { error } = await supabaseClient
-    .from("products")
-    .delete()
-    .eq("id", id);
-
-    if(error){
-        console.log(error);
-        return;
-    }
-
-    loadInventory();
-}
-
-function openPopup(){
-    document.getElementById("productPopup")
-    .classList.remove("hidden");
-}
-
-function closePopup(){
-    document.getElementById("productPopup")
-    .classList.add("hidden");
-}
-
-async function logout(){
+async function logout() {
 
     await supabaseClient.auth.signOut();
 
     location.reload();
+}
+
+// ==============================
+// POPUP
+// ==============================
+
+function openProductPopup() {
+
+    document
+        .getElementById("productPopup")
+        .classList.remove("hidden");
+}
+
+function closeProductPopup() {
+
+    document
+        .getElementById("productPopup")
+        .classList.add("hidden");
+}
+
+// ==============================
+// LOAD INVENTORY
+// ==============================
+
+async function loadInventory() {
+
+    const { data, error } =
+        await supabaseClient
+            .from("products")
+            .select("*")
+            .order("created_at", {
+                ascending: false
+            });
+
+    if (error) {
+
+        console.error(error);
+        return;
+    }
+
+    products = data;
+
+    renderTable();
+    renderPagination();
+}
+
+// ==============================
+// PAGINATION
+// ==============================
+
+function renderPagination() {
+
+    const totalPages =
+        Math.ceil(
+            products.length /
+            PRODUCTS_PER_PAGE
+        );
+
+    const pagination =
+        document.getElementById("pagination");
+
+    pagination.innerHTML = "";
+
+    if (currentPage > 1) {
+
+        pagination.innerHTML += `
+            <button onclick="changePage(${currentPage - 1})">
+                Previous
+            </button>
+        `;
+    }
+
+    for (let i = 1; i <= totalPages; i++) {
+
+        pagination.innerHTML += `
+            <button
+            class="${i === currentPage ? "active-page" : ""}"
+            onclick="changePage(${i})">
+            ${i}
+            </button>
+        `;
+    }
+
+    if (currentPage < totalPages) {
+
+        pagination.innerHTML += `
+            <button onclick="changePage(${currentPage + 1})">
+                Next
+            </button>
+        `;
+    }
+}
+
+function changePage(page) {
+
+    currentPage = page;
+
+    renderTable();
+    renderPagination();
+}
+
+// ==============================
+// TABLE
+// ==============================
+
+async function renderTable() {
+
+    const tbody =
+        document.getElementById("inventoryBody");
+
+    tbody.innerHTML = "";
+
+    const start =
+        (currentPage - 1) * PRODUCTS_PER_PAGE;
+
+    const end =
+        start + PRODUCTS_PER_PAGE;
+
+    const pageProducts =
+        products.slice(start, end);
+
+    for (const product of pageProducts) {
+
+        const images =
+            await getProductImages(product.id);
+
+        const thumbnails =
+            images.map(img => `
+                <img
+                src="${img.image_url}"
+                class="mini-thumb">
+            `).join("");
+
+        tbody.innerHTML += `
+
+        <tr id="row-${product.id}">
+
+            <td>${product.name}</td>
+
+            <td>
+                <div class="thumb-container">
+                    ${thumbnails}
+                </div>
+            </td>
+
+            <td>${product.category}</td>
+
+            <td>
+                ₹${product.actual_price}
+            </td>
+
+            <td>
+                ₹${product.offer_price}
+            </td>
+
+            <td>
+                ${product.stock}
+            </td>
+
+            <td>
+
+                <button
+                onclick="editProduct(${product.id})">
+
+                    Edit
+
+                </button>
+
+                <button
+                onclick="deleteProduct(${product.id})">
+
+                    Delete
+
+                </button>
+
+            </td>
+
+        </tr>
+        `;
+    }
+}
+
+// ==============================
+// IMAGES
+// ==============================
+
+async function getProductImages(productId) {
+
+    const { data } =
+        await supabaseClient
+            .from("product_images")
+            .select("*")
+            .eq("product_id", productId);
+
+    return data || [];
+}
+
+// ==============================
+// EDIT PRODUCT
+// ==============================
+
+async function editProduct(productId) {
+
+    const product =
+        products.find(
+            p => p.id === productId
+        );
+
+    const row =
+        document.getElementById(
+            `row-${productId}`
+        );
+
+    const images =
+        await getProductImages(productId);
+
+    const thumbnails =
+        images.map(img => `
+            <img
+            src="${img.image_url}"
+            class="mini-thumb">
+        `).join("");
+
+    row.innerHTML = `
+
+        <td>${product.name}</td>
+
+        <td>${thumbnails}</td>
+
+        <td>${product.category}</td>
+
+        <td>
+            <input
+            type="number"
+            id="actual-${productId}"
+            value="${product.actual_price}">
+        </td>
+
+        <td>
+            <input
+            type="number"
+            id="offer-${productId}"
+            value="${product.offer_price}">
+        </td>
+
+        <td>
+            <input
+            type="number"
+            id="stock-${productId}"
+            value="${product.stock}">
+        </td>
+
+        <td>
+
+            <button
+            onclick="saveEdit(${productId})">
+
+            Done
+
+            </button>
+
+        </td>
+    `;
+}
+
+// ==============================
+// SAVE EDIT
+// ==============================
+
+async function saveEdit(productId) {
+
+    const actualPrice =
+        document.getElementById(
+            `actual-${productId}`
+        ).value;
+
+    const offerPrice =
+        document.getElementById(
+            `offer-${productId}`
+        ).value;
+
+    const stock =
+        document.getElementById(
+            `stock-${productId}`
+        ).value;
+
+    const { error } =
+        await supabaseClient
+            .from("products")
+            .update({
+
+                actual_price: actualPrice,
+
+                offer_price: offerPrice,
+
+                stock: stock
+
+            })
+            .eq("id", productId);
+
+    if (error) {
+
+        alert("Update failed");
+        return;
+    }
+
+    loadInventory();
+}
+
+// ==============================
+// DELETE PRODUCT
+// ==============================
+
+async function deleteProduct(productId) {
+
+    const confirmDelete =
+        confirm(
+            "Delete this product?"
+        );
+
+    if (!confirmDelete) return;
+
+    const images =
+        await getProductImages(productId);
+
+    for (const img of images) {
+
+        const path =
+            img.image_url
+                .split("/product-images/")[1];
+
+        if (path) {
+
+            await supabaseClient.storage
+                .from("product-images")
+                .remove([path]);
+        }
+    }
+
+    await supabaseClient
+        .from("products")
+        .delete()
+        .eq("id", productId);
+
+    loadInventory();
+}
+
+// ==============================
+// SAVE PRODUCT
+// ==============================
+
+async function saveProduct() {
+
+    const name =
+        document.getElementById(
+            "productName"
+        ).value;
+
+    const category =
+        document.getElementById(
+            "productCategory"
+        ).value;
+
+    const actualPrice =
+        document.getElementById(
+            "actualPrice"
+        ).value;
+
+    const offerPrice =
+        document.getElementById(
+            "offerPrice"
+        ).value;
+
+    const description =
+        document.getElementById(
+            "description"
+        ).value;
+
+    const stock =
+        document.getElementById(
+            "stock"
+        ).value;
+
+    const imageFiles =
+        document.getElementById(
+            "productImages"
+        ).files;
+
+    if (!name || imageFiles.length === 0) {
+
+        alert("Complete all fields");
+        return;
+    }
+
+    const productInsert =
+        await supabaseClient
+            .from("products")
+            .insert([{
+
+                name,
+                category,
+                actual_price: actualPrice,
+                offer_price: offerPrice,
+                description,
+                stock
+
+            }])
+            .select()
+            .single();
+
+    const product =
+        productInsert.data;
+
+    if (!product) {
+
+        alert("Failed to create product");
+        return;
+    }
+
+    for (const file of imageFiles) {
+
+        const filename =
+            `${Date.now()}-${file.name}`;
+
+        const upload =
+            await supabaseClient.storage
+                .from("product-images")
+                .upload(
+                    filename,
+                    file
+                );
+
+        if (upload.error) {
+
+            console.error(upload.error);
+            continue;
+        }
+
+        const imageUrl =
+            `${SUPABASE_URL}/storage/v1/object/public/product-images/${filename}`;
+
+        await supabaseClient
+            .from("product_images")
+            .insert([{
+
+                product_id: product.id,
+
+                image_url: imageUrl
+
+            }]);
+    }
+
+    alert(
+        "Product Added Successfully"
+    );
+
+    closeProductPopup();
+
+    loadInventory();
 }
