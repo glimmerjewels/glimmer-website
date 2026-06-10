@@ -954,3 +954,106 @@ footer a{
     background:#e91e63;
     color:white;
 }
+
+.mini-thumb{
+    width:60px;
+    height:60px;
+    object-fit:cover;
+    border-radius:8px;
+    border:1px solid #ddd;
+}
+
+.thumb-container{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    max-width:220px;
+}
+.logout-btn{
+    background:#4b1765;
+    color:white;
+    border:none;
+    padding:12px 22px;
+    border-radius:30px;
+    cursor:pointer;
+    font-weight:600;
+    margin-left:10px;
+    transition:0.3s;
+}
+
+.logout-btn:hover{
+    opacity:.9;
+}
+
+.edit-btn{
+    background:#4b1765;
+    color:white;
+    border:none;
+    padding:8px 15px;
+    border-radius:20px;
+    cursor:pointer;
+    margin-right:5px;
+}
+
+.delete-btn{
+    background:#ff4e8b;
+    color:white;
+    border:none;
+    padding:8px 15px;
+    border-radius:20px;
+    cursor:pointer;
+}
+
+.done-btn{
+    background:#28a745;
+    color:white;
+    border:none;
+    padding:8px 15px;
+    border-radius:20px;
+    cursor:pointer;
+}
+.inventory-table-container{
+    width:100%;
+    overflow-x:auto;
+    overflow-y:hidden;
+    border-radius:15px;
+}
+
+.inventory-table{
+    min-width:1200px;
+    width:100%;
+    border-collapse:collapse;
+}
+
+.inventory-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.inventory-header h1{
+    margin:0;
+}
+
+.inventory-header div{
+    display:flex;
+    align-items:center;
+}
+.inventory-table td{
+    padding:15px;
+    vertical-align:middle;
+}
+
+.inventory-table th{
+    padding:15px;
+}
+
+.inventory-table img{
+    max-width:60px;
+    max-height:60px;
+}
+
+.inventory-table td:nth-child(2){
+    width:220px;
+}
