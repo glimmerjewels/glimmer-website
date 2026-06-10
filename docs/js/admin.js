@@ -300,12 +300,21 @@ async function editProduct(productId) {
     const images =
         await getProductImages(productId);
 
-    const thumbnails =
-        images.map(img => `
-            <img
-            src="${img.image_url}"
-            class="mini-thumb">
-        `).join("");
+   const thumbnails =
+    images
+    .slice(0,3)
+    .map(img => `
+        <img
+        src="${img.image_url}"
+        class="mini-thumb">
+    `).join("");
+
+const extraCount =
+    images.length > 3
+    ? `<span class="more-images">
+         +${images.length - 3}
+       </span>`
+    : "";
 
     row.innerHTML = `
 
