@@ -124,7 +124,9 @@ async function loadInventory() {
         return;
     }
 
-    products = data;
+    products = data || [];
+
+    currentPage = 1;
 
     renderTable();
     renderPagination();
@@ -226,6 +228,7 @@ async function renderTable() {
             <td>
                 <div class="thumb-container">
                     ${thumbnails}
+                    ${extraCount}
                 </div>
             </td>
 
@@ -245,17 +248,19 @@ async function renderTable() {
 
             <td>
 
-                <button
+               <button
+                class="edit-btn"
                 onclick="editProduct(${product.id})">
 
-                    Edit
+                Edit
 
                 </button>
 
                 <button
+                class="delete-btn"
                 onclick="deleteProduct(${product.id})">
 
-                    Delete
+                Delete
 
                 </button>
 
@@ -347,7 +352,8 @@ const extraCount =
 
         <td>
 
-            <button
+           <button
+            class="done-btn"
             onclick="saveEdit(${productId})">
 
             Done
@@ -410,36 +416,76 @@ async function deleteProduct(productId) {
 
     const confirmDelete =
         confirm(
-            "Delete this product?"
+            "Delete this product permanently?"
         );
 
-    if (!confirmDelete) return;
+    if (!confirmDelete)
+        return;
 
-    const images =
-        await getProductImages(productId);
+    try {
 
-    for (const img of images) {
+        const images =
+            await getProductImages(
+                productId
+            );
 
-        const path =
-            img.image_url
-                .split("/product-images/")[1];
+        for (const img of images) {
 
-        if (path) {
+            const path =
+                img.image_url
+                    .split(
+                        "/product-images/"
+                    )[1];
 
-            await supabaseClient.storage
-                .from("product-images")
-                .remove([path]);
+            if (path) {
+
+                await supabaseClient
+                    .storage
+                    .from(
+                        "product-images"
+                    )
+                    .remove([
+                        path
+                    ]);
+            }
         }
+
+        await supabaseClient
+            .from(
+                "product_images"
+            )
+            .delete()
+            .eq(
+                "product_id",
+                productId
+            );
+
+        await supabaseClient
+            .from(
+                "products"
+            )
+            .delete()
+            .eq(
+                "id",
+                productId
+            );
+
+        alert(
+            "Product Deleted"
+        );
+
+        loadInventory();
+
     }
+    catch(error){
 
-    await supabaseClient
-        .from("products")
-        .delete()
-        .eq("id", productId);
+        console.error(error);
 
-    loadInventory();
+        alert(
+            "Delete Failed"
+        );
+    }
 }
-
 // ==============================
 // SAVE PRODUCT
 // ==============================
