@@ -1427,3 +1427,119 @@ footer a{
     }
 
 }
+
+/* ==========================
+   ORDERS SECTION
+========================== */
+
+.orders-section {
+
+    margin-top: 60px;
+
+}
+
+.status-badge {
+
+    padding: 6px 12px;
+
+    border-radius: 20px;
+
+    color: white;
+
+    font-size: 12px;
+
+    font-weight: bold;
+
+}
+
+.status-pending {
+
+    background: orange;
+
+}
+
+.status-confirmed {
+
+    background: green;
+
+}
+
+.status-cancelled {
+
+    background: red;
+
+}
+
+/* ==========================
+   ORDER POPUP
+========================== */
+
+.order-popup {
+
+    background: white;
+
+    width: 700px;
+
+    max-width: 95%;
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    border-radius: 15px;
+
+    padding: 25px;
+
+}
+
+.order-popup h2 {
+
+    text-align: center;
+
+    margin-bottom: 20px;
+
+    color: #8E2DE2;
+
+}
+
+.order-item {
+
+    padding: 10px;
+
+    border-bottom: 1px solid #ddd;
+
+}
+
+.order-action-btn {
+
+    padding: 8px 12px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    color: white;
+
+    margin-right: 5px;
+
+}
+
+.confirm-btn {
+
+    background: green;
+
+}
+
+.cancel-btn {
+
+    background: red;
+
+}
+
+.view-btn {
+
+    background: #8E2DE2;
+
+}
