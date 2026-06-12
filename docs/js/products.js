@@ -50,7 +50,19 @@ async function loadProducts() {
 
     allProducts = data;
 
-    renderProducts("all");
+    const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+    const category =
+    params.get(
+        "category"
+    ) || "all";
+
+    renderProducts(
+    category
+    );
 }
 
 // ======================================
@@ -271,7 +283,31 @@ function populatePopup(
         )
         .innerText =
         product.stock;
+    
+        const cartBtn =
+        document.getElementById(
+            "addToCartBtn"
+        );
 
+        if (
+            product.stock <= 0
+        ) {
+
+            cartBtn.disabled = true;
+
+            cartBtn.innerText =
+                "Out Of Stock";
+
+        }
+        else {
+
+            cartBtn.disabled = false;
+
+            cartBtn.innerText =
+                "Add To Cart";
+
+        }
+    
     const mainImage =
         document.getElementById(
             "mainPopupImage"
@@ -482,9 +518,17 @@ async function addToCart() {
 
     );
 
-    alert(
-        "Added To Cart"
-    );
+       const totalItems =
+        cart.reduce(
+            (sum,item) =>
+            sum +
+            item.quantity,
+            0
+        );
+
+        alert(
+        `Added To Cart\nCart Items : ${totalItems}`
+        );
 
     closePopup();
 }
