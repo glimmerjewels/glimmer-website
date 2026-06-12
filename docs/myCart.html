@@ -1,69 +1,301 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Cart</title>
-    <link rel="stylesheet" href="css/style.css">
-    <script defer src="js/cart.js"></script>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>My Cart | Glimmer</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css">
+
 </head>
+
 <body>
 
+<!-- HEADER -->
+
 <header>
-    <div class="logo-container">
-    <a href="index.html">
-        <img src="assets/logo1.png" alt="Glimmer Logo" class="logo">
-    </a>
+
+    <div class="logo-section">
+
+        <img
+            src="assets/logo1.png"
+            alt="Glimmer Logo">
+
     </div>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="products.html">Products</a>
-        <a href="offers.html">Offers</a>
-        <a href="myCart.html">Cart 🛒</a>
-        <a href="contact.html">Contact</a>
-    </nav>
-</header>
 
-<section>
-    <div id="cart-items"></div>
-    <h2>Total: ₹<span id="cart-total">0</span></h2>
+    <nav class="navbar">
 
-    <a href="https://wa.me/919404458374" target="_blank">
-        <button class="whatsapp-btn">Order on WhatsApp</button>
-    </a>
-</section>
+        <a href="index.html">
+            Home
+        </a>
 
-     <!-- FOOTER -->
-    <footer>
-        <div class="footer-grid">
+        <div class="dropdown">
 
-            <div>
-                <h3>Glimmer</h3>
-                <p>
-                    Anti Tarnish artificial jewellery crafted
-                    to help you stay sparkling every single day.
-                </p>
-            </div>
+            <button class="dropbtn">
+                Products ▼
+            </button>
 
-            <div>
-                <h3>Company</h3>
-                <a href="contact.html">Contact</a><br>
-                <a href="products.html">All Products</a><br>
-                <a href="myCart.html">My Cart</a>
-            </div>
+            <div class="dropdown-content">
 
-            <div>
-                <h3>Reach Us</h3>
-                <p>📞 +91 9404458374</p>
-                <p>✉ glimmer.jewels2000@gmail.com</p>
-                <p>📸 @glimmer_staysparkling</p>
+                <a href="products.html?category=all">
+                    All
+                </a>
+
+                <a href="products.html?category=earrings">
+                    Earrings
+                </a>
+
+                <a href="products.html?category=necklace">
+                    Necklace & Chains
+                </a>
+
+                <a href="products.html?category=bracelet">
+                    Bracelets
+                </a>
+
+                <a href="products.html?category=ring">
+                    Rings
+                </a>
+
             </div>
 
         </div>
-    </footer>
+
+        <a href="contact.html">
+            Contact
+        </a>
+
+        <a href="admin.html">
+            Admin
+        </a>
+
+        <a href="myCart.html">
+            🛒 My Cart
+        </a>
+
+    </nav>
+
+</header>
+
+<!-- PAGE TITLE -->
+
+<section class="cart-section">
+
+    <h1 class="cart-title">
+
+        My Cart
+
+    </h1>
+
+    <!-- CART ITEMS -->
+
+    <div id="cartItems">
+
+    </div>
+
+    <!-- CART SUMMARY -->
+
+    <div class="cart-summary">
+
+        <div class="summary-row">
+
+            <span>
+                Delivery Charges
+            </span>
+
+            <span>
+                ₹50
+            </span>
+
+        </div>
+
+        <hr>
+
+        <div class="summary-row">
+
+            <span>
+                Total Quantity
+            </span>
+
+            <span id="totalQty">
+                0
+            </span>
+
+        </div>
+
+        <div class="summary-row total">
+
+            <span>
+                Grand Total
+            </span>
+
+            <span id="grandTotal">
+                ₹0
+            </span>
+
+        </div>
+
+        <button
+            id="checkoutBtn"
+            class="checkout-btn">
+
+            Proceed To Delivery Details
+
+        </button>
+
+    </div>
+
+</section>
+
+<!-- DELIVERY POPUP -->
+
+<div
+    id="deliveryOverlay"
+    class="popup-overlay hidden">
+
+    <div class="delivery-popup">
+
+        <h2>
+
+            Delivery Details
+
+        </h2>
+
+        <input
+            type="text"
+            id="customerName"
+            placeholder="Customer Name">
+
+        <input
+            type="text"
+            id="customerMobile"
+            placeholder="Mobile Number">
+
+        <textarea
+            id="customerAddress"
+            placeholder="Complete Address">
+        </textarea>
+
+        <input
+            type="text"
+            id="city"
+            placeholder="City">
+
+        <input
+            type="text"
+            id="pincode"
+            placeholder="Pincode">
+
+        <input
+            type="text"
+            id="state"
+            placeholder="State">
+
+        <div class="popup-buttons">
+
+            <button
+                id="orderWhatsappBtn">
+
+                Order Via WhatsApp
+
+            </button>
+
+            <button
+                id="closePopupBtn">
+
+                Cancel
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- FOOTER -->
+
+<footer>
+
+    <div class="footer-content">
+
+        <div>
+
+            <h3>
+                Glimmer
+            </h3>
+
+            <p>
+
+                Anti Tarnish artificial jewellery crafted
+                to help you stay sparkling every single day.
+
+            </p>
+
+        </div>
+
+        <div>
+
+            <h3>
+                Company
+            </h3>
+
+            <a href="contact.html">
+                Contact
+            </a>
+
+            <br>
+
+            <a href="products.html">
+                All Products
+            </a>
+
+            <br>
+
+            <a href="myCart.html">
+                My Cart
+            </a>
+
+        </div>
+
+        <div>
+
+            <h3>
+                Reach Us
+            </h3>
+
+            <p>
+                📞 +91 9404458374
+            </p>
+
+            <p>
+                ✉ glimmer.jewels2000@gmail.com
+            </p>
+
+            <p>
+                📸 @glimmer_staysparkling
+            </p>
+
+        </div>
+
+    </div>
+
+</footer>
+
+<!-- SCRIPTS -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="js/supabase.js"></script>
+
 <script src="js/cart.js"></script>
+
 </body>
 </html>
