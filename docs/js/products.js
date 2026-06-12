@@ -411,10 +411,39 @@ async function addToCart() {
 
     if (existing) {
 
-        existing.quantity +=
+        const newQty =
+            existing.quantity +
             currentQuantity;
 
-    } else {
+        if (
+            newQty >
+            selectedProduct.stock
+        ) {
+
+            alert(
+                `Only ${selectedProduct.stock} item(s) available in stock`
+            );
+
+            return;
+        }
+
+        existing.quantity =
+            newQty;
+
+    }
+    else {
+
+        if (
+            currentQuantity >
+            selectedProduct.stock
+        ) {
+
+            alert(
+                `Only ${selectedProduct.stock} item(s) available in stock`
+            );
+
+            return;
+        }
 
         cart.push({
 
