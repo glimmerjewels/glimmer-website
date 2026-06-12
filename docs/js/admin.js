@@ -20,16 +20,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (session) {
 
-        document
-            .getElementById("loginOverlay")
-            .classList.add("hidden");
+        showAdminPanel();
 
-        document
-            .getElementById("adminPanel")
-            .classList.remove("hidden");
-
-        loadInventory();
-
+        await loadInventory();
     }
 });
 
@@ -72,7 +65,28 @@ async function login() {
         .getElementById("adminPanel")
         .classList.remove("hidden");
 
-    loadInventory();
+    await login();
+
+    showAdminPanel();
+
+    await loadInventory();
+}
+
+
+
+// =====================
+// Show Admin Panel
+// =====================
+
+function showAdminPanel() {
+
+    document
+        .getElementById("loginOverlay")
+        .classList.add("hidden");
+
+    document
+        .getElementById("adminPanel")
+        .classList.remove("hidden");
 }
 
 // ==============================
@@ -107,9 +121,13 @@ function closeProductPopup() {
 // ==============================
 // LOAD INVENTORY
 // ==============================
-
+let inventoryLoading = false;
 async function loadInventory() {
-    console.log("LOAD INVENTORY CALLED");
+    if (inventoryLoading) return;
+
+    inventoryLoading = true;
+
+    try {
     const { data, error } =
         await supabaseClient
             .from("products")
@@ -130,6 +148,9 @@ async function loadInventory() {
 
     renderTable();
     renderPagination();
+    } finally {
+        inventoryLoading = false;
+    }
 }
 
 // ==============================
@@ -322,7 +343,7 @@ async function editProduct(productId) {
         class="mini-thumb">
     `).join("");
 
-const extraCount =
+    const extraCount =
     images.length > 3
     ? `<span class="more-images">
          +${images.length - 3}
@@ -370,6 +391,7 @@ const extraCount =
 
         </td>
     `;
+    await loadInventory();
 }
 
 // ==============================
@@ -413,7 +435,7 @@ async function saveEdit(productId) {
         return;
     }
 
-    loadInventory();
+    await loadInventory();
 }
 
 // ==============================
@@ -482,7 +504,7 @@ async function deleteProduct(productId) {
             "Product Deleted"
         );
 
-        loadInventory();
+        await loadInventory();
 
     }
     catch(error){
