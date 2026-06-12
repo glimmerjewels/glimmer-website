@@ -65,8 +65,6 @@ async function login() {
         .getElementById("adminPanel")
         .classList.remove("hidden");
 
-    await login();
-
     showAdminPanel();
 
     await loadInventory();
@@ -354,7 +352,12 @@ async function editProduct(productId) {
 
         <td>${product.name}</td>
 
-        <td>${thumbnails}</td>
+        <td>
+        <div class="thumb-container">
+        ${thumbnails}
+        ${extraCount}
+        </div>
+        </td>
 
         <td>${product.category}</td>
 
@@ -391,7 +394,6 @@ async function editProduct(productId) {
 
         </td>
     `;
-    await loadInventory();
 }
 
 // ==============================
@@ -434,7 +436,7 @@ async function saveEdit(productId) {
         alert("Update failed");
         return;
     }
-
+    inventoryLoading = false;
     await loadInventory();
 }
 
@@ -503,7 +505,7 @@ async function deleteProduct(productId) {
         alert(
             "Product Deleted"
         );
-
+        inventoryLoading = false;
         await loadInventory();
 
     }
@@ -626,6 +628,6 @@ async function saveProduct() {
     );
 
     closeProductPopup();
-
-    loadInventory();
+    inventoryLoading = false;
+    await loadInventory();
 }
