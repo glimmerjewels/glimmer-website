@@ -8,6 +8,12 @@ let currentPage = 1;
 
 const PRODUCTS_PER_PAGE = 25;
 
+let orders = [];
+
+let orderPage = 1;
+
+const ORDERS_PER_PAGE = 25;
+
 // ==============================
 // INIT
 // ==============================
@@ -146,6 +152,7 @@ async function loadInventory() {
 
     renderTable();
     renderPagination();
+    await loadOrders();
     } finally {
         inventoryLoading = false;
     }
@@ -630,4 +637,570 @@ async function saveProduct() {
     closeProductPopup();
     inventoryLoading = false;
     await loadInventory();
+}
+
+async function loadOrders() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("orders")
+        .select("*")
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        );
+
+    if (error) {
+
+        console.error(error);
+
+        return;
+    }
+
+    orders = data || [];
+
+    renderOrders();
+}
+
+function renderOrders() {
+
+    const tbody =
+        document.getElementById(
+            "ordersBody"
+        );
+
+    if (!tbody)
+        return;
+
+    tbody.innerHTML = "";
+
+    const start =
+        (orderPage - 1) *
+        ORDERS_PER_PAGE;
+
+    const pageOrders =
+        orders.slice(
+            start,
+            start +
+            ORDERS_PER_PAGE
+        );
+
+    pageOrders.forEach(order => {
+
+        let statusClass =
+            "status-pending";
+
+        if (
+            order.status ===
+            "Confirmed"
+        )
+            statusClass =
+                "status-confirmed";
+
+        if (
+            order.status ===
+            "Cancelled"
+        )
+            statusClass =
+                "status-cancelled";
+
+        tbody.innerHTML += `
+
+        <tr>
+
+            <td>
+                ${order.id}
+            </td>
+
+            <td>
+                ${order.customer_name}
+            </td>
+
+            <td>
+                ${order.customer_mobile}
+            </td>
+
+            <td>
+                ${order.total_quantity}
+            </td>
+
+            <td>
+                ₹${order.grand_total}
+            </td>
+
+            <td>
+
+                <span
+                    class="status-badge ${statusClass}">
+
+                    ${order.status}
+
+                </span>
+
+            </td>
+
+            <td>
+
+                ${new Date(
+                    order.created_at
+                ).toLocaleDateString()}
+
+            </td>
+
+            <td>
+
+                <button
+                    class="order-action-btn view-btn"
+                    onclick="viewOrder(${order.id})">
+
+                    View
+
+                </button>
+
+                ${
+                    order.status === "Pending"
+                    ? `
+                    <button
+                        class="order-action-btn confirm-btn"
+                        onclick="confirmOrder(${order.id})">
+
+                        Confirm
+
+                    </button>
+
+                    <button
+                        class="order-action-btn cancel-btn"
+                        onclick="cancelOrder(${order.id})">
+
+                        Cancel
+
+                    </button>
+                    `
+                    : ""
+                }
+
+            </td>
+
+        </tr>
+
+        `;
+    });
+}
+
+async function viewOrder(orderId) {
+
+    const order =
+        orders.find(
+            o => o.id === orderId
+        );
+
+    if (!order)
+        return;
+
+    const {
+        data: items,
+        error
+    } =
+    await supabaseClient
+        .from("order_items")
+        .select("*")
+        .eq(
+            "order_id",
+            orderId
+        );
+
+    if (error) {
+
+        console.error(error);
+
+        return;
+    }
+
+    let html = `
+
+        <h3>
+            Order #${order.id}
+        </h3>
+
+        <hr>
+
+        <h4>
+            Products
+        </h4>
+
+    `;
+
+    items.forEach(item => {
+
+        html += `
+
+            <div class="order-item">
+
+                <strong>
+                    ${item.product_name}
+                </strong>
+
+                <br>
+
+                ${item.quantity}
+                ×
+                ₹${item.price}
+
+                =
+
+                ₹${item.subtotal}
+
+            </div>
+
+        `;
+    });
+
+    html += `
+
+        <hr>
+
+        <h4>
+            Order Summary
+        </h4>
+
+        <p>
+            Total Quantity :
+            ${order.total_quantity}
+        </p>
+
+        <p>
+            Subtotal :
+            ₹${order.subtotal}
+        </p>
+
+        <p>
+            Delivery :
+            ₹${order.delivery_charge}
+        </p>
+
+        <p>
+            Grand Total :
+            ₹${order.grand_total}
+        </p>
+
+        <hr>
+
+        <h4>
+            Customer Details
+        </h4>
+
+        <p>
+
+            <strong>Name:</strong>
+
+            ${order.customer_name}
+
+        </p>
+
+        <p>
+
+            <strong>Mobile:</strong>
+
+            ${order.customer_mobile}
+
+        </p>
+
+        <p>
+
+            <strong>Address:</strong>
+
+            ${order.customer_address}
+
+        </p>
+
+        <p>
+
+            <strong>City:</strong>
+
+            ${order.city}
+
+        </p>
+
+        <p>
+
+            <strong>Pincode:</strong>
+
+            ${order.pincode}
+
+        </p>
+
+        <p>
+
+            <strong>State:</strong>
+
+            ${order.state}
+
+        </p>
+
+        <hr>
+
+        <p>
+
+            <strong>Status:</strong>
+
+            ${order.status}
+
+        </p>
+
+    `;
+
+    document
+        .getElementById(
+            "orderPopupContent"
+        )
+        .innerHTML =
+        html;
+
+    document
+        .getElementById(
+            "orderPopupOverlay"
+        )
+        .classList
+        .remove("hidden");
+}
+
+function closeOrderPopup() {
+
+    document
+        .getElementById(
+            "orderPopupOverlay"
+        )
+        .classList
+        .add("hidden");
+}
+
+async function cancelOrder(orderId) {
+
+    const confirmCancel =
+        confirm(
+            "Cancel this order?"
+        );
+
+    if (!confirmCancel)
+        return;
+
+    const {
+        error
+    } =
+    await supabaseClient
+        .from("orders")
+        .update({
+
+            status:
+                "Cancelled"
+
+        })
+        .eq(
+            "id",
+            orderId
+        );
+
+    if (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to cancel order"
+        );
+
+        return;
+    }
+
+    alert(
+        "Order Cancelled"
+    );
+
+    await loadOrders();
+}
+
+async function confirmOrder(orderId) {
+
+    const confirmPayment =
+        confirm(
+            "Confirm payment received and reduce stock?"
+        );
+
+    if (!confirmPayment)
+        return;
+
+    const {
+        data: order,
+        error
+    } =
+    await supabaseClient
+        .from("orders")
+        .select("*")
+        .eq(
+            "id",
+            orderId
+        )
+        .single();
+
+    if (error) {
+
+        console.error(error);
+
+        return;
+    }
+
+    if (
+        order.stock_reduced
+    ) {
+
+        alert(
+            "Stock already reduced for this order."
+        );
+
+        return;
+    }
+
+    const success =
+        await reduceStock(
+            orderId
+        );
+
+    if (!success)
+        return;
+
+    const {
+        error: updateError
+    } =
+    await supabaseClient
+        .from("orders")
+        .update({
+
+            status:
+                "Confirmed",
+
+            stock_reduced:
+                true,
+
+            confirmed_at:
+                new Date()
+                    .toISOString()
+
+        })
+        .eq(
+            "id",
+            orderId
+        );
+
+    if (updateError) {
+
+        console.error(
+            updateError
+        );
+
+        alert(
+            "Unable to confirm order"
+        );
+
+        return;
+    }
+
+    alert(
+        "Order Confirmed Successfully"
+    );
+
+    await loadInventory();
+
+    await loadOrders();
+}
+
+async function reduceStock(orderId) {
+
+    const {
+        data: items,
+        error
+    } =
+    await supabaseClient
+        .from("order_items")
+        .select("*")
+        .eq(
+            "order_id",
+            orderId
+        );
+
+    if (error) {
+
+        console.error(error);
+
+        return false;
+    }
+
+    for (
+        const item of items
+    ) {
+
+        const {
+            data: product,
+            error: productError
+        } =
+        await supabaseClient
+            .from("products")
+            .select(
+                "id, stock"
+            )
+            .eq(
+                "id",
+                item.product_id
+            )
+            .single();
+
+        if (
+            productError
+        ) {
+
+            console.error(
+                productError
+            );
+
+            return false;
+        }
+
+        const newStock =
+            Math.max(
+                0,
+                product.stock -
+                item.quantity
+            );
+
+        const {
+            error: updateError
+        } =
+        await supabaseClient
+            .from("products")
+            .update({
+
+                stock:
+                    newStock
+
+            })
+            .eq(
+                "id",
+                item.product_id
+            );
+
+        if (
+            updateError
+        ) {
+
+            console.error(
+                updateError
+            );
+
+            return false;
+        }
+    }
+
+    return true;
 }
