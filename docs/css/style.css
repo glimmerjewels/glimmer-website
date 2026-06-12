@@ -1057,3 +1057,373 @@ footer a{
 .inventory-table td:nth-child(2){
     width:220px;
 }
+
+/* ==========================
+   MY CART PAGE
+========================== */
+
+.cart-section {
+
+    max-width: 1200px;
+
+    margin: 40px auto;
+
+    padding: 20px;
+
+}
+
+.cart-title {
+
+    text-align: center;
+
+    margin-bottom: 30px;
+
+    color: #8E2DE2;
+
+}
+
+.cart-item {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+    background: white;
+
+    padding: 15px;
+
+    border-radius: 12px;
+
+    margin-bottom: 15px;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+
+}
+
+.cart-image {
+
+    width: 100px;
+
+    height: 100px;
+
+    object-fit: cover;
+
+    border-radius: 10px;
+
+}
+
+.cart-details {
+
+    flex: 1;
+
+}
+
+.cart-details h3 {
+
+    margin-bottom: 5px;
+
+}
+
+.cart-details p {
+
+    color: #FF4E8B;
+
+    font-weight: 600;
+
+}
+
+.cart-subtotal {
+
+    font-weight: bold;
+
+    color: #8E2DE2;
+
+    min-width: 120px;
+
+    text-align: right;
+
+}
+
+.empty-cart {
+
+    text-align: center;
+
+    padding: 50px;
+
+    background: white;
+
+    border-radius: 12px;
+
+}
+
+/* ==========================
+   QUANTITY BOX
+========================== */
+
+.qty-box {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+.qty-box button {
+
+    width: 35px;
+
+    height: 35px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    cursor: pointer;
+
+    background: #8E2DE2;
+
+    color: white;
+
+    font-size: 18px;
+
+}
+
+.qty-box span {
+
+    min-width: 25px;
+
+    text-align: center;
+
+    font-weight: bold;
+
+}
+
+/* ==========================
+   CART SUMMARY
+========================== */
+
+.cart-summary {
+
+    background: white;
+
+    margin-top: 30px;
+
+    padding: 25px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+
+}
+
+.summary-row {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 15px;
+
+}
+
+.summary-row.total {
+
+    font-size: 22px;
+
+    font-weight: bold;
+
+    color: #8E2DE2;
+
+}
+
+/* ==========================
+   CHECKOUT BUTTON
+========================== */
+
+.checkout-btn {
+
+    width: 100%;
+
+    padding: 14px;
+
+    margin-top: 20px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    background: linear-gradient(
+        135deg,
+        #8E2DE2,
+        #FF4E8B
+    );
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+}
+
+/* ==========================
+   DELIVERY POPUP
+========================== */
+
+.popup-overlay {
+
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    background: rgba(
+        0,
+        0,
+        0,
+        0.6
+    );
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    z-index: 9999;
+
+}
+
+.hidden {
+
+    display: none !important;
+
+}
+
+.delivery-popup {
+
+    width: 500px;
+
+    max-width: 95%;
+
+    background: white;
+
+    border-radius: 15px;
+
+    padding: 25px;
+
+}
+
+.delivery-popup h2 {
+
+    text-align: center;
+
+    margin-bottom: 20px;
+
+    color: #8E2DE2;
+
+}
+
+.delivery-popup input,
+.delivery-popup textarea {
+
+    width: 100%;
+
+    padding: 12px;
+
+    margin-bottom: 12px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 8px;
+
+    box-sizing: border-box;
+
+}
+
+.delivery-popup textarea {
+
+    min-height: 90px;
+
+    resize: vertical;
+
+}
+
+.popup-buttons {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 15px;
+
+}
+
+.popup-buttons button {
+
+    flex: 1;
+
+    padding: 12px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    color: white;
+
+    font-weight: 600;
+
+}
+
+#orderWhatsappBtn {
+
+    background: #25D366;
+
+}
+
+#closePopupBtn {
+
+    background: #777;
+
+}
+
+/* ==========================
+   MOBILE
+========================== */
+
+@media(max-width:768px){
+
+    .cart-item {
+
+        flex-direction: column;
+
+        text-align: center;
+
+    }
+
+    .cart-subtotal {
+
+        text-align: center;
+
+    }
+
+    .summary-row.total {
+
+        font-size: 18px;
+
+    }
+
+}
