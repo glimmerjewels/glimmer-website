@@ -109,7 +109,7 @@ function closeProductPopup() {
 // ==============================
 
 async function loadInventory() {
-
+    console.log("LOAD INVENTORY CALLED");
     const { data, error } =
         await supabaseClient
             .from("products")
