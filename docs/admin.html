@@ -137,6 +137,63 @@
         id="pagination">
 
     </div>
+    <!-- ORDERS MANAGEMENT -->
+
+<section class="orders-section">
+
+    <div class="inventory-header">
+
+        <h1>
+
+            Orders Management
+
+        </h1>
+
+    </div>
+
+    <div class="inventory-table-container">
+
+        <table class="inventory-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Order ID</th>
+
+                    <th>Customer</th>
+
+                    <th>Mobile</th>
+
+                    <th>Total Qty</th>
+
+                    <th>Order Total</th>
+
+                    <th>Status</th>
+
+                    <th>Created On</th>
+
+                    <th>Actions</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="ordersBody">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div
+        class="pagination"
+        id="ordersPagination">
+
+    </div>
+
+   </section>
 
 </section>
 
@@ -210,6 +267,36 @@
             <button onclick="closeProductPopup()">
                 Cancel
             </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+ <!-- ORDER DETAILS POPUP -->
+
+<div
+    id="orderPopupOverlay"
+    class="popup-overlay hidden">
+
+    <div class="order-popup">
+
+        <button
+            class="close-popup"
+            onclick="closeOrderPopup()">
+
+            ×
+
+        </button>
+
+        <h2>
+
+            Order Details
+
+        </h2>
+
+        <div id="orderPopupContent">
 
         </div>
 
