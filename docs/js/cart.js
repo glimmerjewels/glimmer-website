@@ -110,9 +110,9 @@ function renderCart() {
 
         <div class="cart-item">
 
-            <img
-                src="${item.image}"
-                class="cart-image">
+           <img
+            src="${item.image || 'assets/no-image.png'}"
+            class="cart-image">
 
             <div class="cart-details">
 
