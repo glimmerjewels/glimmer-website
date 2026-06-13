@@ -578,7 +578,7 @@ Mobile : ${mobile}`;
         );
 
         window.open(
-            `https://wa.me/919404458374?text=${encodeURIComponent(message)}`,
+            `https://wa.me/918999120594?text=${encodeURIComponent(message)}`,
             "_blank"
         );
 
