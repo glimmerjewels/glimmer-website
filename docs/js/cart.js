@@ -60,7 +60,7 @@ if(
 ){
 
     alert(
-        "Enter valid Indian mobile number"
+        "Enter a valid Mobile number"
     );
 
     return;
