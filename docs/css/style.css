@@ -43,8 +43,13 @@ header{
     box-shadow:0px 4px 15px rgba(0,0,0,0.05);
 }
 
-.logo-section img{
-    width:160px;
+.logo-section img {
+
+    height: 65px;
+
+    width: auto;
+
+    object-fit: contain;
 }
 
 /* NAVBAR */
