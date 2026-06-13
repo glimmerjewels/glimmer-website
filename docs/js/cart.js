@@ -45,26 +45,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 });
 
-const mobile =
-
-document
-.getElementById(
-    "customerMobile"
-)
-.value
-.trim();
-
-if(
-    !/^[6-9]\d{9}$/
-    .test(mobile)
-){
-
-    alert(
-        "Enter a valid Mobile number"
-    );
-
-    return;
-}
 
 function saveCart() {
 
