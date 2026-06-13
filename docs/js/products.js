@@ -63,6 +63,9 @@ async function loadProducts() {
     renderProducts(
     category
     );
+    highlightCategory(
+    category
+    );
 }
 
 // ======================================
@@ -97,6 +100,9 @@ function initializeFilters() {
                         button.dataset.category;
 
                     renderProducts(
+                        category
+                    );
+                    highlightCategory(
                         category
                     );
 
@@ -531,4 +537,38 @@ async function addToCart() {
         );
 
     closePopup();
+}
+// ========================
+// Highlight selected Category
+// ========================
+
+
+function highlightCategory(
+    category
+){
+
+    document
+    .querySelectorAll(
+        ".filter-btn"
+    )
+    .forEach(btn => {
+
+        btn.classList.remove(
+            "active"
+        );
+
+        if(
+
+            btn.dataset.category
+            ===
+            category
+
+        ){
+
+            btn.classList.add(
+                "active"
+            );
+        }
+
+    });
 }
