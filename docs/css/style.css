@@ -859,6 +859,49 @@ footer a{
     display:none !important;
 }
 
+.cart-btn {
+
+    width: 100%;
+
+    margin-top: 20px;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    color: white;
+
+    background: linear-gradient(
+        135deg,
+        #8E2DE2,
+        #FF4E8B
+    );
+
+    transition: 0.3s;
+}
+
+.cart-btn:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px
+        rgba(
+            142,
+            45,
+            226,
+            0.3
+        );
+}
+
 .popup-overlay{
     position:fixed;
     inset:0;
