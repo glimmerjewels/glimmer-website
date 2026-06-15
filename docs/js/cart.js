@@ -481,12 +481,21 @@ async function placeOrder() {
             const item of cart
         ) {
 
-            await supabaseClient
-                .from(
-                    "order_items"
-                )
-                .insert([{
+           const {
 
+            error:itemError
+
+            } =
+
+            await supabaseClient
+            .from(
+                "order_items"
+            )
+            .insert([{
+                    if(itemError){
+
+                        throw itemError;
+                        }
                     order_id:
                         order.id,
 
@@ -568,11 +577,20 @@ Mobile : ${mobile}`;
     }
     catch(error){
 
-        console.error(error);
+    console.error(
+        "ORDER ERROR:",
+        error
+    );
 
-        alert(
-            "Unable to place order"
-        );
-    }
+    alert(
+
+        error.message ||
+
+        JSON.stringify(
+            error
+        )
+
+    );
+    }    
 
 }
