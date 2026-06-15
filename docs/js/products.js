@@ -9,6 +9,8 @@ let selectedProduct = null;
 
 let currentQuantity = 1;
 
+let currentReviewProductId = null;
+
 // ======================================
 // PAGE LOAD
 // ======================================
@@ -211,7 +213,7 @@ async function openProductPopup(
         allProducts.find(
             p => p.id === productId
         );
-
+    currentReviewProductId = product.id;
     if (!selectedProduct)
         return;
 
@@ -635,4 +637,84 @@ async function loadReviews(
         </div>
         `;
     });
+}
+async function submitReview() {
+
+    const name =
+        document
+        .getElementById(
+            "reviewName"
+        )
+        .value.trim();
+
+    const rating =
+        parseFloat(
+            document
+            .getElementById(
+                "reviewRating"
+            )
+            .value
+        );
+
+    const review =
+        document
+        .getElementById(
+            "reviewComment"
+        )
+        .value.trim();
+
+    if(!name || !review){
+
+        alert(
+            "Please complete review"
+        );
+
+        return;
+    }
+
+    const { error } =
+        await supabaseClient
+        .from("reviews")
+        .insert([{
+
+            product_id:
+                currentReviewProductId,
+
+            customer_name:
+                name,
+
+            rating:
+                rating,
+
+            review:
+                review
+
+        }]);
+
+    if(error){
+
+        console.error(error);
+
+        alert(
+            "Unable to save review"
+        );
+
+        return;
+    }
+
+    document
+    .getElementById(
+        "reviewName"
+    )
+    .value = "";
+
+    document
+    .getElementById(
+        "reviewComment"
+    )
+    .value = "";
+
+    loadReviews(
+        currentReviewProductId
+    );
 }
