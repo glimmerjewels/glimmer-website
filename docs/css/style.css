@@ -1591,3 +1591,142 @@ footer a{
     background: #8E2DE2;
 
 }
+/* CONTACT PAGE */
+
+.contact-hero{
+
+    padding:80px 10%;
+    text-align:center;
+    background:#fff;
+}
+
+.contact-tag{
+
+    color:#ff4e8b;
+    letter-spacing:3px;
+    font-weight:700;
+}
+
+.contact-hero h1{
+
+    font-size:48px;
+    color:#4b136f;
+    margin-top:15px;
+}
+
+.contact-hero p{
+
+    max-width:700px;
+    margin:auto;
+    color:#555;
+    line-height:1.8;
+}
+
+.contact-container{
+
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:40px;
+    padding:60px 10%;
+}
+
+.contact-form-box,
+.contact-info-box{
+
+    background:white;
+    padding:40px;
+    border-radius:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+.contact-form-box input,
+.contact-form-box textarea{
+
+    width:100%;
+    padding:15px;
+    margin-bottom:15px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    font-size:15px;
+}
+
+.contact-form-box button{
+
+    background:linear-gradient(
+        135deg,
+        #8E2DE2,
+        #FF4E8B
+    );
+
+    color:white;
+    border:none;
+    padding:15px 25px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.info-card{
+
+    margin-bottom:25px;
+}
+
+.info-card h3{
+
+    color:#4b136f;
+}
+
+.whatsapp-btn{
+
+    display:inline-block;
+    padding:12px 20px;
+    border-radius:10px;
+    background:#25D366;
+    color:white;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.faq-section{
+
+    padding:60px 10%;
+}
+
+.faq-section h2{
+
+    text-align:center;
+    color:#4b136f;
+    margin-bottom:40px;
+}
+
+.faq-grid{
+
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+}
+
+.faq-card{
+
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+@media(max-width:768px){
+
+    .contact-container{
+
+        grid-template-columns:1fr;
+    }
+
+    .faq-grid{
+
+        grid-template-columns:1fr;
+    }
+
+    .contact-hero h1{
+
+        font-size:34px;
+    }
+}
