@@ -1766,3 +1766,28 @@ footer a{
     transform:scale(1.1);
 
 }
+.reviews-section{
+
+    margin-top:25px;
+
+    max-height:250px;
+
+    overflow-y:auto;
+
+    border-top:1px solid #eee;
+
+    padding-top:15px;
+
+}
+
+.review-card{
+
+    background:#fff8fc;
+
+    padding:12px;
+
+    border-radius:10px;
+
+    margin-bottom:10px;
+
+}
