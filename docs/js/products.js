@@ -1,7 +1,4 @@
-/*
-const SUPABASE_URL = "https://bwgcnxaedxfoaoivfqlz.supabase.co";
-const SUPABASE_KEY = "YOUR_PUBLISHABLE_KEY";
-*/
+
 // ======================================
 // GLOBALS
 // ======================================
@@ -236,7 +233,9 @@ async function openProductPopup(
         selectedProduct,
         images
     );
-
+    loadReviews(
+    productId
+    );
     document
         .getElementById(
             "productPopup"
@@ -570,5 +569,70 @@ function highlightCategory(
             );
         }
 
+    });
+}
+async function loadReviews(
+    productId
+){
+
+    const { data } =
+        await supabaseClient
+        .from("reviews")
+        .select("*")
+        .eq(
+            "product_id",
+            productId
+        )
+        .order(
+            "created_at",
+            {
+                ascending:false
+            }
+        );
+
+    const container =
+        document.getElementById(
+            "reviewsContainer"
+        );
+
+    container.innerHTML = "";
+
+    if(!data?.length){
+
+        container.innerHTML =
+        `
+        <p>
+        No reviews yet
+        </p>
+        `;
+
+        return;
+    }
+
+    data.forEach(review=>{
+
+        container.innerHTML +=
+
+        `
+        <div class="review-card">
+
+            <strong>
+            ${review.customer_name}
+            </strong>
+
+            <div>
+
+            ${"⭐".repeat(
+                review.rating
+            )}
+
+            </div>
+
+            <p>
+            ${review.review}
+            </p>
+
+        </div>
+        `;
     });
 }
