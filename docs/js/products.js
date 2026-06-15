@@ -160,13 +160,24 @@ async function renderProducts(category) {
             images.length > 0
                 ? images[0].image_url
                 : "assets/no-image.png";
-
+        
+        const isNew =
+            new Date(product.created_at) >
+            new Date(
+                Date.now()-15*24*60*60*1000);
+        
         grid.innerHTML += `
 
         <div
         class="product-card"
         onclick="openProductPopup(${product.id})">
-
+            ${isNew ? `
+            <div class="new-badge">
+            ✨ New Arrival</div>
+            `: ""}
+            ${product.stock <= 0 ?`<div class="stock-badge">
+            Out Of Stock </div>`: ""}
+            
             <img
             src="${coverImage}"
             alt="${product.name}">
