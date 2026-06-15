@@ -32,6 +32,24 @@ document.addEventListener(
 
 async function loadProducts() {
 
+      const productsGrid =
+        document.getElementById(
+            "productsGrid"
+        );
+
+    // SHOW SKELETONS
+
+    productsGrid.innerHTML =
+
+        Array(8)
+        .fill("")
+        .map(() => `
+
+            <div class="skeleton-card"></div>
+
+        `)
+        .join("");
+
     const { data, error } =
         await supabaseClient
             .from("products")
