@@ -401,6 +401,23 @@ async function placeOrder() {
 
         return;
     }
+    if (!/^[6-9]\d{9}$/.test(mobile)) {
+
+    alert(
+        "Please enter valid 10 digit mobile number"
+    );
+
+    return;
+    }
+
+    if (!/^\d{6}$/.test(pincode)) {
+
+    alert(
+        "Please enter valid 6 digit pincode"
+    );
+
+    return;
+    }
 
     let totalQty = 0;
 
@@ -566,9 +583,6 @@ Mobile : ${mobile}`;
 
         window.location.href =
         `https://wa.me/918999120594?text=${encodeURIComponent(message)}`;
-
-        window.location.href =
-            "products.html";
 
     }
     catch(error){
