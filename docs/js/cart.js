@@ -565,7 +565,7 @@ Mobile : ${mobile}`;
         );
 
         window.location.href =
-        `https://wa.me/919404458374?text=${encodeURIComponent(message)}`;
+        `https://wa.me/918999120594?text=${encodeURIComponent(message)}`;
 
         window.location.href =
             "products.html";
