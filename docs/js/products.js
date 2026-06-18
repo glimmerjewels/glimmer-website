@@ -32,22 +32,20 @@ document.addEventListener(
 
 async function loadProducts() {
 
-      const productsGrid =
+    const grid =
         document.getElementById(
             "productsGrid"
         );
 
-    // SHOW SKELETONS
-
-    productsGrid.innerHTML =
+    grid.innerHTML =
 
         Array(8)
         .fill("")
-        .map(() => `
+        .map(() =>
 
-            <div class="skeleton-card"></div>
+        `<div class="skeleton-card"></div>`
 
-        `)
+        )
         .join("");
 
     const { data, error } =
