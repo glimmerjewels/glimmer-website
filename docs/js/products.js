@@ -242,7 +242,7 @@ async function openProductPopup(
         allProducts.find(
             p => p.id === productId
         );
-    currentReviewProductId = product.id;
+    currentReviewProductId = selectedProduct.id;
     if (!selectedProduct)
         return;
 
