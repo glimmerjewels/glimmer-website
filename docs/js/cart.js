@@ -564,10 +564,8 @@ Mobile : ${mobile}`;
             "glimmerCart"
         );
 
-        window.open(
-            `https://wa.me/918999120594?text=${encodeURIComponent(message)}`,
-            "_blank"
-        );
+        window.location.href =
+        `https://wa.me/919404458374?text=${encodeURIComponent(message)}`;
 
         window.location.href =
             "products.html";
