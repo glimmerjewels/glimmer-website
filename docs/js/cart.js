@@ -477,46 +477,44 @@ async function placeOrder() {
         if (orderError)
             throw orderError;
 
-        for (
-            const item of cart
-        ) {
+        for (const item of cart) {
 
-           const {
+    const {
 
-            error:itemError
+        error:itemError
 
-            } =
+    } =
 
-            await supabaseClient
-            .from(
-                "order_items"
-            )
-            .insert([{
-                    if(itemError){
+    await supabaseClient
+        .from("order_items")
+        .insert([{
 
-                        throw itemError;
-                        }
-                    order_id:
-                        order.id,
+            order_id:
+                order.id,
 
-                    product_id:
-                        item.id,
+            product_id:
+                item.id,
 
-                    product_name:
-                        item.name,
+            product_name:
+                item.name,
 
-                    quantity:
-                        item.quantity,
+            quantity:
+                item.quantity,
 
-                    price:
-                        item.offer_price,
+            price:
+                item.offer_price,
 
-                    subtotal:
-                        item.quantity *
-                        item.offer_price
+            subtotal:
+                item.quantity *
+                item.offer_price
 
-                }]);
-        }
+        }]);
+
+    if(itemError){
+
+        throw itemError;
+    }
+    }
 
         let message =
 
