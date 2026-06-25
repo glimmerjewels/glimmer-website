@@ -1756,19 +1756,19 @@ footer a{
 
 .whatsapp-float{
 
-    position:fixed;
+    position:fixed !important;
 
-    bottom:25px;
+    bottom:25px !important;
 
-    right:25px;
+    right:25px !important;
 
-    width:65px;
+    width:65px !important;
 
-    height:65px;
+    height:65px !important;
 
-    z-index:9999;
+    z-index:9999 !important;
 
-    transition:.3s;
+    transition:.3s !important;
 
 }
 
