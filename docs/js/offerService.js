@@ -1,68 +1,35 @@
-// ==============================
+// =============================================
 // GLIMMER OFFER SERVICE
-// ==============================
+// =============================================
 
-let ACTIVE_OFFERS = [];
+let GLIMMER_OFFERS = [];
 
-async function loadActiveOffers(forceReload = false) {
+async function fetchOffers(refresh = false) {
 
-    if (
-        ACTIVE_OFFERS.length > 0 &&
-        !forceReload
-    ) {
-        return ACTIVE_OFFERS;
+    if (!refresh && GLIMMER_OFFERS.length > 0) {
+        return GLIMMER_OFFERS;
     }
 
-    const now =
-        new Date()
-        .toISOString();
+    const now = new Date().toISOString();
 
-    const { data, error } =
-        await supabaseClient
-            .from("offers")
-            .select("*")
-            .eq("active", true)
-            .or(
-                `start_date.is.null,start_date.lte.${now}`
-            )
-            .or(
-                `end_date.is.null,end_date.gte.${now}`
-            )
-            .order(
-                "priority",
-                {
-                    ascending: true
-                }
-            );
+    const { data, error } = await supabaseClient
+        .from("offers")
+        .select("*")
+        .eq("active", true)
+        .or(`start_date.is.null,start_date.lte.${now}`)
+        .or(`end_date.is.null,end_date.gte.${now}`)
+        .order("priority", { ascending: true });
 
     if (error) {
-
-        console.error(
-            "Offer Loading Error",
-            error
-        );
-
-        ACTIVE_OFFERS = [];
-
+        console.error("Offer Loading Error", error);
         return [];
-
     }
 
-    ACTIVE_OFFERS =
-        data || [];
+    GLIMMER_OFFERS = data || [];
 
-    return ACTIVE_OFFERS;
-
+    return GLIMMER_OFFERS;
 }
 
-function getLoadedOffers() {
-
-    return ACTIVE_OFFERS;
-
-}
-
-function clearOfferCache() {
-
-    ACTIVE_OFFERS = [];
-
+function getOffers() {
+    return GLIMMER_OFFERS;
 }
