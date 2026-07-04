@@ -1,69 +1,63 @@
-let ACTIVE_OFFERS = [];
+// ======================================
+// GLIMMER OFFER ENGINE
+// ======================================
 
-async function loadOffers() {
+function cartTotal(cart) {
 
-    const { data, error } =
-        await supabaseClient
-            .from("offers")
-            .select("*")
-            .eq("active", true)
-            .order("priority");
-
-    if (error) {
-
-        console.error(error);
-
-        return [];
-    }
-
-    ACTIVE_OFFERS = data || [];
-
-    return ACTIVE_OFFERS;
-
-}
-
-function getCartCounts(cart) {
-
-    const counts = {
-
-        rings: 0,
-
-        bracelets: 0,
-
-        necklace: 0,
-
-        earrings: 0,
-
-        anklets: 0,
-
-        mens: 0,
-
-        watches: 0,
-
-        totalItems: 0,
-
-        totalPrice: 0
-
-    };
+    let total = 0;
 
     cart.forEach(item => {
 
-        const category =
-            item.category
-            ?.toLowerCase();
-
-        counts.totalItems += item.quantity;
-
-        counts.totalPrice +=
+        total +=
             item.offer_price *
             item.quantity;
 
-        if (counts.hasOwnProperty(category)) {
+    });
 
-            counts[category] +=
+    return total;
+
+}
+
+
+function categoryCounts(cart) {
+
+    const counts = {
+
+        rings:0,
+
+        bracelets:0,
+
+        necklace:0,
+
+        earrings:0,
+
+        anklets:0,
+
+        mens:0,
+
+        watches:0,
+
+        totalItems:0
+
+    };
+
+    cart.forEach(item=>{
+
+        const cat =
+            item.category
+            ?.toLowerCase();
+
+        if(
+            counts.hasOwnProperty(cat)
+        ){
+
+            counts[cat]+=
                 item.quantity;
 
         }
+
+        counts.totalItems+=
+            item.quantity;
 
     });
 
@@ -71,56 +65,57 @@ function getCartCounts(cart) {
 
 }
 
-function isOfferApplicable(
+
+function offerMatches(
     offer,
     counts
-) {
+){
 
-    if (
-        offer.required_rings >
-        counts.rings
+    if(
+        counts.rings<
+        offer.required_rings
     )
         return false;
 
-    if (
-        offer.required_bracelets >
-        counts.bracelets
+    if(
+        counts.bracelets<
+        offer.required_bracelets
     )
         return false;
 
-    if (
-        offer.required_necklace >
-        counts.necklace
+    if(
+        counts.necklace<
+        offer.required_necklace
     )
         return false;
 
-    if (
-        offer.required_earrings >
-        counts.earrings
+    if(
+        counts.earrings<
+        offer.required_earrings
     )
         return false;
 
-    if (
-        offer.required_anklets >
-        counts.anklets
+    if(
+        counts.anklets<
+        offer.required_anklets
     )
         return false;
 
-    if (
-        offer.required_mens >
-        counts.mens
+    if(
+        counts.mens<
+        offer.required_mens
     )
         return false;
 
-    if (
-        offer.required_watches >
-        counts.watches
+    if(
+        counts.watches<
+        offer.required_watches
     )
         return false;
 
-    if (
-        offer.required_any >
-        counts.totalItems
+    if(
+        counts.totalItems<
+        offer.required_any
     )
         return false;
 
@@ -128,154 +123,108 @@ function isOfferApplicable(
 
 }
 
-function calculateBestOffer(
-    cart
-) {
+
+function calculatePricing(cart){
+
+    const offers =
+        getLoadedOffers();
 
     const counts =
-        getCartCounts(cart);
+        categoryCounts(cart);
+
+    const originalTotal =
+        cartTotal(cart);
 
     let bestOffer = null;
 
     let bestTotal =
-        counts.totalPrice;
+        originalTotal;
 
-    ACTIVE_OFFERS.forEach(
-        offer => {
+    offers.forEach(offer=>{
 
-            if (
-                !isOfferApplicable(
-                    offer,
-                    counts
-                )
+        if(
+            !offerMatches(
+                offer,
+                counts
             )
-                return;
+        ){
 
-            if (
-                offer.offer_price <
-                bestTotal
-            ) {
-
-                bestTotal =
-                    offer.offer_price;
-
-                bestOffer =
-                    offer;
-
-            }
+            return;
 
         }
-    );
 
-    return {
+        /*
+        IMPORTANT
 
-        originalTotal:
-            counts.totalPrice,
+        This is temporary.
 
-        finalTotal:
+        Part 2B will replace
+        this with bundle pricing.
+
+        */
+
+        if(
+
+            offer.offer_price
+            <
+            bestTotal
+
+        ){
+
+            bestTotal =
+                offer.offer_price;
+
+            bestOffer =
+                offer;
+
+        }
+
+    });
+
+    return{
+
+        originalTotal,
+
+        discountedTotal:
             bestTotal,
 
         savings:
-            counts.totalPrice -
+            originalTotal-
             bestTotal,
 
         offerApplied:
-            bestOffer != null,
+            bestOffer!=null,
 
-        offer:
+        appliedOffer:
             bestOffer,
 
-        surpriseFreebies:
+        freebies:
+
             bestOffer
-                ?.surprise_freebies ||
-            0
+            ?
+
+            bestOffer
+            .surprise_freebies
+
+            :
+
+            0,
+
+        congratulationMessage:
+
+            bestOffer
+            &&
+            bestOffer
+            .surprise_freebies>0
+
+            ?
+
+            `🎉 Congratulations! You have been selected for ${bestOffer.surprise_freebies} surprise freebies from our side. They will be included in your order package automatically.`
+
+            :
+
+            ""
 
     };
-
-}
-
-function getOfferProgress(cart) {
-
-    const counts =
-        getCartCounts(cart);
-
-    return ACTIVE_OFFERS.map(
-        offer => {
-
-            let needed = 0;
-
-            let current = 0;
-
-            if (
-                offer.required_any >
-                0
-            ) {
-
-                needed =
-                    offer.required_any;
-
-                current =
-                    counts.totalItems;
-
-            }
-
-            else if (
-                offer.required_rings >
-                0
-            ) {
-
-                needed =
-                    offer.required_rings;
-
-                current =
-                    counts.rings;
-
-            }
-
-            else if (
-
-                offer.required_bracelets > 0
-
-            ) {
-
-                needed =
-                    offer.required_bracelets;
-
-                current =
-                    counts.bracelets;
-
-            }
-
-            else if (
-
-                offer.required_necklace > 0
-
-            ) {
-
-                needed =
-                    offer.required_necklace;
-
-                current =
-                    counts.necklace;
-
-            }
-
-            return {
-
-                offer,
-
-                needed,
-
-                current,
-
-                unlocked:
-                    current >=
-                    needed
-
-            };
-
-        }
-
-    );
 
 }
