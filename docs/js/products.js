@@ -528,6 +528,7 @@ async function addToCart() {
                     ? images[0]
                         .image_url
                     : "",
+            category: selectedProduct.category,
 
             actual_price:
                 selectedProduct.actual_price,
