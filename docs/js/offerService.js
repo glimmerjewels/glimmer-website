@@ -33,3 +33,52 @@ async function fetchOffers(refresh = false) {
 function getOffers() {
     return GLIMMER_OFFERS;
 }
+
+
+async function loadOfferBanner() {
+
+    const banner =
+        document.getElementById("offerTrack");
+
+    if (!banner)
+        return;
+
+    const offers =
+        await fetchOffers();
+
+    if (!offers.length) {
+
+        document
+            .getElementById("offerBanner")
+            .style.display =
+            "none";
+
+        return;
+
+    }
+
+    let html = "";
+
+    offers.forEach(offer => {
+
+        html +=
+
+        `<span class="offer-item">
+
+            ${offer.banner_text}
+
+        </span>
+
+        <span class="offer-dot">
+
+        ★
+
+        </span>`;
+
+    });
+
+    html += html;
+
+    banner.innerHTML = html;
+
+}
