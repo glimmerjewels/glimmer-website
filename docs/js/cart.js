@@ -9,7 +9,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             localStorage.getItem("glimmerCart")
         ) || [];
 
-    renderCart();
+    await loadOfferBanner();
+    await renderCart();
 
     document
         .getElementById("checkoutBtn")
@@ -56,7 +57,7 @@ function saveCart() {
 }
 
 
-function renderCart() {
+async function renderCart() {
 
     const container =
         document.getElementById(
@@ -64,6 +65,9 @@ function renderCart() {
         );
 
     if (!container) return;
+
+    await fetchOffers();
+    const pricing = calculatePricing(cart);
 
     if (cart.length === 0) {
 
@@ -86,6 +90,11 @@ function renderCart() {
         document.getElementById(
             "grandTotal"
         ).innerText = "₹0";
+
+        const offerSummary = document.getElementById("offerSummary");
+        if (offerSummary) {
+            offerSummary.innerHTML = "<div class='offer-summary-card'>Add a few items to unlock our combo deals.</div>";
+        }
 
         return;
     }
@@ -170,9 +179,29 @@ function renderCart() {
     ).innerText =
         "₹" +
         (
-            subtotal +
+            pricing.discountedTotal +
             DELIVERY_CHARGE
         );
+
+    const offerSummary = document.getElementById("offerSummary");
+    if (offerSummary) {
+        if (pricing.offerApplied) {
+            offerSummary.innerHTML = `
+                <div class="offer-summary-card">
+                    <strong>Offer applied:</strong> ${pricing.appliedOffer.name}<br>
+                    <span>${pricing.appliedOffer.banner_text}</span><br>
+                    <small>You saved ₹${pricing.savings} on this order.</small>
+                </div>
+            `;
+        } else {
+            offerSummary.innerHTML = `
+                <div class="offer-summary-card">
+                    <strong>No combo matched yet.</strong><br>
+                    <span>Add items to unlock our rotating offers.</span>
+                </div>
+            `;
+        }
+    }
 
 }
 
@@ -221,7 +250,7 @@ async function increaseQty(productId) {
 
     saveCart();
 
-    renderCart();
+    await renderCart();
 
 }
 
@@ -250,7 +279,7 @@ function decreaseQty(productId) {
 
     saveCart();
 
-    renderCart();
+    await renderCart();
 
 }
 
@@ -419,23 +448,19 @@ async function placeOrder() {
     return;
     }
 
-    let totalQty = 0;
+    const pricing = calculatePricing(cart);
 
-    let subtotal = 0;
+    let totalQty = 0;
 
     cart.forEach(item => {
 
         totalQty +=
             item.quantity;
 
-        subtotal +=
-            item.quantity *
-            item.offer_price;
-
     });
 
     const grandTotal =
-        subtotal +
+        pricing.discountedTotal +
         DELIVERY_CHARGE;
 
     try {
@@ -470,7 +495,7 @@ async function placeOrder() {
                     totalQty,
 
                 subtotal:
-                    subtotal,
+                    pricing.discountedTotal,
 
                 delivery_charge:
                     DELIVERY_CHARGE,
@@ -554,6 +579,13 @@ Subtotal ₹${item.quantity * item.offer_price}
 `;
 
         });
+
+        if (pricing.offerApplied) {
+            message += `
+Offer Applied : ${pricing.appliedOffer.name}
+Offer Price : ₹${pricing.appliedOffer.offer_price}
+`;
+        }
 
         message +=
 
