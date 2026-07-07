@@ -1758,17 +1758,23 @@ footer a{
 
     position:fixed !important;
 
-    bottom:25px !important;
+    bottom:20px !important;
 
-    right:25px !important;
+    right:20px !important;
 
-    width:65px !important;
+    width:62px !important;
 
-    height:65px !important;
+    height:62px !important;
 
     z-index:9999 !important;
 
     transition:.3s !important;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    box-shadow:0 10px 24px rgba(0,0,0,.18);
 
 }
 
@@ -1866,7 +1872,7 @@ footer a{
 .offer-track{
     display:inline-flex;
     align-items:center;
-    animation:offerScroll 24s linear infinite;
+    animation:offerScroll 34s linear infinite;
 }
 
 .offer-item{
