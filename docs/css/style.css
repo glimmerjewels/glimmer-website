@@ -1850,75 +1850,58 @@ footer a{
 =========================== */
 
 .offer-banner{
-
     width:100%;
-
-    background:#111;
-
+    background:linear-gradient(90deg,#4b145f,#8e2de2,#ff4e8b);
     color:white;
-
     overflow:hidden;
-
-    height:42px;
-
+    height:46px;
     display:flex;
-
     align-items:center;
-
     white-space:nowrap;
-
     position:relative;
-
     z-index:20;
-
+    box-shadow:0 8px 24px rgba(75,20,95,0.18);
 }
 
 .offer-track{
-
     display:inline-flex;
-
     align-items:center;
-
-    animation:offerScroll 28s linear infinite;
-
+    animation:offerScroll 24s linear infinite;
 }
 
 .offer-item{
-
-    padding:0 50px;
-
+    padding:0 42px;
     font-size:15px;
-
-    font-weight:600;
-
+    font-weight:700;
     color:white;
-
+    letter-spacing:0.4px;
 }
 
 .offer-dot{
-
-    color:#FFD700;
-
+    color:#ffe082;
     font-size:18px;
-
+    margin:0 6px;
 }
 
 @keyframes offerScroll{
-
-    from{
-
-        transform:translateX(100%);
-    }
-
-    to{
-
-        transform:translateX(-100%);
-    }
-
+    from{ transform:translateX(100%); }
+    to{ transform:translateX(-100%); }
 }
 
 .offer-banner:hover .offer-track{
-
     animation-play-state:paused;
+}
 
+.offer-summary-box{
+    margin:12px 0 20px;
+}
+
+.offer-summary-card{
+    background:#fff5fa;
+    border:1px solid #f4d9e8;
+    border-radius:14px;
+    padding:12px 14px;
+    color:#4b145f;
+    font-size:14px;
+    line-height:1.6;
 }
