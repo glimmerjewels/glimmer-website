@@ -10,6 +10,8 @@ const PRODUCTS_PER_PAGE = 25;
 
 let orders = [];
 
+let offers = [];
+
 let orderPage = 1;
 
 const ORDERS_PER_PAGE = 25;
@@ -29,6 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         showAdminPanel();
 
         await loadInventory();
+        await loadOffers();
     }
 });
 
@@ -74,6 +77,7 @@ async function login() {
     showAdminPanel();
 
     await loadInventory();
+    await loadOffers();
 }
 
 
@@ -1203,4 +1207,138 @@ async function reduceStock(orderId) {
     }
 
     return true;
+}
+async function loadOffers() {
+    const { data, error } = await supabaseClient
+        .from("offers")
+        .select("*")
+        .order("priority", { ascending: true });
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    offers = data || [];
+    renderOffers();
+}
+
+function renderOffers() {
+    const tbody = document.getElementById("offersBody");
+
+    if (!tbody) {
+        return;
+    }
+
+    tbody.innerHTML = "";
+
+    offers.forEach((offer) => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${offer.name}</td>
+                <td>${offer.banner_text}</td>
+                <td>₹${offer.offer_price}</td>
+                <td>${offer.minimum_order_value || 0}</td>
+                <td>${offer.priority || 0}</td>
+                <td>${offer.active ? "Active" : "Inactive"}</td>
+                <td>
+                    <button class="edit-btn" onclick="editOffer(${offer.id})">Edit</button>
+                    <button class="delete-btn" onclick="deleteOffer(${offer.id})">Delete</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+async function saveOffer() {
+    const offerData = {
+        name: document.getElementById("offerNameInput").value.trim(),
+        banner_text: document.getElementById("offerBannerTextInput").value.trim(),
+        offer_price: Number(document.getElementById("offerPriceInput").value),
+        minimum_order_value: Number(document.getElementById("minimumOrderValueInput").value || 0),
+        required_any: Number(document.getElementById("requiredAnyInput").value || 0),
+        required_rings: Number(document.getElementById("requiredRingsInput").value || 0),
+        required_bracelets: Number(document.getElementById("requiredBraceletsInput").value || 0),
+        required_necklace: Number(document.getElementById("requiredNecklaceInput").value || 0),
+        required_earrings: Number(document.getElementById("requiredEarringsInput").value || 0),
+        required_anklets: Number(document.getElementById("requiredAnkletsInput").value || 0),
+        required_mens: Number(document.getElementById("requiredMensInput").value || 0),
+        required_watches: Number(document.getElementById("requiredWatchesInput").value || 0),
+        surprise_freebies: Number(document.getElementById("surpriseFreebiesInput").value || 0),
+        priority: Number(document.getElementById("offerPriorityInput").value || 0),
+        active: document.getElementById("offerActiveInput").checked,
+        start_date: document.getElementById("offerStartDateInput").value || null,
+        end_date: document.getElementById("offerEndDateInput").value || null
+    };
+
+    if (!offerData.name || !offerData.banner_text || !offerData.offer_price) {
+        alert("Please complete the offer name, banner text, and offer price.");
+        return;
+    }
+
+    const editingOfferId = document.getElementById("offerPopupTitle").dataset.editingId;
+
+    if (editingOfferId) {
+        const { error } = await supabaseClient.from("offers").update(offerData).eq("id", editingOfferId);
+        if (error) {
+            alert("Offer update failed");
+            return;
+        }
+    } else {
+        const { error } = await supabaseClient.from("offers").insert([offerData]);
+        if (error) {
+            alert("Offer creation failed");
+            return;
+        }
+    }
+
+    closeOfferPopup();
+    await loadOffers();
+    await fetchOffers(true);
+    alert("Offer saved successfully");
+}
+
+async function editOffer(offerId) {
+    const offer = offers.find((item) => item.id === offerId);
+    if (!offer) {
+        return;
+    }
+
+    document.getElementById("offerPopupTitle").innerText = "Edit Offer";
+    document.getElementById("offerPopupTitle").dataset.editingId = offer.id;
+    document.getElementById("offerNameInput").value = offer.name || "";
+    document.getElementById("offerBannerTextInput").value = offer.banner_text || "";
+    document.getElementById("offerPriceInput").value = offer.offer_price || 0;
+    document.getElementById("minimumOrderValueInput").value = offer.minimum_order_value || 0;
+    document.getElementById("requiredAnyInput").value = offer.required_any || 0;
+    document.getElementById("requiredRingsInput").value = offer.required_rings || 0;
+    document.getElementById("requiredBraceletsInput").value = offer.required_bracelets || 0;
+    document.getElementById("requiredNecklaceInput").value = offer.required_necklace || 0;
+    document.getElementById("requiredEarringsInput").value = offer.required_earrings || 0;
+    document.getElementById("requiredAnkletsInput").value = offer.required_anklets || 0;
+    document.getElementById("requiredMensInput").value = offer.required_mens || 0;
+    document.getElementById("requiredWatchesInput").value = offer.required_watches || 0;
+    document.getElementById("surpriseFreebiesInput").value = offer.surprise_freebies || 0;
+    document.getElementById("offerPriorityInput").value = offer.priority || 0;
+    document.getElementById("offerActiveInput").checked = offer.active !== false;
+    document.getElementById("offerStartDateInput").value = offer.start_date ? offer.start_date.split("T")[0] : "";
+    document.getElementById("offerEndDateInput").value = offer.end_date ? offer.end_date.split("T")[0] : "";
+    openOfferPopup();
+}
+
+async function deleteOffer(offerId) {
+    const confirmDelete = confirm("Delete this offer permanently?");
+    if (!confirmDelete) {
+        return;
+    }
+
+    const { error } = await supabaseClient.from("offers").delete().eq("id", offerId);
+    if (error) {
+        alert("Offer deletion failed");
+        return;
+    }
+
+    await loadOffers();
+    await fetchOffers(true);
+    alert("Offer deleted");
 }
