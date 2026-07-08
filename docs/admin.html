@@ -196,6 +196,61 @@
     </div>
 
    </section>
+ <section class="orders-section">
+
+        <div class="inventory-header">
+
+            <h1>
+
+                Offers Management
+
+            </h1>
+
+            <button
+                class="add-btn"
+                onclick="openOfferPopup()">
+
+                Add Offer
+
+            </button>
+
+        </div>
+
+        <div class="inventory-table-container">
+
+            <table class="inventory-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Offer Name</th>
+
+                        <th>Banner Text</th>
+
+                        <th>Offer Price</th>
+
+                        <th>Min Order</th>
+
+                        <th>Priority</th>
+
+                        <th>Status</th>
+
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="offersBody">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
 
 </section>
 
@@ -279,6 +334,60 @@
     </div>
 
 </div>
+<div
+    class="popup-overlay hidden"
+    id="offerPopup">
+
+    <div class="popup-box">
+
+        <h2 id="offerPopupTitle">Add Offer</h2>
+
+        <input type="text" id="offerNameInput" placeholder="Offer Name">
+
+        <textarea id="offerBannerTextInput" placeholder="Banner Text"></textarea>
+
+        <input type="number" id="offerPriceInput" placeholder="Offer Price">
+
+        <input type="number" id="minimumOrderValueInput" placeholder="Minimum Order Value">
+
+        <input type="number" id="requiredAnyInput" placeholder="Required Any Items">
+
+        <input type="number" id="requiredRingsInput" placeholder="Required Rings">
+
+        <input type="number" id="requiredBraceletsInput" placeholder="Required Bracelets">
+
+        <input type="number" id="requiredNecklaceInput" placeholder="Required Necklace">
+
+        <input type="number" id="requiredEarringsInput" placeholder="Required Earrings">
+
+        <input type="number" id="requiredAnkletsInput" placeholder="Required Anklets">
+
+        <input type="number" id="requiredMensInput" placeholder="Required Mens">
+
+        <input type="number" id="requiredWatchesInput" placeholder="Required Watches">
+
+        <input type="number" id="surpriseFreebiesInput" placeholder="Surprise Freebies">
+
+        <input type="number" id="offerPriorityInput" placeholder="Priority">
+
+        <label>
+            <input type="checkbox" id="offerActiveInput" checked>
+            Active
+        </label>
+
+        <input type="date" id="offerStartDateInput">
+
+        <input type="date" id="offerEndDateInput">
+
+        <div class="popup-actions">
+
+            <button onclick="saveOffer()">Save Offer</button>
+
+            <button onclick="closeOfferPopup()">Cancel</button>
+
+        </div>
+
+    </div>
 
  <!-- ORDER DETAILS POPUP -->
 
