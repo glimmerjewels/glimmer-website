@@ -195,13 +195,31 @@ async function renderCart() {
     const offerSummary = document.getElementById("offerSummary");
     if (offerSummary) {
         if (pricing.offerApplied) {
-            offerSummary.innerHTML = `
-                <div class="offer-summary-card">
-                    <strong>Offer applied:</strong> ${pricing.appliedOffer.name}<br>
-                    <span>${pricing.appliedOffer.banner_text}</span><br>
-                    <small>You saved ₹${pricing.savings} on this order.</small>
-                </div>
-            `;
+          offerSummary.innerHTML = `
+                        <div class="offer-summary-card">
+                        <strong>🎉 Offer Applied</strong>
+                            <br>
+                            <span>
+                            ${pricing.appliedOffer.title || pricing.appliedOffer.name}
+                            </span>
+                            <br>
+                            <small>You saved ₹${pricing.savings}</small>
+                            ${
+                            pricing.surpriseFreebies > 0
+                            ?
+                            `
+                            <div class="freebie-message">
+                            🎁 Congratulations! You have been selected for 
+                            ${pricing.surpriseFreebies} surprise freebies from our side.
+                            <br>
+                            They will be included in your order package automatically.
+                            </div>
+                            `
+                            :
+                            ""
+                            }
+                        </div>
+                        `;
         } else {
             offerSummary.innerHTML = `
                 <div class="offer-summary-card">
