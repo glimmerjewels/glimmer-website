@@ -515,6 +515,27 @@ async function placeOrder() {
                 subtotal:
                     pricing.discountedTotal,
 
+                original_total:
+                    pricing.originalTotal,
+
+                offer_id:
+                    pricing.appliedOffer?.id || null,
+
+                offer_name:
+                    pricing.appliedOffer?.title || null,
+
+                offer_type:
+                    pricing.appliedOffer?.offer_type || null,
+
+                offer_price:
+                    pricing.appliedOffer?.offer_price || null,
+
+                offer_discount:
+                    pricing.savings,
+
+                surprise_freebies:
+                    pricing.surpriseFreebies,
+
                 delivery_charge:
                     DELIVERY_CHARGE,
 
