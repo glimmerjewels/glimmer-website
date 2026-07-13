@@ -1898,16 +1898,71 @@ footer a{
     animation-play-state:paused;
 }
 
+/* =====================================
+   OFFER SUMMARY CARD
+===================================== */
+
+
+.offer-summary-card {
+
+    margin-top:20px;
+
+    padding:15px;
+
+    border-radius:15px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #fff0f7,
+        #f5e8ff
+    );
+
+    border:
+    1px solid #e8b6ff;
+
+    font-size:14px;
+
+    line-height:1.6;
+
+}
+
+
+.offer-summary-card strong {
+
+    color:#8E2DE2;
+
+    font-size:16px;
+
+}
+
+
+.offer-summary-card small {
+
+    color:#ff4e8b;
+
+    font-weight:600;
+
+}
+
+
+
+.freebie-message {
+
+    margin-top:12px;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    background:#fff5d6;
+
+    color:#8a5a00;
+
+    font-weight:600;
+
+}
 .offer-summary-box{
     margin:12px 0 20px;
 }
 
-.offer-summary-card{
-    background:#fff5fa;
-    border:1px solid #f4d9e8;
-    border-radius:14px;
-    padding:12px 14px;
-    color:#4b145f;
-    font-size:14px;
-    line-height:1.6;
-}
