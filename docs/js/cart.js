@@ -102,9 +102,7 @@ async function renderCart() {
     let html = "";
 
     let totalQty = 0;
-
-    let subtotal = 0;
-
+   
     cart.forEach((item) => {
 
         const itemTotal =
@@ -112,8 +110,6 @@ async function renderCart() {
             item.offer_price;
 
         totalQty += item.quantity;
-
-        subtotal += itemTotal;
 
         html += `
 
@@ -168,6 +164,22 @@ async function renderCart() {
         `;
     });
 
+    const pricing =
+    await calculatePricing(cart);
+
+
+    const subtotal =
+    pricing.discountedTotal;
+    
+    const savings =
+    pricing.savings;
+
+    const appliedOffer =
+    pricing.appliedOffer;
+
+    const congratulationMessage =
+    pricing.congratulationMessage;
+    
     container.innerHTML = html;
 
     document.getElementById(
@@ -459,9 +471,15 @@ async function placeOrder() {
 
     });
 
+   const pricing =
+    await calculatePricing(cart);
+
+    const subtotal =
+    pricing.discountedTotal;
+
     const grandTotal =
-        pricing.discountedTotal +
-        DELIVERY_CHARGE;
+    subtotal +
+    DELIVERY_CHARGE;
 
     try {
 
