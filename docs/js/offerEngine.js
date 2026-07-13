@@ -70,41 +70,315 @@ function offerMatches(offer, counts) {
     return true;
 }
 
-function calculatePricing(cart) {
-    const offers = getLoadedOffers();
-    const counts = categoryCounts(cart);
-    const originalTotal = cartTotal(cart);
+// =====================================
+// GLIMMER OFFER ENGINE
+// =====================================
 
-    let bestOffer = null;
-    let bestTotal = originalTotal;
 
-    offers.forEach((offer) => {
-        const normalizedOffer = normalizeOffer(offer);
+function expandCartItems(cart){
 
-        if (!offerMatches(normalizedOffer, counts)) {
-            return;
+    let items=[];
+
+
+    cart.forEach(product=>{
+
+
+        for(
+            let i=0;
+            i<product.quantity;
+            i++
+        ){
+
+            items.push({
+
+                id:product.id,
+
+                name:product.name,
+
+                category:
+                    product.category
+                    ?.toLowerCase(),
+
+                price:
+                    product.offer_price
+
+            });
+
         }
 
-        const candidateTotal = Number(normalizedOffer.offer_price) || originalTotal;
 
-        if (candidateTotal < bestTotal) {
-            bestTotal = candidateTotal;
-            bestOffer = normalizedOffer;
-        }
     });
 
-    return {
-        originalTotal,
-        discountedTotal: bestTotal,
-        savings: originalTotal - bestTotal,
-        offerApplied: bestOffer != null,
-        appliedOffer: bestOffer,
-        freebies: bestOffer ? bestOffer.surprise_freebies : 0,
-        congratulationMessage:
-            bestOffer && bestOffer.surprise_freebies > 0
-                ? `🎉 Congratulations! You have been selected for ${bestOffer.surprise_freebies} surprise freebies from our side. They will be included in your order package automatically.`
-                : "",
-        offerMessage: bestOffer ? `${bestOffer.name} — ₹${bestOffer.offer_price}` : ""
-    };
+
+    return items;
+
 }
 
+
+
+// -------------------------------------
+// NORMAL TOTAL
+// -------------------------------------
+
+function calculateNormalTotal(items){
+
+    return items.reduce(
+        (sum,item)=>
+            sum+item.price,
+        0
+    );
+
+}
+
+
+
+// -------------------------------------
+// REMOVE BUNDLE ITEMS
+// -------------------------------------
+
+function removeItems(source,indexes){
+
+
+    return source.filter(
+        (_,index)=>
+            !indexes.includes(index)
+    );
+
+}
+
+
+
+
+// -------------------------------------
+// FIND RING BUNDLES
+// -------------------------------------
+
+function applyRingOffer(items,offer){
+
+
+    let working=[
+        ...items
+    ];
+
+
+    let bundles=[];
+
+
+    while(true){
+
+
+        let rings =
+            working
+            .map(
+                (x,i)=>
+                    x.category==="rings"
+                    ? i
+                    : null
+            )
+            .filter(
+                x=>x!==null
+            );
+
+
+        if(
+            rings.length <
+            offer.required_rings
+        )
+            break;
+
+
+
+        let selected =
+            rings.slice(
+                0,
+                offer.required_rings
+            );
+
+
+        bundles.push({
+
+            items:selected,
+
+            price:
+                offer.offer_price
+
+        });
+
+
+
+        working =
+            removeItems(
+                working,
+                selected
+            );
+
+    }
+
+
+
+    return {
+
+        bundles,
+
+        remaining:
+            working
+
+    };
+
+}
+
+
+
+// -------------------------------------
+// MAIN CALCULATOR
+// -------------------------------------
+
+async function calculatePricing(cart){
+
+
+    const offers =
+        getOffers();
+
+
+
+    const items =
+        expandCartItems(cart);
+
+
+
+    const originalTotal =
+        calculateNormalTotal(
+            items
+        );
+
+
+
+    let bestTotal =
+        originalTotal;
+
+
+
+    let bestOffer=null;
+
+
+
+    let freebies=0;
+
+
+
+    offers.forEach(
+        offer=>{
+
+
+            let result;
+
+
+
+            // 2 rings
+            if(
+                offer.required_rings===2 &&
+                !offer.required_any
+            ){
+
+                result =
+                applyRingOffer(
+                    items,
+                    offer
+                );
+
+            }
+
+
+
+            if(!result)
+                return;
+
+
+
+            let total =
+                result.bundles
+                .reduce(
+                    (sum,b)=>
+                    sum+b.price,
+                    0
+                );
+
+
+
+            total +=
+                calculateNormalTotal(
+                    result.remaining
+                );
+
+
+
+            if(
+                total <
+                bestTotal
+            ){
+
+                bestTotal =
+                    total;
+
+
+                bestOffer =
+                    offer;
+
+
+                freebies =
+                    offer.surprise_freebies
+                    ||0;
+
+            }
+
+
+
+        }
+
+    );
+
+
+
+
+    return {
+
+
+        originalTotal,
+
+
+        discountedTotal:
+            bestTotal,
+
+
+        savings:
+            originalTotal -
+            bestTotal,
+
+
+        offerApplied:
+            bestOffer!==null,
+
+
+        appliedOffer:
+            bestOffer,
+
+
+        freebies,
+
+
+        congratulationMessage:
+
+            freebies>0
+
+            ?
+
+`🎉 Congratulations! You have been selected for ${freebies} surprise freebies from our side. They will be included in your order package automatically.`
+
+            :
+
+            ""
+
+    };
+
+
+}
