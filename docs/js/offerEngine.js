@@ -228,6 +228,179 @@ function applyRingOffer(items,offer){
 }
 
 
+// -------------------------------------
+// FIND CATEGORY COMBO
+// Ring + Necklace + Bracelet
+// -------------------------------------
+
+function applyComboOffer(items,offer){
+
+
+    let working=[
+        ...items
+    ];
+
+
+    let bundles=[];
+
+
+
+    while(true){
+
+
+        let ringIndex =
+            working.findIndex(
+                x =>
+                x.category==="rings"
+            );
+
+
+        let necklaceIndex =
+            working.findIndex(
+                x =>
+                x.category==="necklace"
+            );
+
+
+        let braceletIndex =
+            working.findIndex(
+                x =>
+                x.category==="bracelets"
+            );
+
+
+
+        if(
+            ringIndex===-1 ||
+            necklaceIndex===-1 ||
+            braceletIndex===-1
+        ){
+
+            break;
+
+        }
+
+
+
+        let selected=[
+
+            ringIndex,
+
+            necklaceIndex,
+
+            braceletIndex
+
+        ];
+
+
+
+        bundles.push({
+
+            items:selected,
+
+            price:
+                offer.offer_price
+
+        });
+
+
+
+        working =
+            removeItems(
+                working,
+                selected
+            );
+
+
+    }
+
+
+
+    return {
+
+
+        bundles,
+
+
+        remaining:
+            working
+
+    };
+
+}
+
+
+// -------------------------------------
+// ANY 5 ITEMS OFFER
+// -------------------------------------
+
+function applyAnyFiveOffer(items,offer){
+
+
+    let working=[
+        ...items
+    ];
+
+
+    let bundles=[];
+
+
+
+    while(
+        working.length >=
+        offer.required_any
+    ){
+
+
+        let selected =
+            working
+            .slice(
+                0,
+                offer.required_any
+            )
+            .map(
+                (_,index)=>
+                    index
+            );
+
+
+
+        bundles.push({
+
+            items:selected,
+
+            price:
+                offer.offer_price
+
+        });
+
+
+
+        working =
+            removeItems(
+                working,
+                selected
+            );
+
+
+    }
+
+
+
+    return {
+
+
+        bundles,
+
+
+        remaining:
+            working
+
+    };
+
+
+}
+
 
 // -------------------------------------
 // MAIN CALCULATOR
@@ -266,74 +439,127 @@ async function calculatePricing(cart){
 
 
 
-    offers.forEach(
-        offer=>{
+offers.forEach(
+offer=>{
 
 
-            let result;
-
-
-
-            // 2 rings
-            if(
-                offer.required_rings===2 &&
-                !offer.required_any
-            ){
-
-                result =
-                applyRingOffer(
-                    items,
-                    offer
-                );
-
-            }
+let result=null;
 
 
 
-            if(!result)
-                return;
+// 2 Rings Offer
+
+if(
+    offer.required_rings===2 &&
+    !offer.required_any
+){
+
+    result =
+    applyRingOffer(
+        items,
+        offer
+    );
+
+}
 
 
 
-            let total =
-                result.bundles
-                .reduce(
-                    (sum,b)=>
-                    sum+b.price,
-                    0
-                );
+
+// Ring + Necklace + Bracelet
+
+else if(
+
+offer.required_rings===1 &&
+
+offer.required_necklace===1 &&
+
+offer.required_bracelets===1
+
+){
+
+
+    result =
+    applyComboOffer(
+        items,
+        offer
+    );
+
+
+}
 
 
 
-            total +=
-                calculateNormalTotal(
-                    result.remaining
-                );
+
+
+// Any 5 items
+
+else if(
+    offer.required_any>=5
+){
+
+
+    result =
+    applyAnyFiveOffer(
+        items,
+        offer
+    );
+
+
+}
 
 
 
-            if(
-                total <
-                bestTotal
-            ){
 
-                bestTotal =
-                    total;
-
-
-                bestOffer =
-                    offer;
-
-
-                freebies =
-                    offer.surprise_freebies
-                    ||0;
-
-            }
+if(!result)
+return;
 
 
 
-        }
+
+let offerTotal =
+result.bundles
+.reduce(
+    (sum,bundle)=>
+    sum+
+    bundle.price,
+    0
+);
+
+
+
+offerTotal +=
+calculateNormalTotal(
+    result.remaining
+);
+
+
+
+
+
+if(
+offerTotal <
+bestTotal
+){
+
+
+bestTotal =
+offerTotal;
+
+
+bestOffer =
+offer;
+
+
+freebies =
+offer.surprise_freebies
+||0;
+
+
+}
+
+
+
+});
 
     );
 
