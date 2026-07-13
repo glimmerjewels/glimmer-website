@@ -66,9 +66,6 @@ async function renderCart() {
 
     if (!container) return;
 
-    await fetchOffers();
-    const pricing = calculatePricing(cart);
-
     if (cart.length === 0) {
 
         container.innerHTML = `
@@ -459,9 +456,7 @@ async function placeOrder() {
 
     return;
     }
-
-    const pricing = calculatePricing(cart);
-
+    
     let totalQty = 0;
 
     cart.forEach(item => {
