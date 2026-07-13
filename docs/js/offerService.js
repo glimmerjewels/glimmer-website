@@ -127,3 +127,33 @@ async function loadOfferBanner() {
     banner.innerHTML = html;
 }
 
+async function getOfferRules(offerId){
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("offer_rules")
+        .select("*")
+        .eq(
+            "offer_id",
+            offerId
+        );
+
+
+    if(error){
+
+        console.error(
+            "Offer Rules Loading Error",
+            error
+        );
+
+        return [];
+
+    }
+
+
+    return data || [];
+
+}
