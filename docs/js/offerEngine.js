@@ -1,81 +1,10 @@
-// ======================================
-// GLIMMER OFFER ENGINE
-// ======================================
-
-function cartTotal(cart) {
-    let total = 0;
-
-    cart.forEach((item) => {
-        total += Number(item.offer_price || item.price || 0) * Number(item.quantity || 1);
-    });
-
-    return total;
-}
-
-function categoryCounts(cart) {
-    const counts = {
-        rings: 0,
-        bracelets: 0,
-        necklace: 0,
-        earrings: 0,
-        anklets: 0,
-        mens: 0,
-        watches: 0,
-        totalItems: 0
-    };
-
-    cart.forEach((item) => {
-        const rawCategory = item.category || item.product_category || "";
-        const normalizedCategory = String(rawCategory).toLowerCase().trim();
-        const categoryMap = {
-            ring: "rings",
-            rings: "rings",
-            bracelet: "bracelets",
-            bracelets: "bracelets",
-            necklace: "necklace",
-            necklaces: "necklace",
-            earring: "earrings",
-            earrings: "earrings",
-            anklet: "anklets",
-            anklets: "anklets",
-            men: "mens",
-            mens: "mens",
-            man: "mens",
-            watch: "watches",
-            watches: "watches"
-        };
-
-        const cat = categoryMap[normalizedCategory] || normalizedCategory;
-
-        if (Object.prototype.hasOwnProperty.call(counts, cat)) {
-            counts[cat] += Number(item.quantity || 1);
-        }
-
-        counts.totalItems += Number(item.quantity || 1);
-    });
-
-    return counts;
-}
-
-function offerMatches(offer, counts) {
-    if (counts.rings < (offer.required_rings || 0)) return false;
-    if (counts.bracelets < (offer.required_bracelets || 0)) return false;
-    if (counts.necklace < (offer.required_necklace || 0)) return false;
-    if (counts.earrings < (offer.required_earrings || 0)) return false;
-    if (counts.anklets < (offer.required_anklets || 0)) return false;
-    if (counts.mens < (offer.required_mens || 0)) return false;
-    if (counts.watches < (offer.required_watches || 0)) return false;
-    if (counts.totalItems < (offer.required_any || 0)) return false;
-
-    return true;
-}
-
-// =====================================
-// GLIMMER OFFER ENGINE
-// =====================================
+// =============================================
+// GLIMMER GENERIC OFFER ENGINE
+// DATABASE DRIVEN
+// =============================================
 
 
-function expandCartItems(cart){
+function expandCart(cart){
 
     let items=[];
 
@@ -91,21 +20,24 @@ function expandCartItems(cart){
 
             items.push({
 
-                id:product.id,
+                id:
+                    product.id,
 
-                name:product.name,
+                name:
+                    product.name,
 
                 category:
                     product.category
                     ?.toLowerCase(),
 
                 price:
-                    product.offer_price
+                    Number(
+                        product.offer_price
+                    )
 
             });
 
         }
-
 
     });
 
@@ -116,11 +48,9 @@ function expandCartItems(cart){
 
 
 
-// -------------------------------------
-// NORMAL TOTAL
-// -------------------------------------
 
-function calculateNormalTotal(items){
+
+function normalTotal(items){
 
     return items.reduce(
         (sum,item)=>
@@ -132,16 +62,16 @@ function calculateNormalTotal(items){
 
 
 
-// -------------------------------------
-// REMOVE BUNDLE ITEMS
-// -------------------------------------
-
-function removeItems(source,indexes){
 
 
-    return source.filter(
-        (_,index)=>
-            !indexes.includes(index)
+function removeIndexes(
+    items,
+    indexes
+){
+
+    return items.filter(
+        (_,i)=>
+        !indexes.includes(i)
     );
 
 }
@@ -149,419 +79,311 @@ function removeItems(source,indexes){
 
 
 
-// -------------------------------------
-// FIND RING BUNDLES
-// -------------------------------------
-
-function applyRingOffer(items,offer){
 
 
-    let working=[
-        ...items
-    ];
+// ---------------------------------------------
+// CHECK IF BUNDLE CAN BE CREATED
+// ---------------------------------------------
 
 
-    let bundles=[];
+function findBundleIndexes(
+    items,
+    rules
+){
+
+    let selected=[];
 
 
-    while(true){
+    for(
+        const rule of rules
+    ){
+
+        let category =
+            rule.category
+            .toLowerCase();
 
 
-        let rings =
-            working
+        let required =
+            rule.required_quantity;
+
+
+
+        if(
+            category==="any"
+        ){
+
+            let available =
+                items.length -
+                selected.length;
+
+
+            if(
+                available <
+                required
+            )
+                return null;
+
+
+            for(
+                let i=0;
+                i<items.length;
+                i++
+            ){
+
+                if(
+                    !selected.includes(i)
+                    &&
+                    selected.length <
+                    required
+                ){
+
+                    selected.push(i);
+
+                }
+
+            }
+
+
+            continue;
+
+        }
+
+
+
+
+
+        let matched =
+            items
             .map(
-                (x,i)=>
-                    x.category==="rings"
-                    ? i
-                    : null
+                (item,index)=>
+                item.category===category
+                &&
+                !selected.includes(index)
+                ?
+                index
+                :
+                null
             )
             .filter(
                 x=>x!==null
             );
 
 
+
         if(
-            rings.length <
-            offer.required_rings
+            matched.length <
+            required
         )
-            break;
+            return null;
 
 
 
-        let selected =
-            rings.slice(
+        selected.push(
+            ...matched.slice(
                 0,
-                offer.required_rings
-            );
+                required
+            )
+        );
 
-
-        bundles.push({
-
-            items:selected,
-
-            price:
-                offer.offer_price
-
-        });
-
-
-
-        working =
-            removeItems(
-                working,
-                selected
-            );
 
     }
 
 
 
-    return {
-
-        bundles,
-
-        remaining:
-            working
-
-    };
+    return selected;
 
 }
 
 
-// -------------------------------------
-// FIND CATEGORY COMBO
-// Ring + Necklace + Bracelet
-// -------------------------------------
-
-function applyComboOffer(items,offer){
 
 
-    let working=[
+
+// ---------------------------------------------
+// APPLY OFFER REPEATEDLY
+// ---------------------------------------------
+
+
+function applyOffer(
+    items,
+    offer
+){
+
+    let remaining=[
         ...items
     ];
 
 
-    let bundles=[];
+    let bundles=0;
 
 
 
     while(true){
 
 
-        let ringIndex =
-            working.findIndex(
-                x =>
-                x.category==="rings"
+        let indexes =
+            findBundleIndexes(
+                remaining,
+                offer.rules
             );
 
 
-        let necklaceIndex =
-            working.findIndex(
-                x =>
-                x.category==="necklace"
+        if(!indexes)
+            break;
+
+
+
+        remaining =
+            removeIndexes(
+                remaining,
+                indexes
             );
 
 
-        let braceletIndex =
-            working.findIndex(
-                x =>
-                x.category==="bracelets"
+        bundles++;
+
+    }
+
+
+
+    return {
+
+
+        bundles,
+
+
+        remaining
+
+
+    };
+
+}
+
+
+
+
+
+// ---------------------------------------------
+// MAIN PRICE CALCULATOR
+// ---------------------------------------------
+
+
+async function calculatePricing(cart){
+
+
+    const items =
+        expandCart(cart);
+
+
+
+    const originalTotal =
+        normalTotal(items);
+
+
+
+    const offers =
+        await fetchOffers(true);
+
+
+
+    let best={
+
+
+        total:
+            originalTotal,
+
+
+        offer:null,
+
+
+        bundles:0
+
+
+    };
+
+
+
+
+    for(
+        const offer of offers
+    ){
+
+
+        const rules =
+            await getOfferRules(
+                offer.id
             );
 
 
 
         if(
-            ringIndex===-1 ||
-            necklaceIndex===-1 ||
-            braceletIndex===-1
+            !rules.length
+        )
+            continue;
+
+
+
+
+        const result =
+            applyOffer(
+                items,
+                {
+                    ...offer,
+                    rules
+                }
+            );
+
+
+
+        if(
+            result.bundles===0
+        )
+            continue;
+
+
+
+
+        let total =
+
+            (
+                result.bundles *
+                Number(
+                    offer.offer_price
+                )
+            )
+
+            +
+
+            normalTotal(
+                result.remaining
+            );
+
+
+
+
+
+        if(
+            total <
+            best.total
         ){
 
-            break;
+
+            best.total =
+                total;
+
+
+            best.offer =
+                offer;
+
+
+            best.bundles =
+                result.bundles;
+
 
         }
 
 
-
-        let selected=[
-
-            ringIndex,
-
-            necklaceIndex,
-
-            braceletIndex
-
-        ];
-
-
-
-        bundles.push({
-
-            items:selected,
-
-            price:
-                offer.offer_price
-
-        });
-
-
-
-        working =
-            removeItems(
-                working,
-                selected
-            );
-
-
     }
 
-
-
-    return {
-
-
-        bundles,
-
-
-        remaining:
-            working
-
-    };
-
-}
-
-
-// -------------------------------------
-// ANY 5 ITEMS OFFER
-// -------------------------------------
-
-function applyAnyFiveOffer(items,offer){
-
-
-    let working=[
-        ...items
-    ];
-
-
-    let bundles=[];
-
-
-
-    while(
-        working.length >=
-        offer.required_any
-    ){
-
-
-        let selected =
-            working
-            .slice(
-                0,
-                offer.required_any
-            )
-            .map(
-                (_,index)=>
-                    index
-            );
-
-
-
-        bundles.push({
-
-            items:selected,
-
-            price:
-                offer.offer_price
-
-        });
-
-
-
-        working =
-            removeItems(
-                working,
-                selected
-            );
-
-
-    }
-
-
-
-    return {
-
-
-        bundles,
-
-
-        remaining:
-            working
-
-    };
-
-
-}
-
-
-// -------------------------------------
-// MAIN CALCULATOR
-// -------------------------------------
-
-async function calculatePricing(cart){
-
-
-    const offers =
-        getOffers();
-
-
-
-    const items =
-        expandCartItems(cart);
-
-
-
-    const originalTotal =
-        calculateNormalTotal(
-            items
-        );
-
-
-
-    let bestTotal =
-        originalTotal;
-
-
-
-    let bestOffer=null;
-
-
-
-    let freebies=0;
-
-
-
-offers.forEach(
-offer=>{
-
-
-let result=null;
-
-
-
-// 2 Rings Offer
-
-if(
-    offer.required_rings===2 &&
-    !offer.required_any
-){
-
-    result =
-    applyRingOffer(
-        items,
-        offer
-    );
-
-}
-
-
-
-
-// Ring + Necklace + Bracelet
-
-else if(
-
-offer.required_rings===1 &&
-
-offer.required_necklace===1 &&
-
-offer.required_bracelets===1
-
-){
-
-
-    result =
-    applyComboOffer(
-        items,
-        offer
-    );
-
-
-}
-
-
-
-
-
-// Any 5 items
-
-else if(
-    offer.required_any>=5
-){
-
-
-    result =
-    applyAnyFiveOffer(
-        items,
-        offer
-    );
-
-
-}
-
-
-
-
-if(!result)
-return;
-
-
-
-
-let offerTotal =
-result.bundles
-.reduce(
-    (sum,bundle)=>
-    sum+
-    bundle.price,
-    0
-);
-
-
-
-offerTotal +=
-calculateNormalTotal(
-    result.remaining
-);
-
-
-
-
-
-if(
-offerTotal <
-bestTotal
-){
-
-
-bestTotal =
-offerTotal;
-
-
-bestOffer =
-offer;
-
-
-freebies =
-offer.surprise_freebies
-||0;
-
-
-}
-
-
-
-});
-
-    );
 
 
 
@@ -573,36 +395,41 @@ offer.surprise_freebies
 
 
         discountedTotal:
-            bestTotal,
+            best.total,
 
 
         savings:
             originalTotal -
-            bestTotal,
+            best.total,
 
 
         offerApplied:
-            bestOffer!==null,
+            !!best.offer,
 
 
         appliedOffer:
-            bestOffer,
+            best.offer,
 
 
-        freebies,
+        surpriseFreebies:
+            best.offer
+            ?.surprise_freebies
+            ||
+            0,
 
 
         congratulationMessage:
 
-            freebies>0
+        best.offer
+        ?.surprise_freebies>0
 
-            ?
+        ?
 
-`🎉 Congratulations! You have been selected for ${freebies} surprise freebies from our side. They will be included in your order package automatically.`
+        `🎉 Congratulations! You have been selected for ${best.offer.surprise_freebies} surprise freebies from our side. They will be included in your order package automatically.`
 
-            :
+        :
 
-            ""
+        ""
 
     };
 
