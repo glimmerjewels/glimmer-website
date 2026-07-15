@@ -161,7 +161,14 @@ href="css/style.css">
 class="popup-overlay hidden"
 id="productPopup">
 
-    <div class="product-popup">
+    <div
+    id="productPopup"
+    class="popup-overlay hidden"
+    onclick="closePopup()">
+
+    <div
+        class="product-popup"
+        onclick="event.stopPropagation()">
 
         <!-- LEFT -->
 
@@ -313,7 +320,7 @@ id="productPopup">
     <div id="reviewsContainer">
 
     </div>
-
+            </div>
 </div>
         </div>
     </div>
