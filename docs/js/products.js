@@ -272,6 +272,14 @@ async function openProductPopup(
         .classList.remove(
             "hidden"
         );
+    document.body.style.overflow = "hidden";
+
+    const popup =
+    document.querySelector(".product-popup");
+
+    if (popup) {
+    popup.scrollTop = 0;
+}
 }
 
 // ======================================
@@ -400,13 +408,12 @@ function changeMainImage(
 
 function closePopup() {
 
-    document
-        .getElementById(
-            "productPopup"
-        )
-        .classList.add(
-            "hidden"
-        );
+         document.body.style.overflow = "";
+
+        document
+        .getElementById("productPopup")
+        .classList.add("hidden");
+
 }
 
 // ======================================
