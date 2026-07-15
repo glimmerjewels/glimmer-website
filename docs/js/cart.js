@@ -282,7 +282,7 @@ async function increaseQty(productId) {
 }
 
 
-function decreaseQty(productId) {
+async function decreaseQty(productId) {
 
     const item =
         cart.find(
