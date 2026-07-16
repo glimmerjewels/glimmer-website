@@ -943,7 +943,7 @@ footer a{
     background:white;
     border-radius:20px;
     display:flex;
-    overflow:hidden;
+    overflow-y:auto;
 }
 
 .popup-right{
