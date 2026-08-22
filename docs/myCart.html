@@ -1,44 +1,10 @@
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>My Cart - Glimmer</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/popup-common.css">
-  <link rel="stylesheet" href="css/cart.css">
-</head>
-<body>
-
-<!-- header preserved -->
-
-<section class="cart-section">
-  <h1 class="cart-title">My Cart</h1>
-  <div id="cartItems"></div>
-  <div class="cart-summary">
-    <!-- summary preserved -->
-    <button id="checkoutBtn" class="checkout-btn">Proceed To Delivery Details</button>
-  </div>
-</section>
-
-<!-- DELIVERY MODAL -->
-<div id="deliveryOverlay" class="delivery-modal delivery-modal-hidden modal-overlay-helper">
-  <div class="delivery-modal-content">
-    <h2>Delivery Details</h2>
-    <input type="text" id="customerName" placeholder="Customer Name">
-    <input type="text" id="customerMobile" maxlength="10" placeholder="Mobile Number">
-    <textarea id="customerAddress" placeholder="Address"></textarea>
-    <div class="delivery-modal-actions">
-      <button id="orderWhatsappBtn">Order Via WhatsApp</button>
-      <button id="closePopupBtn">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- footer preserved -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase.js"></script>
-<script src="js/cart.js"></script>
-</body>
-</html>
+@@
+-    <link rel="stylesheet" href="css/style.css">
+-    <link rel="stylesheet" href="css/cart.css">
++    <link rel="stylesheet" href="css/style.css">
++    <link rel="stylesheet" href="css/popup-common.css">
++    <link rel="stylesheet" href="css/cart.css">
+@@
+-<div id="deliveryOverlay" class="delivery-modal delivery-modal-hidden">
++<div id="deliveryOverlay" class="delivery-modal delivery-modal-hidden modal-overlay-helper">
+@@

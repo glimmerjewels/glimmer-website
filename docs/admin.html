@@ -1,54 +1,18 @@
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Admin - Glimmer</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/popup-common.css">
-  <link rel="stylesheet" href="css/admin.css">
-</head>
-<body>
-
-<!-- admin header preserved -->
-
-<!-- ADD PRODUCT POPUP (admin-scoped classes) -->
-<div id="productPopup" class="admin-modal admin-modal-hidden modal-overlay-helper">
-  <div class="admin-modal-content" role="dialog" aria-modal="true">
-    <h2>Add Product</h2>
-    <!-- form inputs preserved -->
-    <div class="admin-modal-actions">
-      <button onclick="saveProduct()">Save Product</button>
-      <button onclick="closeProductPopup()">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- OFFER POPUP -->
-<div id="offerPopup" class="admin-modal admin-modal-hidden modal-overlay-helper">
-  <div class="admin-modal-content">
-    <h2 id="offerPopupTitle">Add Offer</h2>
-    <!-- offer inputs preserved -->
-    <div class="admin-modal-actions">
-      <button onclick="saveOffer()">Save Offer</button>
-      <button onclick="closeOfferPopup()">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- ORDER DETAILS POPUP -->
-<div id="orderPopupOverlay" class="admin-modal admin-modal-hidden modal-overlay-helper">
-  <div class="admin-modal-content order-popup">
-    <button class="admin-modal-close" onclick="closeOrderPopup()">×</button>
-    <h2>Order Details</h2>
-    <div id="orderPopupContent"></div>
-  </div>
-</div>
-
-<!-- footer preserved -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase.js"></script>
-<script src="js/admin.js"></script>
-</body>
-</html>
+@@
+-<link rel="stylesheet" href="css/style.css">
+-    <link rel="stylesheet" href="css/admin.css">
++<link rel="stylesheet" href="css/style.css">
++    <link rel="stylesheet" href="css/popup-common.css">
++    <link rel="stylesheet" href="css/admin.css">
+@@
+-<div class="admin-modal admin-modal-hidden" id="loginOverlay">
++<div class="admin-modal admin-modal-hidden modal-overlay-helper" id="loginOverlay">
+@@
+-<div class="admin-modal admin-modal-hidden" id="productPopup">
++<div class="admin-modal admin-modal-hidden modal-overlay-helper" id="productPopup">
+@@
+-<div class="admin-modal admin-modal-hidden" id="offerPopup">
++<div class="admin-modal admin-modal-hidden modal-overlay-helper" id="offerPopup">
+@@
+-<div id="orderPopupOverlay" class="admin-modal admin-modal-hidden">
++<div id="orderPopupOverlay" class="admin-modal admin-modal-hidden modal-overlay-helper">

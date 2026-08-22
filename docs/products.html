@@ -1,87 +1,35 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Products - Glimmer</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/popup-common.css">
-    <link rel="stylesheet" href="css/products.css">
-  </head>
-  <body>
-
-    <!-- header/navigation omitted for brevity (preserve existing header) -->
-
-    <div id="offerBanner" class="offer-banner">
-      <div class="offer-track" id="offerTrack"></div>
-    </div>
-
-    <!-- HERO / COLLECTION -->
-    <section class="collection-section">
-      <h5 class="collection-label">DISCOVER ELEGANCE IN EVERY PIECE</h5>
-      <h1 class="collection-title" id="categoryTitle">Glimmer Collection</h1>
-    </section>
-
-    <!-- FILTERS -->
-    <section class="filter-section">
-      <!-- filter buttons (preserve) -->
-    </section>
-
-    <!-- PRODUCTS GRID -->
-    <section class="products-section">
-      <div class="products-grid" id="productsGrid"></div>
-    </section>
-
-    <!-- PRODUCT MODAL (page-scoped classes) -->
-    <div id="productPopup" class="product-modal product-modal-hidden modal-overlay-helper" onclick="closePopup()">
-      <div class="product-modal-content" onclick="event.stopPropagation()">
-
-        <!-- LEFT -->
-        <div class="product-modal-left">
-          <div class="main-image-container">
-            <img id="mainPopupImage" src="" alt="Product">
-          </div>
-          <div class="thumbnail-strip" id="thumbnailStrip"></div>
-        </div>
-
-        <!-- RIGHT -->
-        <div class="product-modal-right">
-          <button class="product-modal-close" onclick="closePopup()">×</button>
-          <h2 id="popupName"></h2>
-          <p id="popupDescription"></p>
-          <div class="price-box">
-            <span class="actual-price" id="popupActualPrice"></span>
-            <span class="offer-price" id="popupOfferPrice"></span>
-          </div>
-          <div class="stock-box">Available Stock: <span id="popupStock"></span></div>
-
-          <div class="quantity-section">
-            <button onclick="decreaseQty()">-</button>
-            <span id="quantityValue">1</span>
-            <button onclick="increaseQty()">+</button>
-          </div>
-
-          <button id="addToCartBtn" class="cart-btn" onclick="addToCart()">Add To Cart</button>
-
-          <div class="reviews-section">
-            <h3>Customer Reviews</h3>
-            <div class="add-review-box">
-              <input type="text" id="reviewName" placeholder="Your Name">
-              <select id="reviewRating"><option value="5">5 ⭐</option></select>
-            </div>
-            <div id="reviewsList"></div>
-          </div>
-
-        </div>
-
-      </div>
-    </div>
-
-    <!-- footer preserved -->
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase.js"></script>
-    <script src="js/products.js"></script>
-    <script>loadOfferBanner();</script>
-  </body>
-</html>
+@@
+- <link
+- rel="stylesheet"
+- href="css/style.css">
+-        <link rel="stylesheet" href="css/products.css">
++ <link rel="stylesheet" href="css/style.css">
++    <link rel="stylesheet" href="css/popup-common.css">
++        <link rel="stylesheet" href="css/products.css">
+@@
+-            <div
+-    id="productPopup"
+-    class="product-modal product-modal-hidden"
+-    onclick="closePopup()">
+-              <div
+-        class="product-modal-content"
+-        onclick="event.stopPropagation()">
++            <div
++    id="productPopup"
++    class="product-modal product-modal-hidden"
++    onclick="closePopup()">
++              <div
++        class="product-modal-content"
++        onclick="event.stopPropagation()">
+@@
+-                    <button
+-            class="product-modal-close"
+-            onclick="closePopup()">
+-                      ×
+-                    </button>
++                    <button
++            class="product-modal-close"
++            onclick="closePopup()">
++                      ×
++                    </button>
+@@

@@ -1,5 +1,14 @@
 @@
-     if (error) {
+ document.addEventListener("DOMContentLoaded", async () => {
+@@
+     if (session) {
+ 
+         showAdminPanel();
+ 
+         await loadInventory();
+         await loadOffers();
+     }
+ });
 @@
      document
          .getElementById("loginOverlay")
@@ -46,27 +55,32 @@
  }
 @@
  function openProductPopup() {
--
+ 
 -    document
 -        .getElementById("productPopup")
 -        .classList.remove("hidden");
-+
 +    document
 +        .getElementById("productPopup")
 +        .classList.remove("admin-modal-hidden");
  }
  
  function closeProductPopup() {
--
+ 
 -    document
 -        .getElementById("productPopup")
 -        .classList.add("hidden");
-+
 +    document
 +        .getElementById("productPopup")
 +        .classList.add("admin-modal-hidden");
  }
 @@
+     document
+         .getElementById(
+             "orderPopupContent"
+         )
+         .innerHTML =
+         html;
+ 
 -    document
 -        .getElementById(
 -            "orderPopupOverlay"
@@ -81,6 +95,8 @@
 +        .remove("admin-modal-hidden");
  }
 @@
+ function closeOrderPopup() {
+ 
 -    document
 -        .getElementById(
 -            "orderPopupOverlay"

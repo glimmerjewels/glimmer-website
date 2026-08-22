@@ -1,5 +1,8 @@
 @@
-     for (const product of productsToShow) {
+     selectedProduct =
+         allProducts.find(
+             p => p.id === productId
+         );
 @@
      populatePopup(
          selectedProduct,
@@ -23,10 +26,9 @@
 +            "product-modal-hidden"
 +        );
      document.body.style.overflow = "hidden";
- 
--    const popup =
+@@
+     const popup =
 -    document.querySelector(".product-popup");
-+    const popup =
 +    document.querySelector(".product-modal-content");
  
      if (popup) {
@@ -36,7 +38,7 @@
 @@
  function closePopup() {
  
-     document.body.style.overflow = "";
+         document.body.style.overflow = "";
  
 -        document
 -        .getElementById("productPopup")

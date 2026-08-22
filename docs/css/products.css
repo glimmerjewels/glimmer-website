@@ -1,0 +1,21 @@
+@@
+ /* popup animation (kept local to products for now) */
+-@keyframes popupFade {
+-    from {
+-        opacity: 0;
+-        transform: scale(0.9);
+-    }
+-    to {
+-        opacity: 1;
+-        transform: scale(1);
+-    }
+-}
++/* animation is provided by popup-common.css (popupFade) */
+@@
+ @media(max-width:768px){
+     .product-modal-content{ flex-direction:column; width:95%; }
+     .product-modal-left, .product-modal-right{ width:100%; padding:15px; }
+     .collection-title{ font-size:40px; }
+     .main-image-container img{ height:350px; }
+     .products-grid{ grid-template-columns:1fr; }
+ }
