@@ -1,20 +1,19 @@
 @@
- <link
- rel="stylesheet"
- href="css/style.css">
+- <link
+- rel="stylesheet"
+- href="css/style.css">
+-        <link rel="stylesheet" href="css/products.css">
++ <link rel="stylesheet" href="css/style.css">
++    <link rel="stylesheet" href="css/popup-common.css">
 +        <link rel="stylesheet" href="css/products.css">
-         </head>
-         <body>
 @@
--            <!-- PRODUCT POPUP -->
 -            <div
 -    id="productPopup"
--    class="popup-overlay hidden"
+-    class="product-modal product-modal-hidden"
 -    onclick="closePopup()">
 -              <div
--        class="product-popup"
+-        class="product-modal-content"
 -        onclick="event.stopPropagation()">
-+            <!-- PRODUCT POPUP -->
 +            <div
 +    id="productPopup"
 +    class="product-modal product-modal-hidden"
@@ -24,7 +23,7 @@
 +        onclick="event.stopPropagation()">
 @@
 -                    <button
--            class="close-popup"
+-            class="product-modal-close"
 -            onclick="closePopup()">
 -                      ×
 -                    </button>
@@ -34,11 +33,3 @@
 +                      ×
 +                    </button>
 @@
-                 </script>
-                 <script src="js/products.js">
-                 </script>
-                 <script>
-                   loadOfferBanner();
-                 </script>
-               </body>
-             </html>
