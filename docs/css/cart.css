@@ -1,0 +1,78 @@
+/* ==================================================
+   Cart / Delivery page styles (extracted from style.css)
+   - Contains delivery-popup styles renamed to delivery-modal*
+   - Keeps comments and responsive rules together
+   ================================================== */
+
+/* Delivery modal */
+.delivery-modal{
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0,0,0,0.5);
+    z-index: 10000;
+}
+
+.delivery-modal-hidden{
+    display:none !important;
+}
+
+.delivery-modal-content{
+    background: white;
+    width: 500px;
+    max-width: 95%;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    animation: popupFade 0.25s ease;
+}
+
+.delivery-modal-content h2{
+    margin-top:0;
+}
+
+.delivery-modal-content input,
+.delivery-modal-content textarea{
+    width:100%;
+    padding:12px;
+    margin-bottom:12px;
+    border:1px solid #eee;
+    border-radius:10px;
+    font-family:'Poppins',sans-serif;
+}
+
+.delivery-modal-actions{
+    display:flex;
+    gap:10px;
+}
+
+.delivery-modal-actions button{
+    flex:1;
+    padding:12px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.delivery-modal-actions button#orderWhatsappBtn{
+    background:linear-gradient(135deg,#8E2DE2,#FF4E8B);
+    color:white;
+}
+
+.delivery-modal-actions button#closePopupBtn{
+    background:#ddd;
+}
+
+@keyframes popupFade{
+    from{ opacity:0; transform: scale(.98);} 
+    to{ opacity:1; transform: scale(1);} 
+}
+
+/* Responsive */
+@media(max-width:768px){
+    .delivery-modal-content{ width:95%; padding:20px; }
+    .delivery-modal-actions{ flex-direction:column; }
+}

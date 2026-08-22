@@ -1,276 +1,111 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-    <title>My Cart | Glimmer</title>
-
-    <link
-        rel="stylesheet"
-        href="css/style.css">
-
-</head>
-
-<body>
-<!-- HEADER -->
-
-<header>
-
-    <div class="logo-section">
-
-        <img
-            src="assets/logo1.png"
-            alt="Glimmer Logo">
-
-    </div>
-
-    <nav class="navbar">
-
-        <a href="index.html">
-            Home
-        </a>
-
-        <div class="dropdown">
-
-            <button class="dropbtn">
-                Products ▼
-            </button>
-
-            <div class="dropdown-content">
-                    <a href="products.html?category=all">All</a>
-                    <a href="products.html?category=anklets">Anklets</a>
-                    <a href="products.html?category=bracelets">Bracelets</a>
-                    <a href="products.html?category=earrings">Earrings</a>
-                    <a href="products.html?category=necklace">Necklace & Chains</a>
-                    <a href="products.html?category=rings">Rings</a>
-                    <a href="products.html?category=watches">Watches</a>
-                    <a href="products.html?category=mens">Men's</a>
-                </div>
-
-        </div>
-
-        <a href="contact.html">
-            Contact
-        </a>
-
-        <a href="admin.html">
-            Admin
-        </a>
-
-        <a href="myCart.html">
-            🛒 My Cart
-        </a>
-
-    </nav>
-
-</header>
-    <div id="offerBanner" class="offer-banner">
-
-    <div
-        class="offer-track"
-        id="offerTrack">
-
-    </div>
-
-    </div>
-<!-- PAGE TITLE -->
-
-<section class="cart-section">
-
-    <h1 class="cart-title">
-
-        My Cart
-
-    </h1>
-
-    <!-- CART ITEMS -->
-
-    <div id="cartItems">
-
-    </div>
-
-    <!-- CART SUMMARY -->
-
-    <div class="cart-summary">
-
-        <div class="summary-row">
-
-            <span>
-                Delivery Charges
-            </span>
-
-            <span>
-                ₹50
-            </span>
-
-        </div>
-
-        <hr>
-
-        <div class="summary-row">
-
-            <span>
-                Total Quantity
-            </span>
-
-            <span id="totalQty">
-                0
-            </span>
-
-        </div>
-        <div id="offerSummary"></div>
-        <div class="summary-row total">
-
-            <span>
-                Grand Total
-            </span>
-
-            <span id="grandTotal">
-                ₹0
-            </span>
-
-        </div>
-
-        <div id="offerSummary" class="offer-summary-box"></div>
-
-        <button
-            id="checkoutBtn"
-            class="checkout-btn">
-
-            Proceed To Delivery Details
-
-        </button>
-
-    </div>
-
-</section>
-
-<!-- DELIVERY POPUP -->
-
-<div
-    id="deliveryOverlay"
-    class="popup-overlay hidden">
-
-    <div class="delivery-popup">
-
-        <h2>
-
-            Delivery Details
-
-        </h2>
-
-        <input
-            type="text"
-            id="customerName"
-            placeholder="Customer Name">
-
-        <input
-            type="text"
-            id="customerMobile"
-            maxlength="10"
-            pattern="[0-9]{10}"
-            placeholder="Mobile Number">
-
-        <textarea
-            id="customerAddress"
-            placeholder="Address">
-        </textarea>
-
-        <input
-            type="text"
-            id="city"
-            placeholder="City">
-
-        <input
-            type="text"
-            id="pincode"
-            maxlength="6"
-            pattern="[0-9]{6}"
-            placeholder="Pincode">
-
-        <input
-            type="text"
-            id="state"
-            placeholder="State">
-
-        <div class="popup-buttons">
-
-            <button
-                id="orderWhatsappBtn">
-
-                Order Via WhatsApp
-
-            </button>
-
-            <button
-                id="closePopupBtn">
-
-                Cancel
-
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-<!-- FOOTER -->
-
- <footer>
-        <div class="footer-grid">
-
-            <div>
-                <h3>Glimmer</h3>
-                <p>
-                    Anti Tarnish artificial jewellery crafted
-                    to help you stay sparkling every single day.
-                </p>
-            </div>
-
-            <div>
-                <h3>Company</h3>
-                <a href="contact.html">Contact</a><br>
-                <a href="products.html">All Products</a><br>
-                <a href="myCart.html">My Cart</a>
-            </div>
-
-            <div>
-                <h3>Reach Us</h3>
-                <p>📞 +91 8999120594</p>
-                <p>✉  glimmer.jewels2000@gmail.com</p>
-                <p>📸 @glimmer_staysparkling</p>
-            </div>
-
-        </div>
-  </footer>
-
-<a
-    href="https://wa.me/918999120594"
-    target="_blank"
-    class="whatsapp-float">
-
-    <img
-        src="assets/whatsapp.png"
-        alt="Whatsapp">
-
-</a>
-<!-- SCRIPTS -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="js/supabase.js"></script>
-<script src="js/offerService.js"></script>
-<script src="js/offerEngine.js"></script>
-<script src="js/cart.js"></script>
-<script>
-    loadOfferBanner();
-</script>
-
-</body>
-</html>
+@@
+     <link
+         rel="stylesheet"
+         href="css/style.css">
++    <link rel="stylesheet" href="css/cart.css">
+ 
+ </head>
+ 
+ <body>
+@@
+ <!-- DELIVERY POPUP -->
+-
+-<div
+-    id="deliveryOverlay"
+-    class="popup-overlay hidden">
+-
+-    <div class="delivery-popup">
+-
+-        <h2>
+-
+-            Delivery Details
+-
+-        </h2>
+-
+-        <input
+-            type="text"
+-            id="customerName"
+-            placeholder="Customer Name">
+-
+-        <input
+-            type="text"
+-            id="customerMobile"
+-            maxlength="10"
+-            pattern="[0-9]{10}"
+-            placeholder="Mobile Number">
+-
+-        <textarea
+-            id="customerAddress"
+-            placeholder="Address">
+-        </textarea>
+-
+-        <input
+-            type="text"
+-            id="city"
+-            placeholder="City">
+-
+-        <input
+-            type="text"
+-            id="pincode"
+-            maxlength="6"
+-            pattern="[0-9]{6}"
+-            placeholder="Pincode">
+-
+-        <input
+-            type="text"
+-            id="state"
+-            placeholder="State">
+-
+-        <div class="popup-buttons">
+-
+-            <button
+-                id="orderWhatsappBtn">
+-
+-                Order Via WhatsApp
+-
+-            </button>
+-
+-            <button
+-                id="closePopupBtn">
+-
+-                Cancel
+-
+-            </button>
+-
+-        </div>
+-
+-    </div>
+-
+-</div>
++
++<!-- DELIVERY POPUP -->
++
++<div id="deliveryOverlay" class="delivery-modal delivery-modal-hidden">
++
++    <div class="delivery-modal-content">
++
++        <h2>Delivery Details</h2>
++
++        <input type="text" id="customerName" placeholder="Customer Name">
++
++        <input type="text" id="customerMobile" maxlength="10" pattern="[0-9]{10}" placeholder="Mobile Number">
++
++        <textarea id="customerAddress" placeholder="Address"></textarea>
++
++        <input type="text" id="city" placeholder="City">
++
++        <input type="text" id="pincode" maxlength="6" pattern="[0-9]{6}" placeholder="Pincode">
++
++        <input type="text" id="state" placeholder="State">
++
++        <div class="delivery-modal-actions">
++
++            <button id="orderWhatsappBtn">Order Via WhatsApp</button>
++
++            <button id="closePopupBtn">Cancel</button>
++
++        </div>
++
++    </div>
++
++</div>
