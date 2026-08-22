@@ -1,0 +1,176 @@
+/* ==================================================
+   Admin page styles (extracted from style.css)
+   - Contains admin-only styles and renamed admin modal classes
+   - Keep comments and responsive rules together
+   ================================================== */
+
+/* Admin layout */
+.admin-section{
+    padding:60px 80px;
+}
+
+.small-heading{
+    color:#ff2c7d;
+    letter-spacing:4px;
+    font-size:14px;
+    margin-bottom:10px;
+}
+
+.admin-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:40px;
+}
+
+.admin-header h1{
+    font-family:'Playfair Display', serif;
+    font-size:55px;
+}
+
+.add-btn{
+    background:#ff2c7d;
+    color:white;
+    border:none;
+    padding:14px 25px;
+    border-radius:30px;
+    cursor:pointer;
+}
+
+/* Table styles used in admin pages */
+.table-container{
+    background:white;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.08);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    background:#4b145f;
+    color:white;
+    padding:15px;
+}
+
+td{
+    padding:15px;
+    text-align:center;
+}
+
+.table-img{
+    width:70px;
+    height:70px;
+    object-fit:cover;
+    border-radius:10px;
+}
+
+.delete-btn{
+    background:red;
+    color:white;
+    border:none;
+    padding:8px 14px;
+    border-radius:8px;
+}
+
+/* ================= Admin modal (renamed) ================= */
+.admin-modal{
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0,0,0,0.55);
+    z-index: 2000;
+}
+
+.admin-modal-hidden{
+    display:none !important;
+}
+
+.admin-modal-content{
+    width: 550px;
+    max-width: 90%;
+    background: white;
+    padding: 35px;
+    border-radius: 25px;
+    box-shadow: 0px 15px 40px rgba(0,0,0,0.2);
+    animation: popupFade 0.3s ease;
+}
+
+.admin-modal-content h2{
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    color: #4b145f;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.admin-modal-content input,
+.admin-modal-content textarea,
+.admin-modal-content select{
+    width:100%;
+    padding:14px;
+    margin-bottom:15px;
+    border:1px solid #eee;
+    border-radius:12px;
+    font-family:'Poppins',sans-serif;
+}
+
+.admin-modal-actions{
+    display:flex;
+    gap:15px;
+    margin-top:20px;
+}
+
+.admin-modal-actions button{
+    flex:1;
+    padding:14px;
+    border:none;
+    border-radius:30px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.admin-modal-actions button:first-child{
+    background: linear-gradient(135deg,#8E2DE2,#FF4E8B);
+    color:white;
+}
+
+.admin-modal-close{
+    position:absolute;
+    right:20px;
+    top:20px;
+    cursor:pointer;
+    font-size:24px;
+    background:none;
+    border:none;
+}
+
+/* login box variant (keeps markup compatible) */
+.login-box{
+    background:white;
+    padding:40px;
+    border-radius:20px;
+    width:400px;
+}
+
+/* Order popup specific layout (inside admin modal content) */
+.order-popup{
+    max-width:900px;
+}
+
+/* popup animation (referenced by admin modal) */
+@keyframes popupFade {
+    from { opacity:0; transform: scale(0.9); }
+    to { opacity:1; transform: scale(1); }
+}
+
+/* Responsive */
+@media(max-width:768px){
+    .admin-modal-content{ width:95%; padding:25px; }
+    .admin-modal-actions{ flex-direction:column; }
+}
