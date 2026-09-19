@@ -1,18 +1,71 @@
-@@
--<link rel="stylesheet" href="css/style.css">
--    <link rel="stylesheet" href="css/admin.css">
-+<link rel="stylesheet" href="css/style.css">
-+    <link rel="stylesheet" href="css/popup-common.css">
-+    <link rel="stylesheet" href="css/admin.css">
-@@
--<div class="admin-modal admin-modal-hidden" id="loginOverlay">
-+<div class="admin-modal admin-modal-hidden modal-overlay-helper" id="loginOverlay">
-@@
--<div class="admin-modal admin-modal-hidden" id="productPopup">
-+<div class="admin-modal admin-modal-hidden modal-overlay-helper" id="productPopup">
-@@
--<div class="admin-modal admin-modal-hidden" id="offerPopup">
-+<div class="admin-modal admin-modal-hidden modal-overlay-helper" id="offerPopup">
-@@
--<div id="orderPopupOverlay" class="admin-modal admin-modal-hidden">
-+<div id="orderPopupOverlay" class="admin-modal admin-modal-hidden modal-overlay-helper">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glimmer Admin</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <header>
+        <div class="logo-section">
+            <img src="assets/logo1.png" alt="Glimmer Logo">
+        </div>
+        <nav class="navbar">
+            <a href="index.html">Home</a>
+            <div class="dropdown">
+                <button class="dropbtn">Products ▼</button>
+                <div class="dropdown-content">
+                    <a href="products.html?category=all">All</a>
+                    <a href="products.html?category=anklets">Anklets</a>
+                    <a href="products.html?category=bracelets">Bracelets</a>
+                    <a href="products.html?category=earrings">Earrings</a>
+                    <a href="products.html?category=necklace">Necklace & Chains</a>
+                    <a href="products.html?category=rings">Rings</a>
+                    <a href="products.html?category=watches">Watches</a>
+                    <a href="products.html?category=mens">Men's</a>
+                </div>
+            </div>
+            <a href="contact.html">Contact</a>
+            <a href="admin.html">Admin</a>
+            <a href="myCart.html">🛒 My Cart</a>
+        </nav>
+    </header>
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box">
+            <h2>Admin Login</h2>
+            <input type="email" id="adminEmail" placeholder="Admin Email">
+            <input type="password" id="adminPassword" placeholder="Password">
+            <button onclick="login()">Login</button>
+            <p id="loginError"></p>
+        </div>
+    </div>
+    <section class="admin-section hidden" id="adminPanel">
+        <div class="inventory-header">
+            <h1>Inventory</h1>
+            <div>
+                <button class="add-btn" onclick="openProductPopup()">Add Product</button>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+        <div class="inventory-table-container">
+            <table class="inventory-table">
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Images</th>
+                        <th>Category</th>
+                        <th>Actual Price</th>
+                        <th>Offer Price</th>
+                        <th>Stock</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryBody"></tbody>
+            </table>
+        </div>
+        <div class="pagination" id="pagination"></div>
+    </section>
+</body>
+</html>
