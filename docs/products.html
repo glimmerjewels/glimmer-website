@@ -1,35 +1,79 @@
-@@
-- <link
-- rel="stylesheet"
-- href="css/style.css">
--        <link rel="stylesheet" href="css/products.css">
-+ <link rel="stylesheet" href="css/style.css">
-+    <link rel="stylesheet" href="css/popup-common.css">
-+        <link rel="stylesheet" href="css/products.css">
-@@
--            <div
--    id="productPopup"
--    class="product-modal product-modal-hidden"
--    onclick="closePopup()">
--              <div
--        class="product-modal-content"
--        onclick="event.stopPropagation()">
-+            <div
-+    id="productPopup"
-+    class="product-modal product-modal-hidden"
-+    onclick="closePopup()">
-+              <div
-+        class="product-modal-content"
-+        onclick="event.stopPropagation()">
-@@
--                    <button
--            class="product-modal-close"
--            onclick="closePopup()">
--                      ×
--                    </button>
-+                    <button
-+            class="product-modal-close"
-+            onclick="closePopup()">
-+                      ×
-+                    </button>
-@@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glimmer Products</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/products.css">
+</head>
+<body>
+    <header>
+        <div class="logo-section">
+            <img src="assets/logo1.png" alt="Glimmer Logo">
+        </div>
+        <nav class="navbar">
+            <a href="index.html">Home</a>
+            <div class="dropdown">
+                <button class="dropbtn">Products ▼</button>
+                <div class="dropdown-content">
+                    <a href="products.html?category=all">All</a>
+                    <a href="products.html?category=anklets">Anklets</a>
+                    <a href="products.html?category=bracelets">Bracelets</a>
+                    <a href="products.html?category=earrings">Earrings</a>
+                    <a href="products.html?category=necklace">Necklace & Chains</a>
+                    <a href="products.html?category=rings">Rings</a>
+                    <a href="products.html?category=watches">Watches</a>
+                    <a href="products.html?category=mens">Men's</a>
+                </div>
+            </div>
+            <a href="contact.html">Contact</a>
+            <a href="admin.html">Admin</a>
+            <a href="myCart.html">🛒 My Cart</a>
+        </nav>
+    </header>
+    <div id="offerBanner" class="offer-banner">
+        <div class="offer-track" id="offerTrack"></div>
+    </div>
+    <section class="collection-section">
+        <h5 class="collection-label">DISCOVER ELEGANCE IN EVERY PIECE</h5>
+        <h1 class="collection-title" id="categoryTitle">Glimmer Collection</h1>
+    </section>
+    <section class="category-filters">
+        <button class="filter-btn active" data-category="all">All</button>
+        <button class="filter-btn" data-category="anklets">Anklets</button>
+        <button class="filter-btn" data-category="bracelets">Bracelets</button>
+        <button class="filter-btn" data-category="earrings">Earrings</button>
+        <button class="filter-btn" data-category="necklace">Necklace & Chains</button>
+        <button class="filter-btn" data-category="rings">Rings</button>
+        <button class="filter-btn" data-category="watches">Watches</button>
+        <button class="filter-btn" data-category="mens">Men's</button>
+    </section>
+    <section class="products-section">
+        <div class="products-grid" id="productsGrid"></div>
+    </section>
+    <div id="productPopup" class="popup-overlay hidden" onclick="closePopup()">
+        <div class="product-popup" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="closePopup()">×</button>
+            <div class="popup-left">
+                <div class="main-image-container"><img id="popupMainImage" src="" alt="Product"></div>
+                <div class="thumbnail-strip" id="thumbnailStrip"></div>
+            </div>
+            <div class="popup-right">
+                <h5>Glimmer Collection</h5>
+                <h1 id="popupName"></h1>
+                <h2 id="popupPrice"></h2>
+                <p id="popupDescription"></p>
+                <div class="quantity-section">
+                    <button id="decreaseQtyBtn">-</button>
+                    <span id="popupQty">1</span>
+                    <button id="increaseQtyBtn">+</button>
+                </div>
+                <div class="popup-actions">
+                    <button class="add-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
