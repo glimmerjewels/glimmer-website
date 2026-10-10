@@ -1084,3 +1084,10 @@ footer a{
 .offer-summary-box{
     margin:12px 0 20px;
 }
+/* ==========================
+   PRODUCT POPUP BODY LOCK
+========================== */
+
+body.popup-open {
+    overflow: hidden !important;
+}
