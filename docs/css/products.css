@@ -200,31 +200,83 @@
     }
 }
 
-.popup-overlay{
+
+/* ==========================
+   PRODUCT QUICK VIEW OVERLAY
+========================== */
+
+.popup-overlay {
     position: fixed;
     inset: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(0,0,0,.75);
+    padding: 24px;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     z-index: 9999;
 }
 
-.product-popup{
-    width:90%;
-    max-width:1100px;
-    max-height:90vh;
-    background:white;
-    border-radius:20px;
-    display:flex;
-    overflow-y:auto;
+/* Hidden must override the overlay's display:flex */
+.popup-overlay.hidden {
+    display: none !important;
 }
-.modal-overlay, .product-popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1000;
-  max-height: 90vh;
-  overflow-y: auto;
+
+/* The overlay handles centering.
+   Do NOT make .product-popup position: fixed. */
+.product-popup {
+    position: relative;
+    width: min(1100px, 95vw);
+    max-height: 90vh;
+    margin: auto;
+    background: #fff;
+    border-radius: 20px;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.22);
+    transform: none;
+}
+
+/* Keep the details scrollable inside the popup */
+.popup-right {
+    width: 50%;
+    padding: 30px;
+    position: relative;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+/* Lock background scrolling while Quick View is open */
+body.popup-open {
+    overflow: hidden !important;
+}
+
+@media (max-width: 768px) {
+    .popup-overlay {
+        padding: 12px;
+        align-items: center;
+    }
+
+    .product-popup {
+        width: 100%;
+        max-height: 92vh;
+        flex-direction: column;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    .popup-left,
+    .popup-right {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .popup-right {
+        overflow-y: visible;
+    }
+
+    .main-image-container img {
+        height: 350px;
+    }
 }
