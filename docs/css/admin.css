@@ -48,6 +48,12 @@
     border-radius: 10px;
     cursor: pointer;
     font-weight: 600;
+    transition: 0.3s;
+}
+
+.login-box button:hover {
+    background: #d41763;
+    transform: translateY(-2px);
 }
 
 #loginError {
@@ -86,6 +92,10 @@
     align-items: center;
 }
 
+/* ==========================
+   BUTTONS
+========================== */
+
 .add-btn,
 .logout-btn,
 .edit-btn,
@@ -97,6 +107,7 @@
     padding: 12px 20px;
     font-weight: 600;
     transition: 0.3s;
+    font-size: 14px;
 }
 
 .add-btn {
@@ -118,6 +129,41 @@
     background: #ff4e8b;
     transform: translateY(-2px);
 }
+
+.edit-btn {
+    background: #8e2de2;
+    color: white;
+    margin-right: 8px;
+}
+
+.edit-btn:hover {
+    background: #6a1ba5;
+    transform: translateY(-2px);
+}
+
+.delete-btn {
+    background: #e53935;
+    color: white;
+}
+
+.delete-btn:hover {
+    background: #c62828;
+    transform: translateY(-2px);
+}
+
+.done-btn {
+    background: #2e9d4e;
+    color: white;
+}
+
+.done-btn:hover {
+    background: #238c44;
+    transform: translateY(-2px);
+}
+
+/* ==========================
+   TABLE CONTAINER
+========================== */
 
 .inventory-table-container {
     overflow-x: auto;
@@ -154,36 +200,9 @@
     color: #333;
 }
 
-.edit-btn {
-    background: #8e2de2;
-    color: white;
-    margin-right: 8px;
-}
-
-.edit-btn:hover {
-    background: #6a1ba5;
-    transform: translateY(-2px);
-}
-
-.delete-btn {
-    background: #e53935;
-    color: white;
-}
-
-.delete-btn:hover {
-    background: #c62828;
-    transform: translateY(-2px);
-}
-
-.done-btn {
-    background: #2e9d4e;
-    color: white;
-}
-
-.done-btn:hover {
-    background: #238c44;
-    transform: translateY(-2px);
-}
+/* ==========================
+   TABLE THUMBNAILS
+========================== */
 
 .mini-thumb {
     width: 42px;
@@ -212,6 +231,10 @@
     font-size: 12px;
     font-weight: 700;
 }
+
+/* ==========================
+   PAGINATION
+========================== */
 
 .pagination,
 #ordersPagination {
@@ -247,6 +270,10 @@
     border: none;
 }
 
+/* ==========================
+   ORDERS SECTION
+========================== */
+
 .orders-section {
     margin-top: 60px;
     background: white;
@@ -256,6 +283,10 @@
     border-left: 3px solid #ff4e8b;
     border-right: 3px solid #ff4e8b;
 }
+
+/* ==========================
+   STATUS BADGES
+========================== */
 
 .status-badge {
     padding: 6px 12px;
@@ -322,7 +353,7 @@
 }
 
 /* ==========================
-   POPUPS - ADMIN
+   POPUP OVERLAY
 ========================== */
 
 .popup-overlay {
@@ -345,6 +376,10 @@
 .popup-overlay:not(.hidden) {
     display: flex !important;
 }
+
+/* ==========================
+   POPUP BOX - PRODUCT & OFFER
+========================== */
 
 .popup-box {
     width: 550px;
@@ -406,13 +441,25 @@
     cursor: pointer;
 }
 
-.popup-buttons {
-    display: flex;
-    gap: 15px;
-    margin-top: 25px;
+input[type="file"] {
+    background: #fff7fb;
+    border: 2px dashed #ffb6d5 !important;
+    cursor: pointer;
+    padding: 20px !important;
+    text-align: center;
 }
 
-.popup-buttons button {
+/* ==========================
+   POPUP ACTIONS BUTTONS
+========================== */
+
+.popup-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.popup-actions button {
     flex: 1;
     padding: 14px;
     border: none;
@@ -423,42 +470,23 @@
     transition: 0.3s;
 }
 
-.popup-buttons button:first-child {
+.popup-actions button:first-child {
     background: linear-gradient(135deg, #8E2DE2, #FF4E8B);
     color: white;
 }
 
-.popup-buttons button:first-child:hover {
+.popup-actions button:first-child:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(255, 78, 139, 0.3);
 }
 
-.cancel-btn {
+.popup-actions .cancel-btn {
     background: #f1f1f1;
     color: #333;
 }
 
-.cancel-btn:hover {
+.popup-actions .cancel-btn:hover {
     background: #ddd;
-}
-
-input[type="file"] {
-    background: #fff7fb;
-    border: 2px dashed #ffb6d5 !important;
-    cursor: pointer;
-    padding: 20px !important;
-    text-align: center;
-}
-
-@keyframes popupFade {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
 }
 
 /* ==========================
@@ -484,6 +512,7 @@ input[type="file"] {
     font-size: 28px;
     color: #4b145f;
     margin-bottom: 20px;
+    text-align: center;
 }
 
 .order-popup h4 {
@@ -530,7 +559,22 @@ input[type="file"] {
 }
 
 /* ==========================
-   RESPONSIVE
+   POPUP ANIMATION
+========================== */
+
+@keyframes popupFade {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ==========================
+   MOBILE RESPONSIVE
 ========================== */
 
 @media (max-width: 768px) {
@@ -557,7 +601,7 @@ input[type="file"] {
         padding: 25px;
     }
 
-    .popup-buttons {
+    .popup-actions {
         flex-direction: column;
     }
 
@@ -583,6 +627,13 @@ input[type="file"] {
     .pagination button,
     #ordersPagination button {
         padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .edit-btn,
+    .delete-btn,
+    .done-btn {
+        padding: 8px 12px;
         font-size: 12px;
     }
 }
