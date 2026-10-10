@@ -985,10 +985,12 @@ footer a{
     box-shadow:0 8px 24px rgba(75,20,95,0.18);
 }
 
-.offer-track{
-    display:inline-flex;
-    align-items:center;
-    animation:offerScroll 34s linear infinite;
+.offer-track {
+    display: inline-flex;
+    align-items: center;
+    width: max-content;
+    flex-shrink: 0;
+    animation: offerScroll 34s linear infinite;
 }
 
 .offer-item{
@@ -1005,9 +1007,13 @@ footer a{
     margin:0 6px;
 }
 
-@keyframes offerScroll{
-    from{ transform:translateX(100%); }
-    to{ transform:translateX(-100%); }
+@keyframes offerScroll {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
 }
 
 .offer-banner:hover .offer-track{
