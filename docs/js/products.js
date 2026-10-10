@@ -115,6 +115,13 @@ function initializeFilters() {
                     const category =
                         button.dataset.category;
 
+                    // ===== FIX: Update URL when button is clicked =====
+                    window.history.pushState(
+                        { category: category },
+                        '',
+                        `products.html?category=${category}`
+                    );
+
                     renderProducts(
                         category
                     );
@@ -132,7 +139,6 @@ function initializeFilters() {
 // RENDER PRODUCTS
 // ======================================
 
-// docs/js/products.js - COMPLETE REPLACEMENT FUNCTION
 async function renderProducts(category) {
 
     const grid =
