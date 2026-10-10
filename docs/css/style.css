@@ -571,35 +571,6 @@ footer a{
         );
 }
 
-.popup-overlay{
-    position: fixed;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0,0,0,.75);
-    z-index: 9999;
-}
-
-.product-popup{
-    width:90%;
-    max-width:1100px;
-    max-height:90vh;
-    background:white;
-    border-radius:20px;
-    display:flex;
-    overflow-y:auto;
-}
-.modal-overlay, .product-popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1000;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
 .popup-right{
     width:50%;
     padding:30px;
