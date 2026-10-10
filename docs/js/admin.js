@@ -667,7 +667,10 @@ async function loadOrders() {
 
     orders = data || [];
 
+    orderPage = 1;
+
     renderOrders();
+    renderOrdersPagination();
 }
 
 function renderOrders() {
@@ -1341,4 +1344,90 @@ async function deleteOffer(offerId) {
     await loadOffers();
     await fetchOffers(true);
     alert("Offer deleted");
+}
+
+
+// ==============================
+// OFFER POPUP MANAGEMENT
+// ==============================
+
+function openOfferPopup() {
+    document.getElementById("offerPopupTitle").innerText = "Add Offer";
+    document.getElementById("offerPopupTitle").dataset.editingId = "";
+    
+    // Clear all inputs
+    document.getElementById("offerNameInput").value = "";
+    document.getElementById("offerBannerTextInput").value = "";
+    document.getElementById("offerPriceInput").value = "";
+    document.getElementById("minimumOrderValueInput").value = "";
+    document.getElementById("requiredAnyInput").value = "";
+    document.getElementById("requiredRingsInput").value = "";
+    document.getElementById("requiredBraceletsInput").value = "";
+    document.getElementById("requiredNecklaceInput").value = "";
+    document.getElementById("requiredEarringsInput").value = "";
+    document.getElementById("requiredAnkletsInput").value = "";
+    document.getElementById("requiredMensInput").value = "";
+    document.getElementById("requiredWatchesInput").value = "";
+    document.getElementById("surpriseFreebiesInput").value = "";
+    document.getElementById("offerPriorityInput").value = "";
+    document.getElementById("offerActiveInput").checked = true;
+    document.getElementById("offerStartDateInput").value = "";
+    document.getElementById("offerEndDateInput").value = "";
+    
+    document.getElementById("offerPopup").classList.remove("hidden");
+}
+
+function closeOfferPopup() {
+    document.getElementById("offerPopup").classList.add("hidden");
+}
+
+// ==============================
+// ORDERS PAGINATION
+// ==============================
+
+function renderOrdersPagination() {
+    const totalPages =
+        Math.ceil(
+            orders.length /
+            ORDERS_PER_PAGE
+        );
+
+    const pagination =
+        document.getElementById("ordersPagination");
+
+    if (!pagination) return;
+
+    pagination.innerHTML = "";
+
+    if (orderPage > 1) {
+        pagination.innerHTML += `
+            <button onclick="changeOrderPage(${orderPage - 1})">
+                Previous
+            </button>
+        `;
+    }
+
+    for (let i = 1; i <= totalPages; i++) {
+        pagination.innerHTML += `
+            <button
+            class="${i === orderPage ? "active-page" : ""}"
+            onclick="changeOrderPage(${i})">
+            ${i}
+            </button>
+        `;
+    }
+
+    if (orderPage < totalPages) {
+        pagination.innerHTML += `
+            <button onclick="changeOrderPage(${orderPage + 1})">
+                Next
+            </button>
+        `;
+    }
+}
+
+function changeOrderPage(page) {
+    orderPage = page;
+    renderOrders();
+    renderOrdersPagination();
 }
