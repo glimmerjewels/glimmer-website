@@ -132,6 +132,7 @@ function initializeFilters() {
 // RENDER PRODUCTS
 // ======================================
 
+// docs/js/products.js - COMPLETE REPLACEMENT FUNCTION
 async function renderProducts(category) {
 
     const grid =
@@ -166,24 +167,41 @@ async function renderProducts(category) {
                 .toUpperCase() +
               category.slice(1);
 
+    // ===== OPTIMIZATION: Fetch all images in parallel =====
+    const imageMap = {};
+    
+    try {
+        // Fetch all images concurrently instead of sequentially
+        const imagePromises = 
+            productsToShow.map(async (product) => {
+                const images = 
+                    await getImages(product.id);
+                imageMap[product.id] = 
+                    images.length > 0
+                        ? images[0].image_url
+                        : "assets/no-image.png";
+            });
+        
+        await Promise.all(imagePromises);
+    } catch (error) {
+        console.error("Error fetching images:", error);
+    }
+
+    // ===== OPTIMIZATION: Build HTML string first, then insert once =====
+    let htmlContent = "";
+
     for (const product of productsToShow) {
 
-        const images =
-            await getImages(
-                product.id
-            );
-
-        const coverImage =
-            images.length > 0
-                ? images[0].image_url
-                : "assets/no-image.png";
+        const coverImage = 
+            imageMap[product.id] || 
+            "assets/no-image.png";
         
         const isNew =
             new Date(product.created_at) >
             new Date(
                 Date.now()-7*24*60*60*1000);
         
-        grid.innerHTML += `
+        htmlContent += `
 
         <div
         class="product-card"
@@ -197,7 +215,8 @@ async function renderProducts(category) {
             
             <img
             src="${coverImage}"
-            alt="${product.name}">
+            alt="${product.name}"
+            loading="lazy">
 
             <h3>
                 ${product.name}
@@ -207,6 +226,9 @@ async function renderProducts(category) {
 
         `;
     }
+
+    // ===== OPTIMIZATION: Insert all HTML at once =====
+    grid.innerHTML = htmlContent;
 }
 
 // ======================================
