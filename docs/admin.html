@@ -231,7 +231,7 @@
 
                         <th>Offer Price</th>
 
-                        <th>Min Order</th>
+                        <th>Offer Type</th>
 
                         <th>Priority</th>
 
@@ -343,13 +343,18 @@
 
         <h2 id="offerPopupTitle">Add Offer</h2>
 
-        <input type="text" id="offerNameInput" placeholder="Offer Name">
+        <input type="text" id="offerNameInput" placeholder="Offer Name" required>
 
-        <textarea id="offerBannerTextInput" placeholder="Banner Text"></textarea>
+        <input
+             type="text"
+             id="offerTypeInput"
+             value="bundle"
+             placeholder="Offer Type (e.g. bundle)"
+             required
+        >
+
 
         <input type="number" id="offerPriceInput" placeholder="Offer Price">
-
-        <input type="number" id="minimumOrderValueInput" placeholder="Minimum Order Value">
 
         <input type="number" id="requiredAnyInput" placeholder="Required Any Items">
 
