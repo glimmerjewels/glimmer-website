@@ -443,15 +443,18 @@ function changeMainImage(
 // CLOSE POPUP
 // ======================================
 
+
 function closePopup() {
+    const overlay = document.getElementById("productPopup");
 
-         document.body.style.overflow = "";
+    if (overlay) {
+        overlay.classList.add("hidden");
+    }
 
-        document
-        .getElementById("productPopup")
-        .classList.add("hidden");
-
+    document.body.classList.remove("popup-open");
+    document.body.style.overflow = "";
 }
+
 
 // ======================================
 // QUANTITY
