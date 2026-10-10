@@ -261,54 +261,62 @@ async function getImages(
 // PRODUCT POPUP
 // ======================================
 
-async function openProductPopup(
-    productId
-) {
 
-    selectedProduct =
-        allProducts.find(
-            p => p.id === productId
-        );
-    currentReviewProductId = selectedProduct.id;
-    if (!selectedProduct)
+async function openProductPopup(productId) {
+    selectedProduct = allProducts.find(
+        product => String(product.id) === String(productId)
+    );
+
+    if (!selectedProduct) {
+        console.error("Quick View could not find product:", productId);
         return;
+    }
 
+    const overlay = document.getElementById("productPopup");
+
+    if (!overlay) {
+        console.error("Product popup element #productPopup was not found.");
+        return;
+    }
+
+    currentReviewProductId = selectedProduct.id;
     currentQuantity = 1;
 
-    document
-        .getElementById(
-            "quantityValue"
-        )
-        .innerText =
-        currentQuantity;
+    document.getElementById("quantityValue").innerText = currentQuantity;
 
-    const images =
-        await getImages(
-            productId
-        );
-
-    populatePopup(
-        selectedProduct,
-        images
-    );
-    loadReviews(
-    productId
-    );
-    document
-        .getElementById(
-            "productPopup"
-        )
-        .classList.remove(
-            "hidden"
-        );
+    // Show and center the overlay immediately.
+    overlay.classList.remove("hidden");
+    document.body.classList.add("popup-open");
     document.body.style.overflow = "hidden";
 
-    const popup =
-    document.querySelector(".product-popup");
+    const popup = overlay.querySelector(".product-popup");
 
     if (popup) {
-    popup.scrollTop = 0;
-}
+        popup.scrollTop = 0;
+    }
+
+    try {
+        const images = await getImages(selectedProduct.id);
+
+        // Do not populate a different product if another was clicked
+        // while the images were loading.
+        if (
+            !selectedProduct ||
+            String(selectedProduct.id) !== String(productId)
+        ) {
+            return;
+        }
+
+        populatePopup(selectedProduct, images);
+
+        if (popup) {
+            popup.scrollTop = 0;
+        }
+
+        loadReviews(selectedProduct.id);
+    } catch (error) {
+        console.error("Unable to load Quick View details:", error);
+    }
 }
 
 // ======================================
