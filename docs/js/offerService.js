@@ -79,10 +79,13 @@ async function fetchOffers(refresh = false) {
             .or(`end_date.is.null,end_date.gte.${now}`)
             .order("priority", { ascending: true });
 
-        if (!error && Array.isArray(data) && data.length > 0) {
-            GLIMMER_OFFERS = data.map(normalizeOffer);
-            return GLIMMER_OFFERS;
+       if (!error && Array.isArray(data)) {
+        // An empty result means there are no currently active offers.
+        GLIMMER_OFFERS = data.map(normalizeOffer);
+        return GLIMMER_OFFERS;
         }
+
+console.warn("Could not fetch offers from Supabase:", error);
     } catch (error) {
         console.warn("Offer table unavailable, using fallback offers", error);
     }
@@ -99,32 +102,39 @@ function getLoadedOffers() {
     return getOffers();
 }
 
+
 async function loadOfferBanner() {
     const banner = document.getElementById("offerTrack");
+    const bannerContainer = document.getElementById("offerBanner");
 
-    if (!banner) {
-        return;
-    }
+    if (!banner) return;
 
     const offers = await fetchOffers();
 
     if (!offers.length) {
-        const bannerContainer = document.getElementById("offerBanner");
-        if (bannerContainer) {
-            bannerContainer.style.display = "none";
-        }
+        if (bannerContainer) bannerContainer.style.display = "none";
+        banner.replaceChildren();
         return;
     }
 
-    const repeatedOffers = [...offers, ...offers];
-    const html = repeatedOffers.map((offer) => `
-        <span class="offer-item">
-            ${offer.banner_text}
-        </span>
-        <span class="offer-dot">★</span>
-    `).join("");
+    if (bannerContainer) bannerContainer.style.display = "flex";
 
-    banner.innerHTML = html;
+    // Repeat the offers to create a continuous rolling effect.
+    const repeatedOffers = [...offers, ...offers];
+    banner.replaceChildren();
+
+    repeatedOffers.forEach((offer) => {
+        const item = document.createElement("span");
+        item.className = "offer-item";
+        item.textContent =
+            offer.banner_text || offer.title || offer.name || "Special Offer";
+
+        const dot = document.createElement("span");
+        dot.className = "offer-dot";
+        dot.textContent = "★";
+
+        banner.append(item, dot);
+    });
 }
 
 async function getOfferRules(offerId){
