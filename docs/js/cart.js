@@ -56,6 +56,12 @@ function saveCart() {
 
 }
 
+async function removeFromCart(productId) {
+    cart = cart.filter(item => String(item.id) !== String(productId));
+    saveCart();
+    await renderCart();
+}
+
 
 async function renderCart() {
 
@@ -155,6 +161,13 @@ async function renderCart() {
                 ₹${itemTotal}
 
             </div>
+            <button
+                type="button"
+                class="remove-cart-item"
+                onclick="removeFromCart('${item.id}')"
+                aria-label="Remove ${item.name} from cart">
+                Remove
+            </button>
 
         </div>
 
