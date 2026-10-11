@@ -231,7 +231,6 @@ clearButton?.addEventListener("click", () => {
 
     renderProducts(currentCategory);
 });
-```
 
 }
 
@@ -245,6 +244,7 @@ const normalized = String(value ?? "")
 
 
 const aliases = {
+    necklaceandchains: "necklace",
     necklacechains: "necklace",
     necklaces: "necklace",
     men: "mens"
@@ -313,7 +313,6 @@ String(product.category || "").toLowerCase().includes(searchTerm)
 productsToShow = productsToShow.filter(product => {
 const price = getProductPrice(product);
 
-```
 if (minPriceFilter !== null && price < minPriceFilter) {
     return false;
 }
@@ -323,7 +322,6 @@ if (maxPriceFilter !== null && price > maxPriceFilter) {
 }
 
 return true;
-```
 
 });
 
@@ -345,14 +343,12 @@ const aHasOffer =
 Number(a.offer_price) > 0 &&
 Number(a.actual_price) > Number(a.offer_price);
 
-```
     const bHasOffer =
         Number(b.offer_price) > 0 &&
         Number(b.actual_price) > Number(b.offer_price);
 
     return Number(bHasOffer) - Number(aHasOffer);
 });
-```
 
 } else {
 productsToShow.sort(
