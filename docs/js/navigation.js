@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 const dropdowns = document.querySelectorAll(".navbar .dropdown");
 
-```
 dropdowns.forEach((dropdown) => {
     const button = dropdown.querySelector(".dropbtn");
     const menu = dropdown.querySelector(".dropdown-content");
@@ -60,6 +59,5 @@ document.addEventListener("keydown", (event) => {
         }
     });
 });
-```
 
 });
