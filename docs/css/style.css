@@ -117,8 +117,51 @@ header{
     background:#ffe6f2;
 }
 
-.dropdown:hover .dropdown-content{
-    display:block;
+/* Desktop: open when hovering or using keyboard focus */
+@media (min-width: 769px) {
+    .dropdown:hover .dropdown-content,
+    .dropdown:focus-within .dropdown-content {
+        display: block;
+    }
+}
+
+/* Mobile: the JavaScript toggles this class on tap */
+.dropdown.open .dropdown-content {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .dropdown {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .dropdown-content {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        min-width: 220px;
+        max-width: min(280px, 90vw);
+        max-height: 60vh;
+        overflow-y: auto;
+        z-index: 1200;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(75, 20, 95, 0.18);
+    }
+
+    .dropdown-content a {
+        display: flex;
+        align-items: center;
+        min-height: 46px;
+        padding: 12px 16px;
+        font-size: 14px;
+        white-space: normal;
+    }
+
+    .dropdown .dropbtn {
+        min-height: 44px;
+        white-space: nowrap;
+    }
 }
 
 /* HERO */
