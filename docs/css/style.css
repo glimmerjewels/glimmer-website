@@ -1228,6 +1228,7 @@ Quick category shortcuts
     margin: 0 auto;
 }
 
+
 .quick-categories a {
     min-height: 48px;
     display: flex;
@@ -1235,22 +1236,32 @@ Quick category shortcuts
     justify-content: center;
     gap: 6px;
     padding: 10px 8px;
-    border: 1px solid #f0d8eb;
+    border: none;
     border-radius: 14px;
-    background: #fff;
-    color: #4b145f;
+    background: linear-gradient(135deg, #8e2de2, #ff4e8b);
+    color: #fff;
     text-decoration: none;
     font-size: 13px;
     font-weight: 600;
     text-align: center;
+    box-shadow: 0 4px 12px rgba(142, 45, 226, 0.16);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .quick-categories a span {
-    color: #ff4e8b;
+    color: #fff;
     font-size: 18px;
 }
 
-.quick-categories a:focus-visible,
+.quick-categories a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 18px rgba(142, 45, 226, 0.25);
+}
+
+.quick-categories a:focus-visible {
+    outline: 3px solid #4b145f;
+    outline-offset: 3px;
+}
 .navbar a:focus-visible,
 .navbar button:focus-visible {
     outline: 3px solid #8e2de2;
