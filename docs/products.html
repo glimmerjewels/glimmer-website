@@ -122,48 +122,6 @@ content="width=device-width, initial-scale=1.0">
               </button>
             </section>
           
-<section class="product-tools" aria-label="Search and sort products">
-    <label class="product-search-label" for="productSearch">
-        Search jewellery
-    </label>
-    <input
-        type="search"
-        id="productSearch"
-        placeholder="Search by product name..."
-        autocomplete="off">
-
-    <label class="product-sort-label" for="productSort">
-        Sort by
-    </label>
-    <select id="productSort">
-        <option value="newest">Newest arrivals</option>
-        <option value="price-low">Price: Low to High</option>
-        <option value="price-high">Price: High to Low</option>
-        <option value="offers">Offers first</option>
-    </select>
-
-    <button type="button" id="openFilterSheet" class="open-filter-btn">
-        More filters
-    </button>
-</section>
-
-<div id="filterSheet" class="filter-sheet hidden" aria-hidden="true">
-    <div class="filter-sheet-panel" role="dialog" aria-modal="true" aria-labelledby="filterSheetTitle">
-        <h2 id="filterSheetTitle">Filter by price</h2>
-
-        <label for="minPrice">Minimum price (₹)</label>
-        <input type="number" id="minPrice" min="0" inputmode="numeric" placeholder="0">
-
-        <label for="maxPrice">Maximum price (₹)</label>
-        <input type="number" id="maxPrice" min="0" inputmode="numeric" placeholder="No limit">
-
-        <div class="filter-sheet-actions">
-            <button type="button" id="clearPriceFilters">Clear</button>
-            <button type="button" id="applyPriceFilters">Apply filters</button>
-            <button type="button" id="closeFilterSheet">Close</button>
-        </div>
-    </div>
-</div>
             <!-- PRODUCTS GRID -->
             <section class="products-section">
               <div
