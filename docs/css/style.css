@@ -364,31 +364,6 @@ footer a{
     border:none;
 }
 
-/* PRODUCTS GRID */
-.products-grid{
-    padding:0 8% 80px;
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:40px;
-}
-
-.product-card{
-    cursor:pointer;
-}
-
-.product-card img{
-    width:100%;
-    height:400px;
-    object-fit:cover;
-    border-radius:25px;
-}
-
-.product-card h3{
-    margin-top:15px;
-    font-family:'Playfair Display', serif;
-    font-size:36px;
-    color:#4b145f;
-}
 
 /* POPUP */
 
@@ -537,7 +512,7 @@ footer a{
     min-height: 44px;
     white-space: nowrap;
 }
-```
+
 
 
     .hero-section {
