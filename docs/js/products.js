@@ -12,6 +12,10 @@ let currentQuantity = 1;
 
 let currentReviewProductId = null;
 
+let currentCategory = "all";
+let minPriceFilter = null;
+let maxPriceFilter = null;
+
 // ======================================
 // PAGE LOAD
 // ======================================
@@ -23,6 +27,17 @@ document.addEventListener(
         loadProducts();
 
         initializeFilters();
+
+        initializeProductTools();
+        window.addEventListener("popstate", () => {
+    const category =
+        new URLSearchParams(window.location.search)
+            .get("category") || "all";
+
+    currentCategory = category;
+    renderProducts(category);
+    highlightCategory(category);
+});
 
     }
 );
@@ -76,6 +91,8 @@ async function loadProducts() {
         "category"
     ) || "all";
 
+    currentCategory = category;
+
     renderProducts(
     category
     );
@@ -114,6 +131,7 @@ function initializeFilters() {
 
                     const category =
                         button.dataset.category;
+                    currentCategory = category;
 
                     // ===== FIX: Update URL when button is clicked =====
                     window.history.pushState(
@@ -136,6 +154,122 @@ function initializeFilters() {
 }
 
 // ======================================
+// TOOLBARS FUNCTION
+// ======================================
+
+
+function initializeProductTools() {
+const searchInput = document.getElementById("productSearch");
+const sortSelect = document.getElementById("productSort");
+const filterSheet = document.getElementById("filterSheet");
+
+const openButton = document.getElementById("openFilterSheet");
+const closeButton = document.getElementById("closeFilterSheet");
+const applyButton = document.getElementById("applyPriceFilters");
+const clearButton = document.getElementById("clearPriceFilters");
+
+let searchTimer;
+
+// Search by product name or category.
+searchInput?.addEventListener("input", () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+        renderProducts(currentCategory);
+    }, 250);
+});
+
+// Change product ordering.
+sortSelect?.addEventListener("change", () => {
+    renderProducts(currentCategory);
+});
+
+function closeFilterSheet() {
+    filterSheet?.classList.add("hidden");
+    filterSheet?.setAttribute("aria-hidden", "true");
+}
+
+openButton?.addEventListener("click", () => {
+    filterSheet?.classList.remove("hidden");
+    filterSheet?.setAttribute("aria-hidden", "false");
+});
+
+closeButton?.addEventListener("click", closeFilterSheet);
+
+// Apply the selected minimum and maximum prices.
+applyButton?.addEventListener("click", () => {
+    const minInput = document.getElementById("minPrice");
+    const maxInput = document.getElementById("maxPrice");
+
+    const minValue = minInput.value.trim();
+    const maxValue = maxInput.value.trim();
+
+    minPriceFilter = minValue === "" ? null : Number(minValue);
+    maxPriceFilter = maxValue === "" ? null : Number(maxValue);
+
+    if (
+        (minPriceFilter !== null && minPriceFilter < 0) ||
+        (maxPriceFilter !== null && maxPriceFilter < 0) ||
+        (minPriceFilter !== null &&
+            maxPriceFilter !== null &&
+            minPriceFilter > maxPriceFilter)
+    ) {
+        alert("Please enter a valid price range.");
+        return;
+    }
+
+    closeFilterSheet();
+    renderProducts(currentCategory);
+});
+
+// Clear the price range.
+clearButton?.addEventListener("click", () => {
+    document.getElementById("minPrice").value = "";
+    document.getElementById("maxPrice").value = "";
+
+    minPriceFilter = null;
+    maxPriceFilter = null;
+
+    renderProducts(currentCategory);
+});
+```
+
+}
+
+// Match URL slugs such as "necklace" with database categories
+// such as "Necklace & Chains".
+function normalizeCategory(value) {
+const normalized = String(value ?? "")
+.toLowerCase()
+.replace(/&/g, "and")
+.replace(/[^a-z0-9]/g, "");
+
+
+const aliases = {
+    necklacechains: "necklace",
+    necklaces: "necklace",
+    men: "mens"
+};
+
+return aliases[normalized] || normalized;
+
+
+}
+
+// Use the offer price when available; otherwise use the actual price.
+function getProductPrice(product) {
+const offerPrice = Number(product.offer_price);
+const actualPrice = Number(product.actual_price);
+
+
+return Number.isFinite(offerPrice) && offerPrice > 0
+    ? offerPrice
+    : actualPrice;
+
+
+}
+
+
+// ======================================
 // RENDER PRODUCTS
 // ======================================
 
@@ -153,18 +287,81 @@ async function renderProducts(category) {
 
     grid.innerHTML = "";
 
-    let productsToShow =
-        allProducts;
+    let productsToShow = [...allProducts];
 
-    if (category !== "all") {
+const selectedCategory = normalizeCategory(category);
 
-        productsToShow =
-            allProducts.filter(
-                product =>
-                product.category ===
-                category
-            );
-    }
+if (selectedCategory !== "all") {
+productsToShow = productsToShow.filter(product =>
+normalizeCategory(product.category) === selectedCategory
+);
+}
+
+// Search product names and categories.
+const searchTerm = (
+document.getElementById("productSearch")?.value || ""
+).trim().toLowerCase();
+
+if (searchTerm) {
+productsToShow = productsToShow.filter(product =>
+String(product.name || "").toLowerCase().includes(searchTerm) ||
+String(product.category || "").toLowerCase().includes(searchTerm)
+);
+}
+
+// Apply the selected price range.
+productsToShow = productsToShow.filter(product => {
+const price = getProductPrice(product);
+
+```
+if (minPriceFilter !== null && price < minPriceFilter) {
+    return false;
+}
+
+if (maxPriceFilter !== null && price > maxPriceFilter) {
+    return false;
+}
+
+return true;
+```
+
+});
+
+// Sort the filtered results.
+const sortValue =
+document.getElementById("productSort")?.value || "newest";
+
+if (sortValue === "price-low") {
+productsToShow.sort(
+(a, b) => getProductPrice(a) - getProductPrice(b)
+);
+} else if (sortValue === "price-high") {
+productsToShow.sort(
+(a, b) => getProductPrice(b) - getProductPrice(a)
+);
+} else if (sortValue === "offers") {
+productsToShow.sort((a, b) => {
+const aHasOffer =
+Number(a.offer_price) > 0 &&
+Number(a.actual_price) > Number(a.offer_price);
+
+```
+    const bHasOffer =
+        Number(b.offer_price) > 0 &&
+        Number(b.actual_price) > Number(b.offer_price);
+
+    return Number(bHasOffer) - Number(aHasOffer);
+});
+```
+
+} else {
+productsToShow.sort(
+(a, b) =>
+new Date(b.created_at || 0) -
+new Date(a.created_at || 0)
+);
+}
+
 
     title.innerText =
         category === "all"
@@ -211,7 +408,7 @@ async function renderProducts(category) {
 
         <div
         class="product-card"
-        onclick="openProductPopup(${product.id})">
+        onclick="openProductPopup('${product.id}')">
             ${isNew ? `
             <div class="new-badge">
             ✨ New Arrival</div>
