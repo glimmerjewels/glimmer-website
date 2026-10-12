@@ -515,8 +515,7 @@ footer a{
         white-space: normal;
     }
 
-    /* Keep the existing mobile hero, footer and other page styles below. */
-}
+
 
 
 
@@ -625,6 +624,7 @@ footer a{
 }
 
 
+/* Desktop/global product grid starts outside the media query */
 .products-grid{
     display:grid;
     grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
