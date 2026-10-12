@@ -478,3 +478,23 @@
         min-height: 48px;
     }
 }
+
+/* ==========================
+   FREE DELIVERY
+========================== */
+
+.free-delivery-message {
+    margin: 10px 0 16px;
+    padding: 12px 14px;
+    border: 1px solid #f2cfe1;
+    border-radius: 12px;
+    background: #fff7fb;
+    color: #4b145f;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.free-delivery-message:empty {
+    display: none;
+}
+      
