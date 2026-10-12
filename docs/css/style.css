@@ -1322,3 +1322,148 @@ Banner for Mobile
         font-size: 14px;
     }
 }
+
+
+
+/* ==========================
+HOMEPAGE LATEST & TRENDING CAROUSEL 
+========================== */
+.latest-trending-section {
+    padding: 55px 5%;
+}
+
+.latest-trending-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.latest-trending-heading h2 {
+    margin: 8px 0;
+    color: #4b145f;
+    font-family: "Playfair Display", serif;
+    font-size: clamp(28px, 4vw, 44px);
+}
+
+.latest-trending-heading > div > p:last-child {
+    color: #666;
+}
+
+.carousel-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.carousel-controls button {
+    width: 42px;
+    height: 42px;
+    border: 1px solid #ead7e7;
+    border-radius: 50%;
+    background: #fff;
+    color: #4b145f;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.latest-trending-track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 220px;
+    gap: 18px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    padding: 4px 2px 18px;
+}
+
+.latest-product-card {
+    min-width: 0;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #f1e4ed;
+    border-radius: 12px;
+    cursor: pointer;
+    scroll-snap-align: start;
+}
+
+.latest-product-image {
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+}
+
+.latest-product-image img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+}
+
+.latest-product-info {
+    padding: 12px;
+}
+
+.latest-product-price {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.latest-product-price strong {
+    color: #222;
+    font-size: 16px;
+}
+
+.latest-product-price del {
+    color: #888;
+    font-size: 12px;
+}
+
+.latest-product-info h3 {
+    margin: 8px 0;
+    color: #4b145f;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.latest-product-info a {
+    color: #8e2de2;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    .latest-trending-section {
+        padding: 35px 16px;
+    }
+
+    .latest-trending-heading {
+        align-items: center;
+        gap: 10px;
+    }
+
+    .latest-trending-heading .collection-label {
+        font-size: 10px;
+        letter-spacing: 2px;
+    }
+
+    .carousel-controls {
+        flex-shrink: 0;
+    }
+
+    .carousel-controls button {
+        width: 34px;
+        height: 34px;
+        font-size: 18px;
+    }
+
+    .latest-trending-track {
+        grid-auto-columns: 44vw;
+        gap: 12px;
+    }
+}
