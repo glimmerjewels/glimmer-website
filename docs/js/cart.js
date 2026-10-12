@@ -1,6 +1,11 @@
 let cart = [];
 
 const DELIVERY_CHARGE = 50;
+const FREE_DELIVERY_THRESHOLD = 1499;
+
+function getDeliveryCharge(subtotal) {
+    return subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE;
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -180,6 +185,8 @@ async function renderCart() {
 
     const subtotal =
     pricing.discountedTotal;
+
+    const deliveryCharge = getDeliveryCharge(subtotal);
     
     const savings =
     pricing.savings;
@@ -196,14 +203,24 @@ async function renderCart() {
         "totalQty"
     ).innerText = totalQty;
 
-    document.getElementById(
-        "grandTotal"
-    ).innerText =
-        "₹" +
-        (
-            pricing.discountedTotal +
-            DELIVERY_CHARGE
-        );
+    document.getElementById("grandTotal").innerText =
+    "₹" + (subtotal + deliveryCharge);
+
+const deliveryElement = document.getElementById("deliveryCharge");
+if (deliveryElement) {
+    deliveryElement.innerText =
+        deliveryCharge === 0 ? "FREE" : "₹" + deliveryCharge;
+}
+
+const freeDeliveryMessage =
+    document.getElementById("freeDeliveryMessage");
+
+if (freeDeliveryMessage) {
+    freeDeliveryMessage.textContent =
+        deliveryCharge === 0
+            ? "🎉 You've unlocked free delivery!"
+            : `Add ₹${Math.max(0, FREE_DELIVERY_THRESHOLD - subtotal)} more for free delivery.`;
+}
 
     const offerSummary = document.getElementById("offerSummary");
     if (offerSummary) {
@@ -500,13 +517,9 @@ async function placeOrder() {
    const pricing =
     await calculatePricing(cart);
 
-    const subtotal =
-    pricing.discountedTotal;
-
-    const grandTotal =
-    subtotal +
-    DELIVERY_CHARGE;
-
+    const subtotal = pricing.discountedTotal;
+    const deliveryCharge = getDeliveryCharge(subtotal);
+    const grandTotal = subtotal + deliveryCharge;
     try {
 
         const {
@@ -563,7 +576,7 @@ async function placeOrder() {
                     pricing.surpriseFreebies,
 
                 delivery_charge:
-                    DELIVERY_CHARGE,
+                    deliveryCharge,
 
                 grand_total:
                     grandTotal,
@@ -654,7 +667,7 @@ Offer Price : ₹${pricing.appliedOffer.offer_price}
 
         message +=
 
-`Delivery Charges ₹${DELIVERY_CHARGE}
+`Delivery Charges ${deliveryCharge === 0 ? "FREE" : "₹" + deliveryCharge}
 
 Total Quantity : ${totalQty}
 
