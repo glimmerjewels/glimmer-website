@@ -46,6 +46,16 @@ body::before{
     pointer-events:none;
 }
 
+
+/* MOBILE FADED LOGO BACKGROUND */
+@media (max-width: 768px) {
+    body::before {
+        background-position: center center;
+        background-size: min(85vw, 360px);
+        background-repeat: no-repeat;
+    }
+}
+
 /* HEADER */
 header{
     display:flex;
@@ -1466,4 +1476,121 @@ HOMEPAGE LATEST & TRENDING CAROUSEL
         grid-auto-columns: 44vw;
         gap: 12px;
     }
+}
+
+
+/* LATEST & TRENDING: CENTERED HEADING + OVERLAY ARROWS */
+.latest-trending-heading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 28px;
+    text-align: center;
+}
+
+.latest-trending-heading .collection-label {
+    margin: 0;
+    text-align: center;
+}
+
+.latest-trending-heading h2 {
+    width: 100%;
+    margin: 0;
+    text-align: center;
+}
+
+.latest-trending-carousel {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+}
+
+.latest-trending-track {
+    width: 100%;
+    padding: 4px 2px 18px;
+    scroll-behavior: smooth;
+}
+
+.latest-carousel-arrow {
+    position: absolute;
+    top: 42%;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 58px;
+    border: 0;
+    border-radius: 12px;
+    background: rgba(75, 20, 95, 0.24);
+    color: #fff;
+    font-size: 28px;
+    opacity: 0.55;
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+.latest-carousel-arrow:hover {
+    opacity: 0.9;
+    background: rgba(75, 20, 95, 0.65);
+}
+
+.latest-prev {
+    left: 5px;
+}
+
+.latest-next {
+    right: 5px;
+}
+
+@media (max-width: 768px) {
+    .latest-trending-heading {
+        align-items: center;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    /* Touch scrolling on phones; arrows are desktop-only. */
+    .latest-carousel-arrow {
+        display: none;
+    }
+
+    .latest-trending-track {
+        grid-auto-columns: 44vw;
+        gap: 12px;
+    }
+}
+
+
+/* KEEP HOMEPAGE FLAGS ATTACHED TO PRODUCT IMAGES */
+.latest-product-image {
+    position: relative;
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.latest-product-image > .product-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: auto;
+    bottom: auto;
+    z-index: 3;
+    display: inline-block;
+    width: auto;
+    max-width: calc(100% - 20px);
+}
+
+.latest-product-image > img {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
 }
