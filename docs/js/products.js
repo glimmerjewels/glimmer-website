@@ -412,7 +412,7 @@ async function renderProducts(category) {
             ? `<button class="product-add-cart" type="button"
                 aria-label="Add ${name} to cart"
                 onclick="event.stopPropagation(); addProductCardToCart('${id}')">
-                <span aria-hidden="true">🛒</span><span aria-hidden="true">+</span>
+                <span aria-hidden="true">Add To </span><span aria-hidden="true">🛒</span>
                </button>`
             : '<span class="product-card-out-of-stock">Out of stock</span>';
 
