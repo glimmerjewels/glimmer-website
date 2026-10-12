@@ -1594,3 +1594,49 @@ HOMEPAGE LATEST & TRENDING CAROUSEL
     aspect-ratio: 1 / 1;
     object-fit: contain;
 }
+
+/* OPAQUE GLIMMER FLAGS FOR HOMEPAGE CAROUSEL */
+.latest-product-image > .product-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: auto;
+    bottom: auto;
+    z-index: 3;
+
+    display: inline-block;
+    width: auto;
+    max-width: calc(100% - 20px);
+
+    padding: 6px 11px;
+    border: none;
+    border-radius: 3px 12px 12px 3px;
+
+    background: linear-gradient(135deg, #8e2de2, #ff4e8b);
+    color: #fff;
+
+    font-family: "Poppins", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.4;
+    opacity: 1;
+    box-shadow: 0 3px 10px rgba(75, 20, 95, 0.14);
+}
+
+.latest-product-image > .product-badge.trending-badge {
+    background: linear-gradient(135deg, #4b145f, #8e2de2);
+    color: #fff;
+    opacity: 1;
+}
+
+
+
+/* Smooth homepage hero image rotation */
+.hero-right img {
+    transition: opacity 0.25s ease;
+}
+
+.hero-right img.hero-image-changing {
+    opacity: 0.65;
+}
+
