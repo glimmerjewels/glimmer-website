@@ -416,25 +416,24 @@ async function renderProducts(category) {
                </button>`
             : '<span class="product-card-out-of-stock">Out of stock</span>';
 
-        return `
-            <article class="product-card" onclick="openProductPopup('${id}')">
-                <div class="product-image-wrap">
-                    ${badge}
-                    <img src="${image}" alt="${name}" loading="lazy">
-                    ${ratingHTML}
-                </div>
-                <div class="product-card-info">
-                    <div class="product-price-row">
-                        <div class="product-prices">
-                            <strong>₹${price.toLocaleString("en-IN")}</strong>
-                            ${hasOffer ? `<del>₹${actualPrice.toLocaleString("en-IN")}</del>` : ""}
-                        </div>
-                        ${cartButton}
-                    </div>
-                    <h3>${name}</h3>
-                </div>
-            </article>
-        `;
+        
+return `
+    <article class="product-card" onclick="openProductPopup('${id}')">
+        <div class="product-image-wrap">
+            ${badge}
+            <img src="${image}" alt="${name}" loading="lazy">
+            ${ratingHTML}
+        </div>
+        <div class="product-card-info">
+            <div class="product-prices">
+                <strong>₹${price.toLocaleString("en-IN")}</strong>
+                ${hasOffer ? `<del>₹${actualPrice.toLocaleString("en-IN")}</del>` : ""}
+            </div>
+            <h3>${name}</h3>
+            ${cartButton}
+        </div>
+    </article>
+`;
     }).join("");
 }
 
