@@ -393,7 +393,7 @@ async function renderProducts(category) {
             Date.now() - 15 * 24 * 60 * 60 * 1000;
         const isTrending = trendingIds.has(id);
         const reviews = ratingsByProduct[id];
-        const showRating = reviews && reviews.count > 10;
+        const showRating = reviews && reviews.count > 3;
         const average = showRating
             ? (reviews.total / reviews.count).toFixed(1)
             : "";
