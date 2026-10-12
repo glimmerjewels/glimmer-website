@@ -451,6 +451,45 @@ async function getImages(
 }
 
 // ======================================
+// GET TRENDING PRODUCT
+// ======================================
+
+async function getTrendingProductIds() {
+    const { data: recentOrders, error: ordersError } =
+        await supabaseClient
+            .from("orders")
+            .select("id")
+            .in("status", ["Confirmed", "Delivered"])
+            .order("created_at", { ascending: false })
+            .limit(25);
+
+    if (ordersError) {
+        console.error("Unable to load recent orders:", ordersError);
+        return new Set();
+    }
+
+    const orderIds = (recentOrders || []).map(order => order.id);
+    if (!orderIds.length) return new Set();
+
+    const { data: items, error: itemsError } =
+        await supabaseClient
+            .from("order_items")
+            .select("product_id")
+            .in("order_id", orderIds);
+
+    if (itemsError) {
+        console.error("Unable to load trending products:", itemsError);
+        return new Set();
+    }
+
+    return new Set(
+        (items || [])
+            .map(item => String(item.product_id))
+            .filter(Boolean)
+    );
+}
+
+// ======================================
 // PRODUCT POPUP
 // ======================================
 
