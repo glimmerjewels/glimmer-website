@@ -398,7 +398,7 @@ new Date(a.created_at || 0)
         const isNew =
             new Date(product.created_at) >
             new Date(
-                Date.now()-7*24*60*60*1000);
+                Date.now()-14*24*60*60*1000);
         
         htmlContent += `
 
