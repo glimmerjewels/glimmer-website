@@ -1586,15 +1586,21 @@ HOMEPAGE LATEST & TRENDING CAROUSEL
     max-width: calc(100% - 20px);
 }
 
+
 .latest-product-image > img {
-    position: relative;
-    z-index: 1;
     display: block;
     width: 100%;
+    max-width: none;
+    height: auto;
     aspect-ratio: 1 / 1;
-    object-fit: contain;
+    margin: 0;
+    padding: 0;
+    object-fit: cover;
+    object-position: center;
+    border: 0;
+    border-radius: 0;
+    box-sizing: border-box;
 }
-
 /* OPAQUE GLIMMER FLAGS FOR HOMEPAGE CAROUSEL */
 .latest-product-image > .product-badge {
     position: absolute;
