@@ -204,22 +204,28 @@
     </section>
 
     
+
 <!-- LATEST & TRENDING -->
 <section class="latest-trending-section">
     <div class="latest-trending-heading">
-        <div>
-            <p class="collection-label">SHOP LATEST AND TRENDING</p>
-            <h2>Check New Arrivals And Trending Jewellery</h2>
-        </div>
-
-        <div class="carousel-controls">
-            <button type="button" id="latestPrev" aria-label="Previous products">←</button>
-            <button type="button" id="latestNext" aria-label="Next products">→</button>
-        </div>
+        <p class="collection-label">SHOP LATEST AND TRENDING</p>
+        <h2>Check New Arrivals And Trending Jewellery</h2>
     </div>
 
-    <div class="latest-trending-track" id="latestTrendingTrack">
-        <p>Loading the latest sparkle...</p>
+    <div class="latest-trending-carousel">
+        <button type="button"
+                class="latest-carousel-arrow latest-prev"
+                id="latestPrev"
+                aria-label="Previous products">←</button>
+
+        <div class="latest-trending-track" id="latestTrendingTrack">
+            <p>Loading the latest sparkle...</p>
+        </div>
+
+        <button type="button"
+                class="latest-carousel-arrow latest-next"
+                id="latestNext"
+                aria-label="Next products">→</button>
     </div>
 </section>
 
