@@ -273,162 +273,229 @@ return Number.isFinite(offerPrice) && offerPrice > 0
 // RENDER PRODUCTS
 // ======================================
 
+
 async function renderProducts(category) {
+    const grid = document.getElementById("productsGrid");
+    const title = document.getElementById("categoryTitle");
 
-    const grid =
-        document.getElementById(
-            "productsGrid"
-        );
-
-    const title =
-        document.getElementById(
-            "categoryTitle"
-        );
+    if (!grid || !title) return;
 
     grid.innerHTML = "";
 
     let productsToShow = [...allProducts];
+    const selectedCategory = normalizeCategory(category);
 
-const selectedCategory = normalizeCategory(category);
-
-if (selectedCategory !== "all") {
-productsToShow = productsToShow.filter(product =>
-normalizeCategory(product.category) === selectedCategory
-);
-}
-
-// Search product names and categories.
-const searchTerm = (
-document.getElementById("productSearch")?.value || ""
-).trim().toLowerCase();
-
-if (searchTerm) {
-productsToShow = productsToShow.filter(product =>
-String(product.name || "").toLowerCase().includes(searchTerm) ||
-String(product.category || "").toLowerCase().includes(searchTerm)
-);
-}
-
-// Apply the selected price range.
-productsToShow = productsToShow.filter(product => {
-const price = getProductPrice(product);
-
-if (minPriceFilter !== null && price < minPriceFilter) {
-    return false;
-}
-
-if (maxPriceFilter !== null && price > maxPriceFilter) {
-    return false;
-}
-
-return true;
-
-});
-
-// Sort the filtered results.
-const sortValue =
-document.getElementById("productSort")?.value || "newest";
-
-if (sortValue === "price-low") {
-productsToShow.sort(
-(a, b) => getProductPrice(a) - getProductPrice(b)
-);
-} else if (sortValue === "price-high") {
-productsToShow.sort(
-(a, b) => getProductPrice(b) - getProductPrice(a)
-);
-} else if (sortValue === "offers") {
-productsToShow.sort((a, b) => {
-const aHasOffer =
-Number(a.offer_price) > 0 &&
-Number(a.actual_price) > Number(a.offer_price);
-
-    const bHasOffer =
-        Number(b.offer_price) > 0 &&
-        Number(b.actual_price) > Number(b.offer_price);
-
-    return Number(bHasOffer) - Number(aHasOffer);
-});
-
-} else {
-productsToShow.sort(
-(a, b) =>
-new Date(b.created_at || 0) -
-new Date(a.created_at || 0)
-);
-}
-
-
-    title.innerText =
-        category === "all"
-            ? "All Products"
-            : category.charAt(0)
-                .toUpperCase() +
-              category.slice(1);
-
-    // ===== OPTIMIZATION: Fetch all images in parallel =====
-    const imageMap = {};
-    
-    try {
-        // Fetch all images concurrently instead of sequentially
-        const imagePromises = 
-            productsToShow.map(async (product) => {
-                const images = 
-                    await getImages(product.id);
-                imageMap[product.id] = 
-                    images.length > 0
-                        ? images[0].image_url
-                        : "assets/no-image.png";
-            });
-        
-        await Promise.all(imagePromises);
-    } catch (error) {
-        console.error("Error fetching images:", error);
+    if (selectedCategory !== "all") {
+        productsToShow = productsToShow.filter(
+            product => normalizeCategory(product.category) === selectedCategory
+        );
     }
 
-    // ===== OPTIMIZATION: Build HTML string first, then insert once =====
-    let htmlContent = "";
+    const searchTerm = (
+        document.getElementById("productSearch")?.value || ""
+    ).trim().toLowerCase();
 
-    for (const product of productsToShow) {
+    if (searchTerm) {
+        productsToShow = productsToShow.filter(product =>
+            String(product.name || "").toLowerCase().includes(searchTerm) ||
+            String(product.category || "").toLowerCase().includes(searchTerm)
+        );
+    }
 
-        const coverImage = 
-            imageMap[product.id] || 
-            "assets/no-image.png";
-        
-        const isNew =
-            new Date(product.created_at) >
-            new Date(
-                Date.now()-14*24*60*60*1000);
-        
-        htmlContent += `
+    productsToShow = productsToShow.filter(product => {
+        const price = getProductPrice(product);
+        if (minPriceFilter !== null && price < minPriceFilter) return false;
+        if (maxPriceFilter !== null && price > maxPriceFilter) return false;
+        return true;
+    });
 
-        <div
-        class="product-card"
-        onclick="openProductPopup('${product.id}')">
-            ${isNew ? `
-            <div class="new-badge">
-            ✨ New Arrival</div>
-            `: ""}
-            ${product.stock <= 0 ?`<div class="stock-badge">
-            Out Of Stock </div>`: ""}
-            
-            <img
-            src="${coverImage}"
-            alt="${product.name}"
-            loading="lazy">
+    const sortValue =
+        document.getElementById("productSort")?.value || "newest";
 
-            <h3>
-                ${product.name}
-            </h3>
+    if (sortValue === "price-low") {
+        productsToShow.sort((a, b) => getProductPrice(a) - getProductPrice(b));
+    } else if (sortValue === "price-high") {
+        productsToShow.sort((a, b) => getProductPrice(b) - getProductPrice(a));
+    } else if (sortValue === "offers") {
+        productsToShow.sort((a, b) => {
+            const aOffer = Number(a.actual_price) > Number(a.offer_price);
+            const bOffer = Number(b.actual_price) > Number(b.offer_price);
+            return Number(bOffer) - Number(aOffer);
+        });
+    } else {
+        productsToShow.sort(
+            (a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)
+        );
+    }
 
-        </div>
+    title.textContent = selectedCategory === "all"
+        ? "All Products"
+        : category.charAt(0).toUpperCase() + category.slice(1);
 
+    if (!productsToShow.length) {
+        grid.innerHTML = "<p class='no-products'>No jewellery found. Try another category or search.</p>";
+        return;
+    }
+
+    // Fetch images, ratings and Trending status in parallel.
+    const productIds = productsToShow.map(product => product.id);
+
+    const [imageResults, reviewResult, trendingIds] = await Promise.all([
+        Promise.all(productsToShow.map(async product => {
+            const images = await getImages(product.id);
+            return [String(product.id), images[0]?.image_url || "assets/no-image.png"];
+        })),
+        supabaseClient
+            .from("reviews")
+            .select("product_id, rating")
+            .in("product_id", productIds),
+        getTrendingProductIds()
+    ]);
+
+    const imageMap = Object.fromEntries(imageResults);
+    const ratingsByProduct = {};
+
+    if (reviewResult.error) {
+        console.error("Unable to load product ratings:", reviewResult.error);
+    } else {
+        (reviewResult.data || []).forEach(review => {
+            const rating = Number(review.rating);
+            if (!Number.isFinite(rating) || rating < 1 || rating > 5) return;
+
+            const id = String(review.product_id);
+            if (!ratingsByProduct[id]) {
+                ratingsByProduct[id] = { total: 0, count: 0 };
+            }
+
+            ratingsByProduct[id].total += rating;
+            ratingsByProduct[id].count += 1;
+        });
+    }
+
+    const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    }[char]));
+
+    grid.innerHTML = productsToShow.map(product => {
+        const id = String(product.id);
+        const name = escapeHTML(product.name);
+        const image = escapeHTML(imageMap[id]);
+        const offerPrice = Number(product.offer_price);
+        const actualPrice = Number(product.actual_price);
+        const hasOffer = actualPrice > offerPrice && offerPrice > 0;
+        const price = hasOffer ? offerPrice : actualPrice;
+        const isNew = product.created_at &&
+            new Date(product.created_at).getTime() >=
+            Date.now() - 15 * 24 * 60 * 60 * 1000;
+        const isTrending = trendingIds.has(id);
+        const reviews = ratingsByProduct[id];
+        const showRating = reviews && reviews.count > 10;
+        const average = showRating
+            ? (reviews.total / reviews.count).toFixed(1)
+            : "";
+
+        const badge = isTrending
+            ? '<span class="product-badge trending-badge">🔥 Trending</span>'
+            : isNew
+                ? '<span class="product-badge">✨ New</span>'
+                : "";
+
+        const ratingHTML = showRating
+            ? `<div class="product-rating"><span>${average} ★</span><span>|</span><span>${reviews.count}</span></div>`
+            : "";
+
+        const cartButton = Number(product.stock) > 0
+            ? `<button class="product-add-cart" type="button"
+                aria-label="Add ${name} to cart"
+                onclick="event.stopPropagation(); addProductCardToCart('${id}')">
+                <span aria-hidden="true">🛒</span><span aria-hidden="true">+</span>
+               </button>`
+            : '<span class="product-card-out-of-stock">Out of stock</span>';
+
+        return `
+            <article class="product-card" onclick="openProductPopup('${id}')">
+                <div class="product-image-wrap">
+                    ${badge}
+                    <img src="${image}" alt="${name}" loading="lazy">
+                    ${ratingHTML}
+                </div>
+                <div class="product-card-info">
+                    <div class="product-price-row">
+                        <div class="product-prices">
+                            <strong>₹${price.toLocaleString("en-IN")}</strong>
+                            ${hasOffer ? `<del>₹${actualPrice.toLocaleString("en-IN")}</del>` : ""}
+                        </div>
+                        ${cartButton}
+                    </div>
+                    <h3>${name}</h3>
+                </div>
+            </article>
         `;
+    }).join("");
+}
+
+
+// ======================================
+// ADD PRODUCT TO CART DIRECTLY
+// ======================================
+
+
+async function addProductCardToCart(productId) {
+    const product = allProducts.find(
+        item => String(item.id) === String(productId)
+    );
+
+    if (!product) {
+        alert("Product could not be found. Please refresh the page.");
+        return;
     }
 
-    // ===== OPTIMIZATION: Insert all HTML at once =====
-    grid.innerHTML = htmlContent;
+    if (Number(product.stock) <= 0) {
+        alert("Sorry, this product is out of stock.");
+        return;
+    }
+
+    const images = await getImages(product.id);
+    const cart = JSON.parse(localStorage.getItem("glimmerCart") || "[]");
+
+    const existing = cart.find(
+        item => String(item.id) === String(product.id)
+    );
+
+    if (existing) {
+        if (Number(existing.quantity) + 1 > Number(product.stock)) {
+            alert(`Only ${product.stock} item(s) available in stock.`);
+            return;
+        }
+
+        existing.quantity = Number(existing.quantity) + 1;
+    } else {
+        cart.push({
+            id: product.id,
+            name: product.name,
+            image: images[0]?.image_url || "",
+            category: product.category,
+            actual_price: product.actual_price,
+            offer_price: product.offer_price,
+            stock: product.stock,
+            quantity: 1
+        });
+    }
+
+    localStorage.setItem("glimmerCart", JSON.stringify(cart));
+
+    const totalItems = cart.reduce(
+        (sum, item) => sum + Number(item.quantity || 0),
+        0
+    );
+
+    alert(`Added to cart! Cart items: ${totalItems}`);
 }
+
 
 // ======================================
 // GET PRODUCT IMAGES
