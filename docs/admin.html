@@ -47,11 +47,18 @@
     
     <!-- LOGIN OVERLAY -->
 
+
 <div class="login-overlay" id="loginOverlay">
+    <div class="login-box" role="dialog" aria-modal="true" aria-labelledby="adminLoginTitle">
+        <button
+            type="button"
+            class="login-close-btn"
+            id="loginCloseBtn"
+            aria-label="Close admin login">
+            &times;
+        </button>
 
-    <div class="login-box">
-
-        <h2>Admin Login</h2>
+        <h2 id="adminLoginTitle">Admin Login</h2>
 
         <input
             type="email"
@@ -63,15 +70,14 @@
             id="adminPassword"
             placeholder="Password">
 
-        <button onclick="login()">
+        <button type="button" onclick="login()">
             Login
         </button>
 
         <p id="loginError"></p>
-
     </div>
-
 </div>
+
 
 <!-- ADMIN PANEL -->
 
