@@ -7,6 +7,7 @@
 <title>Glimmer Admin</title>
 
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/admin.css">
 
 
 </head>
@@ -15,7 +16,9 @@
  <!-- HEADER -->
     <header>
         <div class="logo-section">
+            <a href="index.html" aria-label="Glimmer home" class="logo-home-link">
             <img src="assets/logo1.png" alt="Glimmer Logo">
+            </a>
         </div>
 
         <nav class="navbar">
@@ -44,11 +47,18 @@
     
     <!-- LOGIN OVERLAY -->
 
+
 <div class="login-overlay" id="loginOverlay">
+    <div class="login-box" role="dialog" aria-modal="true" aria-labelledby="adminLoginTitle">
+        <button
+            type="button"
+            class="login-close-btn"
+            id="loginCloseBtn"
+            aria-label="Close admin login">
+            &times;
+        </button>
 
-    <div class="login-box">
-
-        <h2>Admin Login</h2>
+        <h2 id="adminLoginTitle">Admin Login</h2>
 
         <input
             type="email"
@@ -60,15 +70,14 @@
             id="adminPassword"
             placeholder="Password">
 
-        <button onclick="login()">
+        <button type="button" onclick="login()">
             Login
         </button>
 
         <p id="loginError"></p>
-
     </div>
-
 </div>
+
 
 <!-- ADMIN PANEL -->
 
@@ -230,7 +239,7 @@
 
                         <th>Offer Price</th>
 
-                        <th>Min Order</th>
+                        <th>Offer Type</th>
 
                         <th>Priority</th>
 
@@ -342,13 +351,21 @@
 
         <h2 id="offerPopupTitle">Add Offer</h2>
 
-        <input type="text" id="offerNameInput" placeholder="Offer Name">
+        <input type="text" id="offerNameInput" placeholder="Offer Name" required>
 
-        <textarea id="offerBannerTextInput" placeholder="Banner Text"></textarea>
+        <input
+             type="text"
+             id="offerTypeInput"
+             value="bundle"
+             placeholder="Offer Type (e.g. bundle)"
+             required
+        >
+
+
+        
+        <textarea id="offerBannerTextInput" placeholder="Banner Text" required></textarea>
 
         <input type="number" id="offerPriceInput" placeholder="Offer Price">
-
-        <input type="number" id="minimumOrderValueInput" placeholder="Minimum Order Value">
 
         <input type="number" id="requiredAnyInput" placeholder="Required Any Items">
 
@@ -388,6 +405,7 @@
         </div>
 
     </div>
+</div>
 
  <!-- ORDER DETAILS POPUP -->
 
@@ -450,6 +468,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
 <script src="js/admin.js"></script>
-
+<script src="js/navigation.js"></script>
 </body>
 </html>

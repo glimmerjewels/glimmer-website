@@ -35,6 +35,36 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
+
+/* Admin login popup close controls */
+document.addEventListener("DOMContentLoaded", () => {
+    const overlay = document.getElementById("loginOverlay");
+    const closeButton = document.getElementById("loginCloseBtn");
+
+    if (!overlay) return;
+
+    function closeLoginPopup() {
+        overlay.classList.add("hidden");
+    }
+
+    closeButton?.addEventListener("click", closeLoginPopup);
+
+    // Close only when the overlay itself is tapped, not the login box.
+    overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) {
+            closeLoginPopup();
+        }
+    });
+
+    // Escape key support on desktop keyboards.
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !overlay.classList.contains("hidden")) {
+            closeLoginPopup();
+        }
+    });
+});
+
+
 // ==============================
 // LOGIN
 // ==============================
@@ -667,7 +697,10 @@ async function loadOrders() {
 
     orders = data || [];
 
+    orderPage = 1;
+
     renderOrders();
+    renderOrdersPagination();
 }
 
 function renderOrders() {
@@ -1208,6 +1241,7 @@ async function reduceStock(orderId) {
 
     return true;
 }
+
 async function loadOffers() {
     const { data, error } = await supabaseClient
         .from("offers")
@@ -1215,7 +1249,8 @@ async function loadOffers() {
         .order("priority", { ascending: true });
 
     if (error) {
-        console.error(error);
+        console.error("Loading offers failed:", error);
+        alert("Could not load offers: " + error.message);
         return;
     }
 
@@ -1225,37 +1260,89 @@ async function loadOffers() {
 
 function renderOffers() {
     const tbody = document.getElementById("offersBody");
-
-    if (!tbody) {
-        return;
-    }
+    if (!tbody) return;
 
     tbody.innerHTML = "";
 
     offers.forEach((offer) => {
-        tbody.innerHTML += `
-            <tr>
-                <td>${offer.name}</td>
-                <td>${offer.banner_text}</td>
-                <td>₹${offer.offer_price}</td>
-                <td>${offer.minimum_order_value || 0}</td>
-                <td>${offer.priority || 0}</td>
-                <td>${offer.active ? "Active" : "Inactive"}</td>
-                <td>
-                    <button class="edit-btn" onclick="editOffer(${offer.id})">Edit</button>
-                    <button class="delete-btn" onclick="deleteOffer(${offer.id})">Delete</button>
-                </td>
-            </tr>
-        `;
+        const row = document.createElement("tr");
+
+        const values = [
+            offer.title || "",
+            offer.banner_text || "",
+            `₹${offer.offer_price ?? 0}`,
+            offer.offer_type || "",
+            offer.priority ?? 1,
+            offer.active ? "Active" : "Inactive"
+        ];
+
+        values.forEach((value) => {
+            const cell = document.createElement("td");
+            cell.textContent = value;
+            row.appendChild(cell);
+        });
+
+        const actions = document.createElement("td");
+
+        const editButton = document.createElement("button");
+        editButton.className = "edit-btn";
+        editButton.textContent = "Edit";
+        editButton.addEventListener("click", () => editOffer(offer.id));
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "delete-btn";
+        deleteButton.textContent = "Delete";
+        deleteButton.addEventListener("click", () => deleteOffer(offer.id));
+
+        actions.append(editButton, deleteButton);
+        row.appendChild(actions);
+        tbody.appendChild(row);
     });
 }
 
+// Create the rule rows consumed by offerEngine.js.
+function buildOfferRules(offerId, offerData) {
+    const categoryRequirements = [
+        ["rings", offerData.required_rings],
+        ["bracelets", offerData.required_bracelets],
+        ["necklace", offerData.required_necklace],
+        ["earrings", offerData.required_earrings],
+        ["anklets", offerData.required_anklets],
+        ["mens", offerData.required_mens],
+        ["watches", offerData.required_watches]
+    ].filter(([, quantity]) => quantity > 0);
+
+    // If specific categories are specified, those rules define the bundle.
+    // Use "any" only for offers that require an unrestricted item count.
+    const requirements = categoryRequirements.length
+        ? categoryRequirements
+        : offerData.required_any > 0
+            ? [["any", offerData.required_any]]
+            : [];
+
+    return requirements.map(([category, quantity]) => ({
+        offer_id: offerId,
+        category,
+        required_quantity: quantity
+    }));
+}
+
 async function saveOffer() {
+    const editingId =
+        document.getElementById("offerPopupTitle").dataset.editingId;
+
+    const startValue =
+        document.getElementById("offerStartDateInput").value;
+
+    const endValue =
+        document.getElementById("offerEndDateInput").value;
+
     const offerData = {
-        name: document.getElementById("offerNameInput").value.trim(),
+        title: document.getElementById("offerNameInput").value.trim(),
         banner_text: document.getElementById("offerBannerTextInput").value.trim(),
+        offer_type: document.getElementById("offerTypeInput").value.trim(),
         offer_price: Number(document.getElementById("offerPriceInput").value),
-        minimum_order_value: Number(document.getElementById("minimumOrderValueInput").value || 0),
+
         required_any: Number(document.getElementById("requiredAnyInput").value || 0),
         required_rings: Number(document.getElementById("requiredRingsInput").value || 0),
         required_bracelets: Number(document.getElementById("requiredBraceletsInput").value || 0),
@@ -1264,81 +1351,301 @@ async function saveOffer() {
         required_anklets: Number(document.getElementById("requiredAnkletsInput").value || 0),
         required_mens: Number(document.getElementById("requiredMensInput").value || 0),
         required_watches: Number(document.getElementById("requiredWatchesInput").value || 0),
+
         surprise_freebies: Number(document.getElementById("surpriseFreebiesInput").value || 0),
-        priority: Number(document.getElementById("offerPriorityInput").value || 0),
+        priority: Number(document.getElementById("offerPriorityInput").value || 1),
         active: document.getElementById("offerActiveInput").checked,
-        start_date: document.getElementById("offerStartDateInput").value || null,
-        end_date: document.getElementById("offerEndDateInput").value || null
+
+        start_date: startValue ? `${startValue} 00:00:00` : null,
+        end_date: endValue ? `${endValue} 23:59:59` : null
     };
 
-    if (!offerData.name || !offerData.banner_text || !offerData.offer_price) {
-        alert("Please complete the offer name, banner text, and offer price.");
+    if (
+        !offerData.title ||
+        !offerData.banner_text ||
+        !offerData.offer_type ||
+        !Number.isFinite(offerData.offer_price) ||
+        offerData.offer_price <= 0
+    ) {
+        alert("Enter an offer name, banner text, offer type, and a valid offer price.");
         return;
     }
 
-    const editingOfferId = document.getElementById("offerPopupTitle").dataset.editingId;
+    let offerId = editingId || null;
 
-    if (editingOfferId) {
-        const { error } = await supabaseClient.from("offers").update(offerData).eq("id", editingOfferId);
+    if (editingId) {
+        const { error } = await supabaseClient
+            .from("offers")
+            .update(offerData)
+            .eq("id", editingId);
+
         if (error) {
-            alert("Offer update failed");
+            console.error("Offer update failed:", error);
+            alert("Offer update failed: " + error.message);
             return;
         }
     } else {
-        const { error } = await supabaseClient.from("offers").insert([offerData]);
+        const { data, error } = await supabaseClient
+            .from("offers")
+            .insert([offerData])
+            .select("id")
+            .single();
+
         if (error) {
-            alert("Offer creation failed");
+            console.error("Offer creation failed:", error);
+            alert("Offer creation failed: " + error.message);
+            return;
+        }
+
+        offerId = data.id;
+    }
+
+    // Replace the offer's old rules with the newly saved rules.
+    const { error: deleteRulesError } = await supabaseClient
+        .from("offer_rules")
+        .delete()
+        .eq("offer_id", offerId);
+
+    if (deleteRulesError) {
+        console.error("Replacing offer rules failed:", deleteRulesError);
+        alert(
+            "The offer was saved, but its rules could not be updated: " +
+            deleteRulesError.message
+        );
+        await loadOffers();
+        return;
+    }
+
+    const rules = buildOfferRules(offerId, offerData);
+
+    if (rules.length > 0) {
+        const { error: rulesError } = await supabaseClient
+            .from("offer_rules")
+            .insert(rules);
+
+        if (rulesError) {
+            console.error("Saving offer rules failed:", rulesError);
+            alert(
+                "The offer was saved, but its rules could not be saved: " +
+                rulesError.message
+            );
+            await loadOffers();
             return;
         }
     }
 
     closeOfferPopup();
     await loadOffers();
-    await fetchOffers(true);
+
+    // admin.html does not load offerService.js, so guard this optional refresh.
+    if (typeof fetchOffers === "function") {
+        await fetchOffers(true);
+    }
+
     alert("Offer saved successfully");
 }
 
 async function editOffer(offerId) {
-    const offer = offers.find((item) => item.id === offerId);
+    const offer = offers.find(
+        item => String(item.id) === String(offerId)
+    );
+
     if (!offer) {
+        alert("Offer not found. Please refresh the offers list.");
         return;
     }
 
-    document.getElementById("offerPopupTitle").innerText = "Edit Offer";
-    document.getElementById("offerPopupTitle").dataset.editingId = offer.id;
-    document.getElementById("offerNameInput").value = offer.name || "";
+    const title = document.getElementById("offerPopupTitle");
+    title.innerText = "Edit Offer";
+    title.dataset.editingId = offer.id;
+
+    document.getElementById("offerNameInput").value = offer.title || "";
+    document.getElementById("offerTypeInput").value = offer.offer_type || "bundle";
     document.getElementById("offerBannerTextInput").value = offer.banner_text || "";
-    document.getElementById("offerPriceInput").value = offer.offer_price || 0;
-    document.getElementById("minimumOrderValueInput").value = offer.minimum_order_value || 0;
-    document.getElementById("requiredAnyInput").value = offer.required_any || 0;
-    document.getElementById("requiredRingsInput").value = offer.required_rings || 0;
-    document.getElementById("requiredBraceletsInput").value = offer.required_bracelets || 0;
-    document.getElementById("requiredNecklaceInput").value = offer.required_necklace || 0;
-    document.getElementById("requiredEarringsInput").value = offer.required_earrings || 0;
-    document.getElementById("requiredAnkletsInput").value = offer.required_anklets || 0;
-    document.getElementById("requiredMensInput").value = offer.required_mens || 0;
-    document.getElementById("requiredWatchesInput").value = offer.required_watches || 0;
-    document.getElementById("surpriseFreebiesInput").value = offer.surprise_freebies || 0;
-    document.getElementById("offerPriorityInput").value = offer.priority || 0;
+    document.getElementById("offerPriceInput").value = offer.offer_price ?? "";
+
+    document.getElementById("requiredAnyInput").value = offer.required_any ?? 0;
+    document.getElementById("requiredRingsInput").value = offer.required_rings ?? 0;
+    document.getElementById("requiredBraceletsInput").value = offer.required_bracelets ?? 0;
+    document.getElementById("requiredNecklaceInput").value = offer.required_necklace ?? 0;
+    document.getElementById("requiredEarringsInput").value = offer.required_earrings ?? 0;
+    document.getElementById("requiredAnkletsInput").value = offer.required_anklets ?? 0;
+    document.getElementById("requiredMensInput").value = offer.required_mens ?? 0;
+    document.getElementById("requiredWatchesInput").value = offer.required_watches ?? 0;
+
+    document.getElementById("surpriseFreebiesInput").value = offer.surprise_freebies ?? 0;
+    document.getElementById("offerPriorityInput").value = offer.priority ?? 1;
     document.getElementById("offerActiveInput").checked = offer.active !== false;
-    document.getElementById("offerStartDateInput").value = offer.start_date ? offer.start_date.split("T")[0] : "";
-    document.getElementById("offerEndDateInput").value = offer.end_date ? offer.end_date.split("T")[0] : "";
-    openOfferPopup();
+    document.getElementById("offerStartDateInput").value =
+        offer.start_date ? offer.start_date.split("T")[0].split(" ")[0] : "";
+    document.getElementById("offerEndDateInput").value =
+        offer.end_date ? offer.end_date.split("T")[0].split(" ")[0] : "";
+
+    // Load rules too, since offerEngine.js uses offer_rules.
+    const { data: rules, error } = await supabaseClient
+        .from("offer_rules")
+        .select("*")
+        .eq("offer_id", offer.id);
+
+    if (error) {
+        console.error("Loading offer rules failed:", error);
+        alert("Could not load offer rules: " + error.message);
+        return;
+    }
+
+    // If rules exist, use them to repopulate the rule-related inputs.
+    if (rules && rules.length) {
+        const inputByCategory = {
+            any: "requiredAnyInput",
+            rings: "requiredRingsInput",
+            bracelets: "requiredBraceletsInput",
+            necklace: "requiredNecklaceInput",
+            earrings: "requiredEarringsInput",
+            anklets: "requiredAnkletsInput",
+            mens: "requiredMensInput",
+            watches: "requiredWatchesInput"
+        };
+
+        rules.forEach(rule => {
+            const inputId = inputByCategory[
+                String(rule.category || "").toLowerCase()
+            ];
+
+            if (inputId) {
+                document.getElementById(inputId).value =
+                    rule.required_quantity ?? 0;
+            }
+        });
+    }
+
+    // Do not call openOfferPopup() here; it clears the form.
+    document.getElementById("offerPopup").classList.remove("hidden");
 }
 
 async function deleteOffer(offerId) {
-    const confirmDelete = confirm("Delete this offer permanently?");
-    if (!confirmDelete) {
+    if (!confirm("Delete this offer permanently?")) {
         return;
     }
 
-    const { error } = await supabaseClient.from("offers").delete().eq("id", offerId);
+    // Remove dependent rules first because offer_rules.offer_id is a foreign key.
+    const { error: rulesError } = await supabaseClient
+        .from("offer_rules")
+        .delete()
+        .eq("offer_id", offerId);
+
+    if (rulesError) {
+        console.error("Offer rules deletion failed:", rulesError);
+        alert("Offer rules could not be deleted: " + rulesError.message);
+        return;
+    }
+
+    const { error } = await supabaseClient
+        .from("offers")
+        .delete()
+        .eq("id", offerId);
+
     if (error) {
-        alert("Offer deletion failed");
+        console.error("Offer deletion failed:", error);
+        alert("Offer deletion failed: " + error.message);
         return;
     }
 
     await loadOffers();
-    await fetchOffers(true);
-    alert("Offer deleted");
+
+    if (typeof fetchOffers === "function") {
+        await fetchOffers(true);
+    }
+
+    alert("Offer deleted successfully");
+}
+
+// ==============================
+// OFFER POPUP MANAGEMENT
+// ==============================
+
+function openOfferPopup() {
+    const title = document.getElementById("offerPopupTitle");
+    title.innerText = "Add Offer";
+    title.dataset.editingId = "";
+
+    document.getElementById("offerNameInput").value = "";
+    document.getElementById("offerTypeInput").value = "bundle";
+    document.getElementById("offerBannerTextInput").value = "";
+    document.getElementById("offerPriceInput").value = "";
+
+    [
+        "requiredAnyInput",
+        "requiredRingsInput",
+        "requiredBraceletsInput",
+        "requiredNecklaceInput",
+        "requiredEarringsInput",
+        "requiredAnkletsInput",
+        "requiredMensInput",
+        "requiredWatchesInput",
+        "surpriseFreebiesInput"
+    ].forEach(id => {
+        document.getElementById(id).value = "";
+    });
+
+    document.getElementById("offerPriorityInput").value = "1";
+    document.getElementById("offerActiveInput").checked = true;
+    document.getElementById("offerStartDateInput").value = "";
+    document.getElementById("offerEndDateInput").value = "";
+
+    document.getElementById("offerPopup").classList.remove("hidden");
+}
+
+function closeOfferPopup() {
+    document.getElementById("offerPopup").classList.add("hidden");
+}
+
+// ==============================
+// ORDERS PAGINATION
+// ==============================
+
+function renderOrdersPagination() {
+    const totalPages =
+        Math.ceil(
+            orders.length /
+            ORDERS_PER_PAGE
+        );
+
+    const pagination =
+        document.getElementById("ordersPagination");
+
+    if (!pagination) return;
+
+    pagination.innerHTML = "";
+
+    if (orderPage > 1) {
+        pagination.innerHTML += `
+            <button onclick="changeOrderPage(${orderPage - 1})">
+                Previous
+            </button>
+        `;
+    }
+
+    for (let i = 1; i <= totalPages; i++) {
+        pagination.innerHTML += `
+            <button
+            class="${i === orderPage ? "active-page" : ""}"
+            onclick="changeOrderPage(${i})">
+            ${i}
+            </button>
+        `;
+    }
+
+    if (orderPage < totalPages) {
+        pagination.innerHTML += `
+            <button onclick="changeOrderPage(${orderPage + 1})">
+                Next
+            </button>
+        `;
+    }
+}
+
+function changeOrderPage(page) {
+    orderPage = page;
+    renderOrders();
+    renderOrdersPagination();
 }

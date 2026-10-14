@@ -1,0 +1,709 @@
+/* ==========================
+   ADMIN LOGIN
+========================== */
+
+.login-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(35, 18, 45, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.login-box {
+    background: white;
+    width: min(450px, 90%);
+    padding: 30px 25px;
+    border-radius: 18px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+}
+
+
+.login-box {
+    position: relative;
+}
+
+.login-close-btn {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: #4b145f;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-box .login-close-btn:hover {
+    background: #fff0f7;
+    color: #ff2c7d;
+    transform: none;
+}
+
+
+/* Keep the login close control as a small X */
+.login-box button.login-close-btn {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    z-index: 5;
+
+    width: 30px !important;
+    min-width: 30px;
+    height: 30px;
+    padding: 0 !important;
+    margin: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: transparent !important;
+    color: #4b145f !important;
+    border: none !important;
+    border-radius: 50%;
+    box-shadow: none !important;
+
+    font-size: 25px;
+    font-weight: 400;
+    line-height: 1;
+    transform: none !important;
+}
+
+.login-box button.login-close-btn:hover,
+.login-box button.login-close-btn:focus {
+    background: #fff0f7 !important;
+    color: #ff2c7d !important;
+    box-shadow: none !important;
+    transform: none !important;
+    outline-offset: 2px;
+}
+
+
+.login-box h2 {
+    text-align: center;
+    color: #4b145f;
+    margin-bottom: 20px;
+}
+
+.login-box h3 {
+    margin-bottom: 20px;
+}
+
+.login-box input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+.login-box button {
+    width: 100%;
+    padding: 12px;
+    background: #ff2c7d;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.login-box button:hover {
+    background: #d41763;
+    transform: translateY(-2px);
+}
+
+#loginError {
+    color: red;
+    margin-top: 10px;
+    min-height: 20px;
+}
+
+/* ==========================
+   ADMIN SECTION
+========================== */
+
+.admin-section {
+    padding: 60px 80px;
+}
+
+.inventory-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    gap: 20px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f1f1f1;
+}
+
+.inventory-header h1 {
+    font-size: 36px;
+    color: #4b145f;
+    margin: 0;
+}
+
+.inventory-header > div {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+/* ==========================
+   BUTTONS
+========================== */
+
+.add-btn,
+.logout-btn,
+.edit-btn,
+.delete-btn,
+.done-btn {
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    padding: 12px 20px;
+    font-weight: 600;
+    transition: 0.3s;
+    font-size: 14px;
+}
+
+.add-btn {
+    background: linear-gradient(135deg, #8E2DE2, #FF4E8B);
+    color: white;
+}
+
+.add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 78, 139, 0.3);
+}
+
+.logout-btn {
+    background: #4b145f;
+    color: white;
+}
+
+.logout-btn:hover {
+    background: #ff4e8b;
+    transform: translateY(-2px);
+}
+
+.edit-btn {
+    background: #8e2de2;
+    color: white;
+    margin-right: 8px;
+}
+
+.edit-btn:hover {
+    background: #6a1ba5;
+    transform: translateY(-2px);
+}
+
+.delete-btn {
+    background: #e53935;
+    color: white;
+}
+
+.delete-btn:hover {
+    background: #c62828;
+    transform: translateY(-2px);
+}
+
+.done-btn {
+    background: #2e9d4e;
+    color: white;
+}
+
+.done-btn:hover {
+    background: #238c44;
+    transform: translateY(-2px);
+}
+
+/* ==========================
+   TABLE CONTAINER
+========================== */
+
+.inventory-table-container {
+    overflow-x: auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    border-left: 3px solid #ff4e8b;
+    border-right: 3px solid #ff4e8b;
+}
+
+.inventory-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+}
+
+.inventory-table th,
+.inventory-table td {
+    padding: 16px 12px;
+    border-bottom: 1px solid #f0e6f3;
+    text-align: left;
+    vertical-align: top;
+}
+
+.inventory-table th {
+    background: #fdf5fb;
+    color: #4b145f;
+    font-size: 14px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.inventory-table td {
+    color: #333;
+}
+
+/* ==========================
+   TABLE THUMBNAILS
+========================== */
+
+.mini-thumb {
+    width: 42px;
+    height: 42px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 6px;
+}
+
+.thumb-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.more-images {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #f5e8ff;
+    color: #4b145f;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* ==========================
+   PAGINATION
+========================== */
+
+.pagination,
+#ordersPagination {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 25px;
+}
+
+.pagination button,
+#ordersPagination button {
+    background: #f7edf9;
+    border: 1px solid #e8d7f2;
+    color: #4b145f;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.pagination button:hover,
+#ordersPagination button:hover {
+    background: #ffe6f2;
+    border-color: #ff4e8b;
+}
+
+.pagination .active-page,
+#ordersPagination .active-page {
+    background: linear-gradient(135deg, #8e2de2, #ff4e8b);
+    color: white;
+    border: none;
+}
+
+/* ==========================
+   ORDERS SECTION
+========================== */
+
+.orders-section {
+    margin-top: 60px;
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    border-left: 3px solid #ff4e8b;
+    border-right: 3px solid #ff4e8b;
+}
+
+/* ==========================
+   STATUS BADGES
+========================== */
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status-pending {
+    background: #ffc107;
+    color: #333;
+}
+
+.status-confirmed {
+    background: #28a745;
+}
+
+.status-cancelled {
+    background: #dc3545;
+}
+
+/* ==========================
+   ORDER ACTION BUTTONS
+========================== */
+
+.order-action-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    margin-right: 5px;
+    font-weight: 600;
+    font-size: 12px;
+    transition: 0.3s;
+}
+
+.view-btn {
+    background: #8e2de2;
+}
+
+.view-btn:hover {
+    background: #6a1ba5;
+    transform: translateY(-2px);
+}
+
+.confirm-btn {
+    background: #28a745;
+}
+
+.confirm-btn:hover {
+    background: #218838;
+    transform: translateY(-2px);
+}
+
+.cancel-btn {
+    background: #dc3545;
+}
+
+.cancel-btn:hover {
+    background: #c82333;
+    transform: translateY(-2px);
+}
+
+/* ==========================
+   POPUP OVERLAY
+========================== */
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 2000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.popup-overlay:not(.hidden) {
+    display: flex !important;
+}
+
+/* ==========================
+   POPUP BOX - PRODUCT & OFFER
+========================== */
+
+.popup-box {
+    width: 550px;
+    max-width: 90%;
+    background: white;
+    padding: 35px;
+    border-radius: 25px;
+    box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.2);
+    animation: popupFade 0.3s ease;
+    border: 2px solid #ff4e8b;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.popup-box h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    color: #4b145f;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.popup-box input,
+.popup-box textarea,
+.popup-box select {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 15px;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.popup-box input:focus,
+.popup-box textarea:focus,
+.popup-box select:focus {
+    border-color: #ff4e8b;
+    box-shadow: 0 0 8px rgba(255, 78, 139, 0.2);
+}
+
+.popup-box textarea {
+    min-height: 100px;
+    resize: none;
+}
+
+.popup-box label {
+    display: block;
+    margin-bottom: 15px;
+    color: #4b145f;
+    font-weight: 600;
+}
+
+.popup-box label input[type="checkbox"] {
+    width: auto;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+input[type="file"] {
+    background: #fff7fb;
+    border: 2px dashed #ffb6d5 !important;
+    cursor: pointer;
+    padding: 20px !important;
+    text-align: center;
+}
+
+/* ==========================
+   POPUP ACTIONS BUTTONS
+========================== */
+
+.popup-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.popup-actions button {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.popup-actions button:first-child {
+    background: linear-gradient(135deg, #8E2DE2, #FF4E8B);
+    color: white;
+}
+
+.popup-actions button:first-child:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 78, 139, 0.3);
+}
+
+.popup-actions .cancel-btn {
+    background: #f1f1f1;
+    color: #333;
+}
+
+.popup-actions .cancel-btn:hover {
+    background: #ddd;
+}
+
+/* ==========================
+   ORDER POPUP
+========================== */
+
+.order-popup {
+    background: white;
+    width: 700px;
+    max-width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 20px;
+    padding: 35px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.16);
+    border: 2px solid #ff4e8b;
+    position: relative;
+    animation: popupFade 0.3s ease;
+}
+
+.order-popup h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: #4b145f;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.order-popup h4 {
+    color: #ff4e8b;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.order-popup p {
+    margin: 10px 0;
+    line-height: 1.6;
+    color: #333;
+}
+
+.order-popup hr {
+    border: none;
+    border-top: 2px solid #f1f1f1;
+    margin: 20px 0;
+}
+
+.order-item {
+    padding: 15px;
+    border-bottom: 1px solid #f1f1f1;
+    background: #fff7fb;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.close-popup {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    background: none;
+    border: none;
+    font-size: 32px;
+    cursor: pointer;
+    color: #4b145f;
+    transition: 0.3s;
+}
+
+.close-popup:hover {
+    color: #ff4e8b;
+}
+
+/* ==========================
+   POPUP ANIMATION
+========================== */
+
+@keyframes popupFade {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ==========================
+   MOBILE RESPONSIVE
+========================== */
+
+@media (max-width: 768px) {
+    .admin-section {
+        padding: 30px 20px;
+    }
+
+    .inventory-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .inventory-header h1 {
+        font-size: 28px;
+    }
+
+    .inventory-header > div {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .popup-box {
+        width: 95%;
+        padding: 25px;
+    }
+
+    .popup-actions {
+        flex-direction: column;
+    }
+
+    .order-popup {
+        width: 95%;
+        padding: 25px;
+    }
+
+    .inventory-table {
+        font-size: 12px;
+    }
+
+    .inventory-table th,
+    .inventory-table td {
+        padding: 10px 8px;
+    }
+
+    .pagination,
+    #ordersPagination {
+        gap: 5px;
+    }
+
+    .pagination button,
+    #ordersPagination button {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .edit-btn,
+    .delete-btn,
+    .done-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+}
