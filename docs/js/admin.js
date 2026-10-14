@@ -35,6 +35,36 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
+
+/* Admin login popup close controls */
+document.addEventListener("DOMContentLoaded", () => {
+    const overlay = document.getElementById("loginOverlay");
+    const closeButton = document.getElementById("loginCloseBtn");
+
+    if (!overlay) return;
+
+    function closeLoginPopup() {
+        overlay.classList.add("hidden");
+    }
+
+    closeButton?.addEventListener("click", closeLoginPopup);
+
+    // Close only when the overlay itself is tapped, not the login box.
+    overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) {
+            closeLoginPopup();
+        }
+    });
+
+    // Escape key support on desktop keyboards.
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !overlay.classList.contains("hidden")) {
+            closeLoginPopup();
+        }
+    });
+});
+
+
 // ==============================
 // LOGIN
 // ==============================
