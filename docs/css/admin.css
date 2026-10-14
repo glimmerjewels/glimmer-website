@@ -20,6 +20,37 @@
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
 }
 
+
+.login-box {
+    position: relative;
+}
+
+.login-close-btn {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: #4b145f;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-box .login-close-btn:hover {
+    background: #fff0f7;
+    color: #ff2c7d;
+    transform: none;
+}
+
+
 .login-box h2 {
     text-align: center;
     color: #4b145f;
