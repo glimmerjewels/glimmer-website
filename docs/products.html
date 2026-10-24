@@ -1,374 +1,368 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-
-<meta charset="UTF-8">
-
-<meta
+  <head>
+    <meta charset="UTF-8">
+      <meta
 name="viewport"
 content="width=device-width, initial-scale=1.0">
-
-<title>Glimmer Products</title>
-
-<link
-rel="stylesheet"
-href="css/style.css">
-
-
-
-</head>
-
-<body>
- <!-- HEADER -->
-    <header>
-        <div class="logo-section">
-            <img src="assets/logo1.png" alt="Glimmer Logo">
-        </div>
-
-        <nav class="navbar">
-            <a href="index.html">Home</a>
-
-            <div class="dropdown">
-                <button class="dropbtn">Products ▼</button>
-
-                <div class="dropdown-content">
-                    <a href="products.html?category=all">All</a>
-                    <a href="products.html?category=anklets">Anklets</a>
-                    <a href="products.html?category=bracelets">Bracelets</a>
-                    <a href="products.html?category=earrings">Earrings</a>
-                    <a href="products.html?category=necklace">Necklace & Chains</a>
-                    <a href="products.html?category=rings">Rings</a>
-                    <a href="products.html?category=watches">Watches</a>
-                    <a href="products.html?category=mens">Men's</a>
+        <title>
+          Glimmer Products
+        </title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/products.css">
+        </head>
+        <body>
+          <!-- HEADER -->
+          <header>
+            <div class="logo-section">
+              <a href="index.html" aria-label="Glimmer home" class="logo-home-link">
+              <img src="assets/logo1.png" alt="Glimmer Logo">
+              </a>
+              </div>
+              <nav class="navbar">
+                <a href="index.html">
+                  Home
+                </a>
+                <div class="dropdown">
+                  <button class="dropbtn">
+                    Products ▼
+                  </button>
+                  <div class="dropdown-content">
+                    <a href="products.html?category=all">
+                      All
+                    </a>
+                    <a href="products.html?category=anklets">
+                      Anklets
+                    </a>
+                    <a href="products.html?category=bracelets">
+                      Bracelets
+                    </a>
+                    <a href="products.html?category=earrings">
+                      Earrings
+                    </a>
+                    <a href="products.html?category=necklace">
+                      Necklace & Chains
+                    </a>
+                    <a href="products.html?category=rings">
+                      Rings
+                    </a>
+                    <a href="products.html?category=watches">
+                      Watches
+                    </a>
+                    <a href="products.html?category=mens">
+                      Men's
+                    </a>
+                  </div>
                 </div>
-            </div>
-
-            <a href="contact.html">Contact</a>
-            <a href="admin.html">Admin</a>
-            <a href="myCart.html">🛒 My Cart</a>
-        </nav>
-    </header>
-   <div id="offerBanner" class="offer-banner">
-
-    <div
+                <a href="contact.html">
+                  Contact
+                </a>
+                <a href="admin.html">
+                  Admin
+                </a>
+                <a href="myCart.html">
+                  🛒 My Cart
+                </a>
+              </nav>
+            </header>
+            <div id="offerBanner" class="offer-banner">
+              <div
         class="offer-track"
         id="offerTrack">
-
-    </div>
-
-    </div>
-<!-- HERO -->
-
-<section class="collection-section">
-
-    <h5 class="collection-label">
-        DISCOVER ELEGANCE IN EVERY PIECE
-    </h5>
-
-    <h1 class="collection-title" id="categoryTitle">
-        Glimmer Collection
-    </h1>
-
-</section>
-
-<!-- CATEGORY FILTERS -->
-
-<section class="filter-section">
-
-    <button
+              </div>
+            </div>
+            <!-- HERO -->
+            <section class="collection-section">
+              <h5 class="collection-label">
+                DISCOVER ELEGANCE IN EVERY PIECE
+              </h5>
+              <h1 class="collection-title" id="categoryTitle">
+                Glimmer Collection
+              </h1>
+            </section>
+            <!-- CATEGORY FILTERS -->
+            <section class="filter-section">
+              <button
     class="filter-btn active"
     data-category="all">
-
-        All
-
-    </button>
-
-    <button
+                All
+              </button>
+              <button
     class="filter-btn"
     data-category="anklets">
-
-        Anklets
-
-    </button>
- 
-    <button
+                Anklets
+              </button>
+              <button
     class="filter-btn"
     data-category="bracelets">
-
-        Bracelets
-
-    </button>
-
-    <button
+                Bracelets
+              </button>
+              <button
     class="filter-btn"
     data-category="earrings">
-
-        Earrings
-
-    </button>
-
-    <button
+                Earrings
+              </button>
+              <button
     class="filter-btn"
     data-category="necklace">
-
-        Necklace & Chains
-
-    </button>
- 
-    <button
+                Necklace & Chains
+              </button>
+              <button
     class="filter-btn"
     data-category="rings">
-
-        Rings
-
-    </button>
-
-    <button
+                Rings
+              </button>
+              <button
     class="filter-btn"
     data-category="watches">
-
-        Watches
-
-    </button>
- 
-    <button
+                Watches
+              </button>
+              <button
     class="filter-btn"
     data-category="mens">
+                Men's
+              </button>
+            </section>
 
-        Men's
+    
 
+<section class="product-tools" aria-label="Search and sort products">
+    <label class="visually-hidden" for="productSearch">
+        Search by product name or category
+    </label>
+    <input
+        type="search"
+        id="productSearch"
+        placeholder="Search jewellery..."
+        autocomplete="off">
+
+    <label class="visually-hidden" for="productSort">
+        Sort products
+    </label>
+    <select id="productSort">
+        <option value="newest">Newest arrivals</option>
+        <option value="price-low">Price: Low to High</option>
+        <option value="price-high">Price: High to Low</option>
+        <option value="offers">Offers first</option>
+    </select>
+
+    <button type="button" id="openFilterSheet" class="open-filter-btn">
+        More filters
     </button>
-
-
 </section>
 
-<!-- PRODUCTS GRID -->
+<div id="filterSheet" class="filter-sheet hidden" aria-hidden="true">
+    <div class="filter-sheet-panel" role="dialog" aria-modal="true" aria-labelledby="filterSheetTitle">
+        <h2 id="filterSheetTitle">Filter by price</h2>
 
-<section class="products-section">
+        <label for="minPrice">Minimum price (₹)</label>
+        <input type="number" id="minPrice" min="0" inputmode="numeric" placeholder="0">
 
-    <div
+        <label for="maxPrice">Maximum price (₹)</label>
+        <input type="number" id="maxPrice" min="0" inputmode="numeric" placeholder="No limit">
+
+        <div class="filter-sheet-actions">
+            <button type="button" id="clearPriceFilters">Clear</button>
+            <button type="button" id="applyPriceFilters">Apply filters</button>
+            <button type="button" id="closeFilterSheet">Close</button>
+        </div>
+    </div>
+</div>
+            <!-- PRODUCTS GRID -->
+            <section class="products-section">
+              <div
     class="products-grid"
     id="productsGrid">
-
-    </div>
-
-</section>
-
-<!-- PRODUCT POPUP -->
-
-<div
-class="popup-overlay hidden"
-id="productPopup">
-
-    <div class="product-popup">
-
-        <!-- LEFT -->
-
-        <div class="popup-left">
-
-            <div class="main-image-container">
-
-                <img
+              </div>
+            </section>
+            <!-- PRODUCT POPUP -->
+            <div
+    id="productPopup"
+    class="popup-overlay hidden"
+    onclick="closePopup()">
+              <div
+        class="product-popup"
+        onclick="event.stopPropagation()">
+                <!-- LEFT -->
+                <div class="popup-left">
+                  <div class="main-image-container">
+                    <img
                 id="mainPopupImage"
                 src=""
                 alt="Product">
-
-            </div>
-
-            <div
+                    </div>
+                    <div
             class="thumbnail-strip"
             id="thumbnailStrip">
-
-            </div>
-
-        </div>
-
-        <!-- RIGHT -->
-
-        <div class="popup-right">
-
-            <button
+                    </div>
+                  </div>
+                  <!-- RIGHT -->
+                  <div class="popup-right">
+                    <button
             class="close-popup"
             onclick="closePopup()">
-
-                ×
-
-            </button>
-
-            <h2
+                      ×
+                    </button>
+                    <h2
             id="popupName">
-
-            </h2>
-
-            <p
+                    </h2>
+                    <p
             id="popupDescription">
-
-            </p>
-
-            <div class="price-box">
-
-                <span
+                    </p>
+                    <div class="price-box">
+                      <span
                 class="actual-price"
                 id="popupActualPrice">
-
-                </span>
-
-                <span
+                      </span>
+                      <span
                 class="offer-price"
                 id="popupOfferPrice">
-
-                </span>
-
-            </div>
-
-            <div class="stock-box">
-
-                Available Stock:
-
-                <span id="popupStock">
-
-                </span>
-
-            </div>
-          <div class="quantity-section">
-
-                <button
+                      </span>
+                    </div>
+                    <div class="stock-box">
+                      Available Stock:
+                      <span id="popupStock">
+                      </span>
+                    </div>
+                    <div class="quantity-section">
+                      <button
                 onclick="decreaseQty()">
-
-                    -
-
-                </button>
-
-                <span id="quantityValue">
-
-                    1
-
-                </span>
-
-                <button
+                        -
+                      </button>
+                      <span id="quantityValue">
+                        1
+                      </span>
+                      <button
                 onclick="increaseQty()">
-
-                    +
-
-                </button>
-
-            </div>
-
-            <button
+                        +
+                      </button>
+                    </div>
+                    <button
              id="addToCartBtn"
              class="cart-btn"
              onclick="addToCart()">
+                      Add To Cart
+                    </button>
+                    <div class="purchase-trust" aria-label="Purchase information">
+    <p>✓ Delivery usually takes 5–7 business days across India.</p>
+    <p>✓ For damaged items, contact us with your unboxing video.</p>
+    <p>✓ Free delivery on product orders of ₹1,499 or more.</p>
+    <p>Questions? <a href="https://wa.me/918999120594" target="_blank" rel="noopener noreferrer">Chat with Glimmer on WhatsApp</a></p>
+</div>
 
-             Add To Cart
-
-             </button>
-            <div class="reviews-section">
-
-    <h3>
-        Customer Reviews
-    </h3>
-
-    <!-- Add Review -->
-
-    <div class="add-review-box">
-
-        <input
+<button
+    type="button"
+    class="popup-share-btn"
+    onclick="shareSelectedProduct(event)">
+    Share this product ↗
+</button>
+                    <div class="reviews-section">
+                      <h3>
+                        Customer Reviews
+                      </h3>
+                      <!-- Add Review -->
+                      <div class="add-review-box">
+                        <input
             type="text"
             id="reviewName"
             placeholder="Your Name">
-
-        <select id="reviewRating">
-
-            <option value="0.5">0.5 ⭐</option>
-            <option value="1">1 ⭐</option>
-            <option value="1.5">1.5 ⭐</option>
-            <option value="2">2 ⭐</option>
-            <option value="2.5">2.5 ⭐</option>
-            <option value="3">3 ⭐</option>
-            <option value="3.5">3.5 ⭐</option>
-            <option value="4">4 ⭐</option>
-            <option value="4.5">4.5 ⭐</option>
-            <option value="5" selected>5 ⭐</option>
-
-        </select>
-
-        <textarea
+                          <select id="reviewRating">
+                            <option value="1">
+                              1 ⭐
+                            </option>
+                            <option value="2">
+                              2 ⭐
+                            </option>
+                            <option value="3">
+                              3 ⭐
+                            </option>
+                            <option value="4">
+                              4 ⭐
+                            </option>
+                            <option value="5" selected>
+                              5 ⭐
+                            </option>
+                          </select>
+                          <textarea
             id="reviewComment"
             placeholder="Write your review">
-        </textarea>
-
-        <button
+                          </textarea>
+                          <button
             class="submit-review-btn"
             onclick="submitReview()">
-
-            Submit Review
-
-        </button>
-
-    </div>
-
-    <hr>
-
-    <div id="reviewsContainer">
-
-    </div>
-
-</div>
-        </div>
-    </div>
-
-</div>
-
-<!-- FOOTER -->
-
- <footer>
-        <div class="footer-grid">
-
-            <div>
-                <h3>Glimmer</h3>
-                <p>
-                    Anti Tarnish artificial jewellery crafted
+                            Submit Review
+                          </button>
+                        </div>
+                        <hr>
+                          <div id="reviewsContainer">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- FOOTER -->
+                  <footer>
+                    <div class="footer-grid">
+                      <div>
+                        <h3>
+                          Glimmer
+                        </h3>
+                        <p>
+                        Anti Tarnish artificial jewellery crafted
                     to help you stay sparkling every single day.
-                </p>
-            </div>
-
-            <div>
-                <h3>Company</h3>
-                <a href="contact.html">Contact</a><br>
-                <a href="products.html">All Products</a><br>
-                <a href="myCart.html">My Cart</a>
-            </div>
-
-            <div>
-                <h3>Reach Us</h3>
-                <p>📞 +91 8999120594</p>
-                <p>✉  glimmer.jewels2000@gmail.com</p>
-                <p>📸 @glimmer_staysparkling</p>
-            </div>
-
-        </div>
-  </footer>
-
- <a
+                      </p>
+                    </div>
+                    <div>
+                      <h3>
+                        Company
+                      </h3>
+                      <a href="contact.html">
+                        Contact
+                      </a>
+                      <br>
+                        <a href="products.html">
+                          All Products
+                        </a>
+                        <br>
+                          <a href="myCart.html">
+                            My Cart
+                          </a>
+                        </div>
+                        <div>
+                          <h3>
+                            Reach Us
+                          </h3>
+                          <p>
+                          📞 +91 8999120594
+                        </p>
+                        <p>
+                        ✉  glimmer.jewels2000@gmail.com
+                      </p>
+                      <p>
+                      📸 @glimmer_staysparkling
+                    </p>
+                  </div>
+                </div>
+              </footer>
+              <a
     href="https://wa.me/918999120594"
     target="_blank"
     class="whatsapp-float">
-
-    <img
+                <img
         src="assets/whatsapp.png"
         alt="Whatsapp">
-
-</a>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase.js"></script>
-<script src="js/products.js"></script>
-<script>
-    // your existing page JavaScript
-
-    loadOfferBanner();
-</script>
-
-</body>
-
-</html>
+                </a>
+                <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+                </script>
+                <script src="js/supabase.js">
+                </script>
+                <script src="js/offerService.js">
+                </script>
+                <script src="js/products.js">
+                </script>
+                <script>
+                  loadOfferBanner();
+                </script>
+                <script src="js/navigation.js"></script>
+              </body>
+            </html>

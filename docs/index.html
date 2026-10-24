@@ -3,14 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glimmer | Stay Sparkling</title>
+    <title>Glimmer | Stay Sparkling | Anti-Tarnish Everyday Jewellery</title>
+    <meta name="description"
+      content="Discover everyday statement jewellery at Glimmer Jewels. Explore earrings, necklaces, bracelets and rings designed to keep you sparkling.">
+    <meta property="og:site_name" content="Glimmer Jewels">
     <link rel="stylesheet" href="css/style.css">
+    
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Glimmer Jewels",
+  "alternateName": "Glimmer",
+  "url": "https://glimmerjewels.in/"
+}
+</script>
+
 </head>
 <body>
     <!-- HEADER -->
     <header>
         <div class="logo-section">
+            <a href="index.html" aria-label="Glimmer home" class="logo-home-link">
             <img src="assets/logo1.png" alt="Glimmer Logo">
+            </a>
         </div>
 
         <nav class="navbar">
@@ -59,12 +75,20 @@
             </p>
 
             <a href="products.html?category=all">
-                <button class="shop-btn">Shop The Collection →</button>
+                <button class="shop-btn">Shop Jewellery <span aria-hidden="true">→</span></button>
             </a>
         </div>
 
         <div class="hero-right">
-            <img src="assets/home_images/img1.jpg" alt="Jewellery">
+            
+    <img
+    id="heroCarouselImage"
+    src="assets/home_images/img1.jpg"
+    alt="Glimmer everyday jewellery collection"
+    width="900"
+    height="1100"
+    fetchpriority="high"
+    decoding="async">
         </div>
 
     </section>
@@ -97,7 +121,25 @@
         </div>
 
     </section>
-
+    
+    <nav class="quick-categories" aria-label="Shop jewellery hot categories">
+    <a href="products.html?category=earrings">
+        <span aria-hidden="true">✧</span>
+        Earrings
+    </a>
+    <a href="products.html?category=rings">
+        <span aria-hidden="true">◇</span>
+        Rings
+    </a>
+    <a href="products.html?category=bracelets">
+        <span aria-hidden="true">♡</span>
+        Bracelets
+    </a>
+    <a href="products.html?category=necklace">
+        <span aria-hidden="true">✦</span>
+        Necklaces
+    </a>
+    </nav>
     <!-- CATEGORY SECTION -->
     <section class="category-section">
 
@@ -179,6 +221,32 @@
 
     </section>
 
+    
+
+<!-- LATEST & TRENDING -->
+<section class="latest-trending-section">
+    <div class="latest-trending-heading">
+        <p class="collection-label">SHOP LATEST AND TRENDING</p>
+        <h2>Check New Arrivals And Trending Jewellery</h2>
+    </div>
+
+    <div class="latest-trending-carousel">
+        <button type="button"
+                class="latest-carousel-arrow latest-prev"
+                id="latestPrev"
+                aria-label="Previous products">←</button>
+
+        <div class="latest-trending-track" id="latestTrendingTrack">
+            <p>Loading the latest sparkle...</p>
+        </div>
+
+        <button type="button"
+                class="latest-carousel-arrow latest-next"
+                id="latestNext"
+                aria-label="Next products">→</button>
+    </div>
+</section>
+
     <!-- FOOTER -->
     <footer>
         <div class="footer-grid">
@@ -218,10 +286,15 @@
         alt="Whatsapp">
 
 </a>
-<script>
-    // your existing page JavaScript
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/offerService.js"></script>
+<script>
     loadOfferBanner();
 </script>
+<script src="js/navigation.js"></script>
+<script src="js/hero-carousel.js"></script>
+<script src="js/latest-trending.js"></script>
 </body>
 </html>

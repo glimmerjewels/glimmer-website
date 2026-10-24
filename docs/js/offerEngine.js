@@ -1,230 +1,437 @@
-// ======================================
-// GLIMMER OFFER ENGINE
-// ======================================
+// =============================================
+// GLIMMER GENERIC OFFER ENGINE
+// DATABASE DRIVEN
+// =============================================
 
-function cartTotal(cart) {
 
-    let total = 0;
+function expandCart(cart){
 
-    cart.forEach(item => {
+    let items=[];
 
-        total +=
-            item.offer_price *
-            item.quantity;
+
+    cart.forEach(product=>{
+
+
+        for(
+            let i=0;
+            i<product.quantity;
+            i++
+        ){
+
+            items.push({
+
+                id:
+                    product.id,
+
+                name:
+                    product.name,
+
+                category:
+                    product.category
+                    ?.toLowerCase(),
+
+                price:
+                    Number(
+                        product.offer_price
+                    )
+
+            });
+
+        }
 
     });
 
-    return total;
+
+    return items;
 
 }
 
 
-function categoryCounts(cart) {
 
-    const counts = {
 
-        rings:0,
 
-        bracelets:0,
+function normalTotal(items){
 
-        necklace:0,
+    return items.reduce(
+        (sum,item)=>
+            sum+item.price,
+        0
+    );
 
-        earrings:0,
+}
 
-        anklets:0,
 
-        mens:0,
 
-        watches:0,
 
-        totalItems:0
+
+function removeIndexes(
+    items,
+    indexes
+){
+
+    return items.filter(
+        (_,i)=>
+        !indexes.includes(i)
+    );
+
+}
+
+
+
+
+
+
+// ---------------------------------------------
+// CHECK IF BUNDLE CAN BE CREATED
+// ---------------------------------------------
+
+
+function findBundleIndexes(
+    items,
+    rules
+){
+
+    let selected=[];
+
+
+    for(
+        const rule of rules
+    ){
+
+        let category =
+            rule.category
+            .toLowerCase();
+
+
+        let required =
+            rule.required_quantity;
+
+
+
+        if(
+            category==="any"
+        ){
+
+            let available =
+                items.length -
+                selected.length;
+
+
+            if(
+                available <
+                required
+            )
+                return null;
+
+
+            for(
+                let i=0;
+                i<items.length;
+                i++
+            ){
+
+                if(
+                    !selected.includes(i)
+                    &&
+                    selected.length <
+                    required
+                ){
+
+                    selected.push(i);
+
+                }
+
+            }
+
+
+            continue;
+
+        }
+
+
+
+
+
+        let matched =
+            items
+            .map(
+                (item,index)=>
+                item.category===category
+                &&
+                !selected.includes(index)
+                ?
+                index
+                :
+                null
+            )
+            .filter(
+                x=>x!==null
+            );
+
+
+
+        if(
+            matched.length <
+            required
+        )
+            return null;
+
+
+
+        selected.push(
+            ...matched.slice(
+                0,
+                required
+            )
+        );
+
+
+    }
+
+
+
+    return selected;
+
+}
+
+
+
+
+
+// ---------------------------------------------
+// APPLY OFFER REPEATEDLY
+// ---------------------------------------------
+
+
+function applyOffer(
+    items,
+    offer
+){
+
+    let remaining=[
+        ...items
+    ];
+
+
+    let bundles=0;
+
+
+
+    while(true){
+
+
+        let indexes =
+            findBundleIndexes(
+                remaining,
+                offer.rules
+            );
+
+
+        if(!indexes)
+            break;
+
+
+
+        remaining =
+            removeIndexes(
+                remaining,
+                indexes
+            );
+
+
+        bundles++;
+
+    }
+
+
+
+    return {
+
+
+        bundles,
+
+
+        remaining
+
 
     };
 
-    cart.forEach(item=>{
-
-        const cat =
-            item.category
-            ?.toLowerCase();
-
-        if(
-            counts.hasOwnProperty(cat)
-        ){
-
-            counts[cat]+=
-                item.quantity;
-
-        }
-
-        counts.totalItems+=
-            item.quantity;
-
-    });
-
-    return counts;
-
 }
 
 
-function offerMatches(
-    offer,
-    counts
-){
-
-    if(
-        counts.rings<
-        offer.required_rings
-    )
-        return false;
-
-    if(
-        counts.bracelets<
-        offer.required_bracelets
-    )
-        return false;
-
-    if(
-        counts.necklace<
-        offer.required_necklace
-    )
-        return false;
-
-    if(
-        counts.earrings<
-        offer.required_earrings
-    )
-        return false;
-
-    if(
-        counts.anklets<
-        offer.required_anklets
-    )
-        return false;
-
-    if(
-        counts.mens<
-        offer.required_mens
-    )
-        return false;
-
-    if(
-        counts.watches<
-        offer.required_watches
-    )
-        return false;
-
-    if(
-        counts.totalItems<
-        offer.required_any
-    )
-        return false;
-
-    return true;
-
-}
 
 
-function calculatePricing(cart){
 
-    const offers =
-        getLoadedOffers();
+// ---------------------------------------------
+// MAIN PRICE CALCULATOR
+// ---------------------------------------------
 
-    const counts =
-        categoryCounts(cart);
+
+async function calculatePricing(cart){
+
+
+    const items =
+        expandCart(cart);
+
+
 
     const originalTotal =
-        cartTotal(cart);
+        normalTotal(items);
 
-    let bestOffer = null;
 
-    let bestTotal =
-        originalTotal;
 
-    offers.forEach(offer=>{
+    const offers =
+        await fetchOffers(true);
+
+
+
+    let best={
+
+
+        total:
+            originalTotal,
+
+
+        offer:null,
+
+
+        bundles:0
+
+
+    };
+
+
+
+
+    for(
+        const offer of offers
+    ){
+
+
+        const rules =
+            await getOfferRules(
+                offer.id
+            );
+
+
 
         if(
-            !offerMatches(
-                offer,
-                counts
+            !rules.length
+        )
+            continue;
+
+
+
+
+        const result =
+            applyOffer(
+                items,
+                {
+                    ...offer,
+                    rules
+                }
+            );
+
+
+
+        if(
+            result.bundles===0
+        )
+            continue;
+
+
+
+
+        let total =
+
+            (
+                result.bundles *
+                Number(
+                    offer.offer_price
+                )
             )
-        ){
 
-            return;
+            +
 
-        }
+            normalTotal(
+                result.remaining
+            );
 
-        /*
-        IMPORTANT
 
-        This is temporary.
 
-        Part 2B will replace
-        this with bundle pricing.
 
-        */
 
         if(
-
-            offer.offer_price
-            <
-            bestTotal
-
+            total <
+            best.total
         ){
 
-            bestTotal =
-                offer.offer_price;
 
-            bestOffer =
+            best.total =
+                total;
+
+
+            best.offer =
                 offer;
 
+
+            best.bundles =
+                result.bundles;
+
+
         }
 
-    });
 
-    return{
+    }
+
+
+
+
+
+    return {
+
 
         originalTotal,
 
+
         discountedTotal:
-            bestTotal,
+            best.total,
+
 
         savings:
-            originalTotal-
-            bestTotal,
+            originalTotal -
+            best.total,
+
 
         offerApplied:
-            bestOffer!=null,
+            !!best.offer,
+
 
         appliedOffer:
-            bestOffer,
+            best.offer,
 
-        freebies:
 
-            bestOffer
-            ?
-
-            bestOffer
-            .surprise_freebies
-
-            :
-
+        surpriseFreebies:
+            best.offer
+            ?.surprise_freebies
+            ||
             0,
+
 
         congratulationMessage:
 
-            bestOffer
-            &&
-            bestOffer
-            .surprise_freebies>0
+        best.offer
+        ?.surprise_freebies>0
 
-            ?
+        ?
 
-            `🎉 Congratulations! You have been selected for ${bestOffer.surprise_freebies} surprise freebies from our side. They will be included in your order package automatically.`
+        `🎉 Congratulations! You have been selected for ${best.offer.surprise_freebies} surprise freebies from our side. They will be included in your order package automatically.`
 
-            :
+        :
 
-            ""
+        ""
 
     };
+
 
 }

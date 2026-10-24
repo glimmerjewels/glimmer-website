@@ -1,6 +1,11 @@
 let cart = [];
 
 const DELIVERY_CHARGE = 50;
+const FREE_DELIVERY_THRESHOLD = 1499;
+
+function getDeliveryCharge(subtotal) {
+    return subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE;
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -9,7 +14,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             localStorage.getItem("glimmerCart")
         ) || [];
 
-    renderCart();
+    await loadOfferBanner();
+    await renderCart();
 
     document
         .getElementById("checkoutBtn")
@@ -55,8 +61,14 @@ function saveCart() {
 
 }
 
+async function removeFromCart(productId) {
+    cart = cart.filter(item => String(item.id) !== String(productId));
+    saveCart();
+    await renderCart();
+}
 
-function renderCart() {
+
+async function renderCart() {
 
     const container =
         document.getElementById(
@@ -87,15 +99,18 @@ function renderCart() {
             "grandTotal"
         ).innerText = "₹0";
 
+        const offerSummary = document.getElementById("offerSummary");
+        if (offerSummary) {
+            offerSummary.innerHTML = "<div class='offer-summary-card'>Add a few items to unlock our combo deals.</div>";
+        }
+
         return;
     }
 
     let html = "";
 
     let totalQty = 0;
-
-    let subtotal = 0;
-
+   
     cart.forEach((item) => {
 
         const itemTotal =
@@ -103,8 +118,6 @@ function renderCart() {
             item.offer_price;
 
         totalQty += item.quantity;
-
-        subtotal += itemTotal;
 
         html += `
 
@@ -153,26 +166,99 @@ function renderCart() {
                 ₹${itemTotal}
 
             </div>
+            <button
+                type="button"
+                class="remove-cart-item"
+                onclick="removeFromCart('${item.id}')"
+                aria-label="Remove ${item.name} from cart">
+                Remove
+            </button>
 
         </div>
 
         `;
     });
 
+    const pricing =
+    await calculatePricing(cart);
+
+
+    const subtotal =
+    pricing.discountedTotal;
+
+    const deliveryCharge = getDeliveryCharge(subtotal);
+    
+    const savings =
+    pricing.savings;
+
+    const appliedOffer =
+    pricing.appliedOffer;
+
+    const congratulationMessage =
+    pricing.congratulationMessage;
+    
     container.innerHTML = html;
 
     document.getElementById(
         "totalQty"
     ).innerText = totalQty;
 
-    document.getElementById(
-        "grandTotal"
-    ).innerText =
-        "₹" +
-        (
-            subtotal +
-            DELIVERY_CHARGE
-        );
+    document.getElementById("grandTotal").innerText =
+    "₹" + (subtotal + deliveryCharge);
+
+const deliveryElement = document.getElementById("deliveryCharge");
+if (deliveryElement) {
+    deliveryElement.innerText =
+        deliveryCharge === 0 ? "FREE" : "₹" + deliveryCharge;
+}
+
+const freeDeliveryMessage =
+    document.getElementById("freeDeliveryMessage");
+
+if (freeDeliveryMessage) {
+    freeDeliveryMessage.textContent =
+        deliveryCharge === 0
+            ? "🎉 You've unlocked free delivery!"
+            : `Add ₹${Math.max(0, FREE_DELIVERY_THRESHOLD - subtotal)} more for free delivery.`;
+}
+
+    const offerSummary = document.getElementById("offerSummary");
+    if (offerSummary) {
+        if (pricing.offerApplied) {
+          offerSummary.innerHTML = `
+                        <div class="offer-summary-card">
+                        <strong>🎉 Offer Applied</strong>
+                            <br>
+                            <span>
+                            ${pricing.appliedOffer.title || pricing.appliedOffer.name}
+                            </span>
+                            <br>
+                            <small>You saved ₹${pricing.savings}</small>
+                            ${
+                            pricing.surpriseFreebies > 0
+                            ?
+                            `
+                            <div class="freebie-message">
+                            🎁 Congratulations! You have been selected for 
+                            ${pricing.surpriseFreebies} surprise freebies from our side.
+                            <br>
+                            They will be included in your order package automatically.
+                            </div>
+                            `
+                            :
+                            ""
+                            }
+                        </div>
+                        `;
+        } else {
+            offerSummary.innerHTML = `
+                <div class="offer-summary-card">
+                    <strong>No combo matched yet.</strong><br>
+                    <span>Add items to unlock our rotating offers.</span>
+                </div>
+            `;
+        }
+    }
 
 }
 
@@ -221,12 +307,12 @@ async function increaseQty(productId) {
 
     saveCart();
 
-    renderCart();
+    await renderCart();
 
 }
 
 
-function decreaseQty(productId) {
+async function decreaseQty(productId) {
 
     const item =
         cart.find(
@@ -250,7 +336,7 @@ function decreaseQty(productId) {
 
     saveCart();
 
-    renderCart();
+    await renderCart();
 
 }
 
@@ -418,26 +504,22 @@ async function placeOrder() {
 
     return;
     }
-
+    
     let totalQty = 0;
-
-    let subtotal = 0;
 
     cart.forEach(item => {
 
         totalQty +=
             item.quantity;
 
-        subtotal +=
-            item.quantity *
-            item.offer_price;
-
     });
 
-    const grandTotal =
-        subtotal +
-        DELIVERY_CHARGE;
+   const pricing =
+    await calculatePricing(cart);
 
+    const subtotal = pricing.discountedTotal;
+    const deliveryCharge = getDeliveryCharge(subtotal);
+    const grandTotal = subtotal + deliveryCharge;
     try {
 
         const {
@@ -470,10 +552,31 @@ async function placeOrder() {
                     totalQty,
 
                 subtotal:
-                    subtotal,
+                    pricing.discountedTotal,
+
+                original_total:
+                    pricing.originalTotal,
+
+                offer_id:
+                    pricing.appliedOffer?.id || null,
+
+                offer_name:
+                    pricing.appliedOffer?.title || null,
+
+                offer_type:
+                    pricing.appliedOffer?.offer_type || null,
+
+                offer_price:
+                    pricing.appliedOffer?.offer_price || null,
+
+                offer_discount:
+                    pricing.savings,
+
+                surprise_freebies:
+                    pricing.surpriseFreebies,
 
                 delivery_charge:
-                    DELIVERY_CHARGE,
+                    deliveryCharge,
 
                 grand_total:
                     grandTotal,
@@ -555,9 +658,16 @@ Subtotal ₹${item.quantity * item.offer_price}
 
         });
 
+        if (pricing.offerApplied) {
+            message += `
+Offer Applied : ${pricing.appliedOffer.name}
+Offer Price : ₹${pricing.appliedOffer.offer_price}
+`;
+        }
+
         message +=
 
-`Delivery Charges ₹${DELIVERY_CHARGE}
+`Delivery Charges ${deliveryCharge === 0 ? "FREE" : "₹" + deliveryCharge}
 
 Total Quantity : ${totalQty}
 
