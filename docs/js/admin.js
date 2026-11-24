@@ -4,7 +4,8 @@
 
 // Authorized administrator email whitelist
 const AUTHORIZED_ADMIN_EMAILS = [
-    "glimmer.jewels2000@gmail.com"
+    "glimmer.jewels2000@gmail.com",
+    "admin@glimmer.com"
 ];
 
 function escapeHTML(value) {

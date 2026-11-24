@@ -14,7 +14,8 @@ STABLE
 AS $$
   SELECT COALESCE(
     (auth.jwt() ->> 'email') IN (
-      'glimmer.jewels2000@gmail.com'
+      'glimmer.jewels2000@gmail.com',
+      'admin@glimmer.com'
       -- Add additional admin emails here if needed
     ) OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin',
     false
