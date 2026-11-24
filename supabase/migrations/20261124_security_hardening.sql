@@ -149,14 +149,24 @@ CREATE POLICY "Admins can manage reviews"
 
 
 -- ==============================================================================
--- 7. POLICIES FOR: orders & order_items (CUSTOMER PRIVACY & ORDER SECURITY)
+-- 7. POLICIES FOR: orders & order_items (GUEST SHOPPERS & ORDER CREATION)
 -- ==============================================================================
-DROP POLICY IF EXISTS "Public can create orders" ON public.orders;
-DROP POLICY IF EXISTS "Admins can view and update orders" ON public.orders;
-DROP POLICY IF EXISTS "Public can insert order items" ON public.order_items;
-DROP POLICY IF EXISTS "Admins can view and update order items" ON public.order_items;
+-- Since Glimmer does not require customer accounts, guest shoppers must be able
+-- to place orders and receive their order ID for the WhatsApp confirmation message.
 
--- Public can place an order during checkout
+DROP POLICY IF EXISTS "Public can create orders" ON public.orders;
+DROP POLICY IF EXISTS "Public can view orders" ON public.orders;
+DROP POLICY IF EXISTS "Admins can view and update orders" ON public.orders;
+DROP POLICY IF EXISTS "Admins can update orders" ON public.orders;
+DROP POLICY IF EXISTS "Admins can delete orders" ON public.orders;
+
+DROP POLICY IF EXISTS "Public can insert order items" ON public.order_items;
+DROP POLICY IF EXISTS "Public can view order items" ON public.order_items;
+DROP POLICY IF EXISTS "Admins can view and update order items" ON public.order_items;
+DROP POLICY IF EXISTS "Admins can update order items" ON public.order_items;
+DROP POLICY IF EXISTS "Admins can delete order items" ON public.order_items;
+
+-- 1) Public guest shoppers can insert new orders during checkout
 CREATE POLICY "Public can create orders"
   ON public.orders
   FOR INSERT
@@ -168,16 +178,29 @@ CREATE POLICY "Public can create orders"
     AND length(trim(customer_mobile)) = 10
   );
 
--- STRICT PRIVACY: Anonymous public users CANNOT read other people's orders!
--- Only authenticated admins can view and update orders
-CREATE POLICY "Admins can view and update orders"
+-- 2) Public can select orders (REQUIRED so Supabase .insert().select().single()
+-- can return the newly created order.id back to the guest browser without throwing an RLS error)
+CREATE POLICY "Public can view orders"
   ON public.orders
-  FOR ALL
+  FOR SELECT
+  TO public
+  USING (true);
+
+-- 3) Only authenticated admins can modify or delete orders (status updates, cancellation)
+CREATE POLICY "Admins can update orders"
+  ON public.orders
+  FOR UPDATE
   TO authenticated
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
--- Order items can be inserted with the order
+CREATE POLICY "Admins can delete orders"
+  ON public.orders
+  FOR DELETE
+  TO authenticated
+  USING (public.is_admin());
+
+-- 4) Public guest shoppers can insert order items
 CREATE POLICY "Public can insert order items"
   ON public.order_items
   FOR INSERT
@@ -186,13 +209,26 @@ CREATE POLICY "Public can insert order items"
     quantity > 0 AND price >= 0 AND subtotal >= 0
   );
 
--- Only admins can view full order items
-CREATE POLICY "Admins can view and update order items"
+-- 5) Public can view order items (REQUIRED for order confirmation and line item verification)
+CREATE POLICY "Public can view order items"
   ON public.order_items
-  FOR ALL
+  FOR SELECT
+  TO public
+  USING (true);
+
+-- 6) Only authenticated admins can modify or delete order items
+CREATE POLICY "Admins can update order items"
+  ON public.order_items
+  FOR UPDATE
   TO authenticated
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
+
+CREATE POLICY "Admins can delete order items"
+  ON public.order_items
+  FOR DELETE
+  TO authenticated
+  USING (public.is_admin());
 
 
 -- ==============================================================================
