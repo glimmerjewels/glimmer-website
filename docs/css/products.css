@@ -141,13 +141,6 @@
 
 
 
-.main-image-container img {
-    width: 100%;
-    height: 500px;
-    object-fit: cover;
-    border-radius: 12px;
-}
-
 .thumbnail-strip {
     display: flex;
     gap: 10px;
@@ -520,13 +513,6 @@ Quick View purchase details
         padding: 12px 16px;
     }
 
-    .main-image-container img {
-        width: 100%;
-        height: clamp(210px, 48vh, 330px);
-        object-fit: contain;
-        background: #fff7fb;
-    }
-
     .popup-right {
         overflow: visible;
     }
@@ -883,3 +869,75 @@ Quick View purchase details
         font-size: 14px;
     }
 }
+
+/* ==========================
+   SKELETON LOADER — CLS FIX
+   These placeholder cards reserve the same space as real product cards
+   while images load, preventing layout shifts.
+========================== */
+
+.skeleton-card {
+    /* Match the product card shape so the grid height is stable. */
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #f3e5f0;
+    box-shadow: 0 4px 15px rgba(75, 20, 95, 0.07);
+    /* aspect-ratio preserves the 1:1 image area + fixed info area below */
+    aspect-ratio: 1 / 1.42;
+    min-height: 220px;
+    position: relative;
+}
+
+/* Shimmer animation */
+.skeleton-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0)   0%,
+        rgba(255, 255, 255, 0.5) 50%,
+        rgba(255, 255, 255, 0)   100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+/* Pulsing background colour for the skeleton fill */
+.skeleton-card {
+    background: linear-gradient(135deg, #fce7f3, #f3e5f0);
+    animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
+}
+
+@keyframes skeleton-pulse {
+    0%, 100% { opacity: 1;    }
+    50%       { opacity: 0.65; }
+}
+
+/* ==========================
+   POPUP MAIN IMAGE — CLS FIX
+   Reserve the image space before the src is populated so the popup
+   doesn't jump in height once the image loads.
+========================== */
+
+.main-image-container {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #fff7fb;
+}
+
+.main-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 12px;
+    display: block;
+}
+
