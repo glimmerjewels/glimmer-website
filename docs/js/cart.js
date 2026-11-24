@@ -2,6 +2,71 @@ let cart = [];
 
 const DELIVERY_CHARGE = 50;
 const FREE_DELIVERY_THRESHOLD = 1499;
+let isPlacingOrder = false;
+
+// ======================================
+// ANTI-TAMPERING CART VERIFICATION
+// ======================================
+async function verifyAndSyncCart() {
+    if (!cart || cart.length === 0) {
+        throw new Error("Your cart is empty.");
+    }
+
+    const productIds = cart.map(item => item.id);
+    const { data: dbProducts, error } = await supabaseClient
+        .from("products")
+        .select("id, name, actual_price, offer_price, stock")
+        .in("id", productIds);
+
+    if (error || !dbProducts) {
+        throw new Error("Unable to verify live product prices. Please check your internet connection.");
+    }
+
+    const dbMap = new Map(dbProducts.map(p => [String(p.id), p]));
+    let cartModified = false;
+
+    for (const item of cart) {
+        const dbProd = dbMap.get(String(item.id));
+        if (!dbProd) {
+            throw new Error(`Product "${item.name}" is no longer available in the catalogue.`);
+        }
+
+        const officialOfferPrice = Number(dbProd.offer_price) > 0 ? Number(dbProd.offer_price) : Number(dbProd.actual_price);
+        const officialActualPrice = Number(dbProd.actual_price);
+        const availableStock = Number(dbProd.stock) || 0;
+
+        if (availableStock <= 0) {
+            throw new Error(`Product "${item.name}" is currently out of stock.`);
+        }
+
+        if (Number(item.quantity) > availableStock) {
+            item.quantity = availableStock;
+            cartModified = true;
+            throw new Error(`Quantity for "${item.name}" exceeds available stock (${availableStock}). Cart adjusted.`);
+        }
+
+        // Detect price tampering or outdated cached prices
+        if (Number(item.offer_price) !== officialOfferPrice || Number(item.actual_price) !== officialActualPrice) {
+            item.offer_price = officialOfferPrice;
+            item.actual_price = officialActualPrice;
+            cartModified = true;
+        }
+
+        // Enforce positive integer quantity
+        if (Number(item.quantity) <= 0 || !Number.isInteger(Number(item.quantity))) {
+            item.quantity = 1;
+            cartModified = true;
+        }
+    }
+
+    if (cartModified) {
+        saveCart();
+        await renderCart();
+        throw new Error("Cart has been synchronized with official store prices. Please review before proceeding.");
+    }
+
+    return true;
+}
 
 function getDeliveryCharge(subtotal) {
     return subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE;
@@ -424,103 +489,65 @@ async function fetchPincodeData(pin) {
 
 
 async function placeOrder() {
+    if (isPlacingOrder) return;
 
-    const name =
-        document
-        .getElementById(
-            "customerName"
-        )
-        .value
-        .trim();
+    const orderBtn = document.getElementById("orderWhatsappBtn");
+    const name = document.getElementById("customerName").value.trim();
+    const mobile = document.getElementById("customerMobile").value.trim();
+    const address = document.getElementById("customerAddress").value.trim();
+    const city = document.getElementById("city").value.trim();
+    const pincode = document.getElementById("pincode").value.trim();
+    const state = document.getElementById("state").value.trim();
 
-    const mobile =
-        document
-        .getElementById(
-            "customerMobile"
-        )
-        .value
-        .trim();
-
-    const address =
-        document
-        .getElementById(
-            "customerAddress"
-        )
-        .value
-        .trim();
-
-    const city =
-        document
-        .getElementById(
-            "city"
-        )
-        .value
-        .trim();
-
-    const pincode =
-        document
-        .getElementById(
-            "pincode"
-        )
-        .value
-        .trim();
-
-    const state =
-        document
-        .getElementById(
-            "state"
-        )
-        .value
-        .trim();
-
-    if (
-        !name ||
-        !mobile ||
-        !address ||
-        !city ||
-        !pincode
-    ) {
-
-        alert(
-            "Please fill all delivery details"
-        );
-
+    if (!name || !mobile || !address || !city || !pincode) {
+        alert("Please fill all delivery details.");
         return;
     }
+
+    if (name.length < 2 || name.length > 100) {
+        alert("Please enter a valid customer name (2 to 100 characters).");
+        return;
+    }
+
+    if (address.length < 5 || address.length > 300) {
+        alert("Please enter a valid address (5 to 300 characters).");
+        return;
+    }
+
     if (!/^[6-9]\d{9}$/.test(mobile)) {
-
-    alert(
-        "Please enter valid 10 digit mobile number"
-    );
-
-    return;
+        alert("Please enter a valid 10-digit Indian mobile number.");
+        return;
     }
 
     if (!/^\d{6}$/.test(pincode)) {
-
-    alert(
-        "Please enter valid 6 digit pincode"
-    );
-
-    return;
+        alert("Please enter a valid 6-digit pincode.");
+        return;
     }
-    
-    let totalQty = 0;
 
-    cart.forEach(item => {
+    isPlacingOrder = true;
+    if (orderBtn) {
+        orderBtn.disabled = true;
+        orderBtn.innerText = "Verifying & Placing Order...";
+    }
 
-        totalQty +=
-            item.quantity;
-
-    });
-
-   const pricing =
-    await calculatePricing(cart);
-
-    const subtotal = pricing.discountedTotal;
-    const deliveryCharge = getDeliveryCharge(subtotal);
-    const grandTotal = subtotal + deliveryCharge;
     try {
+        // Step 1: Verify all cart item prices & stock against live Supabase data
+        await verifyAndSyncCart();
+
+        let totalQty = 0;
+        cart.forEach(item => {
+            totalQty += Number(item.quantity) || 0;
+        });
+
+        if (totalQty <= 0) {
+            alert("Your cart is empty or has invalid quantities.");
+            return;
+        }
+
+        const pricing = await calculatePricing(cart);
+        const subtotal = pricing.discountedTotal;
+        const deliveryCharge = getDeliveryCharge(subtotal);
+        const grandTotal = subtotal + deliveryCharge;
 
         const {
             data: order,
@@ -529,188 +556,80 @@ async function placeOrder() {
         await supabaseClient
             .from("orders")
             .insert([{
-
-                customer_name:
-                    name,
-
-                customer_mobile:
-                    mobile,
-
-                customer_address:
-                    address,
-
-                city:
-                    city,
-
-                state:
-                    state,
-
-                pincode:
-                    pincode,
-
-                total_quantity:
-                    totalQty,
-
-                subtotal:
-                    pricing.discountedTotal,
-
-                original_total:
-                    pricing.originalTotal,
-
-                offer_id:
-                    pricing.appliedOffer?.id || null,
-
-                offer_name:
-                    pricing.appliedOffer?.title || null,
-
-                offer_type:
-                    pricing.appliedOffer?.offer_type || null,
-
-                offer_price:
-                    pricing.appliedOffer?.offer_price || null,
-
-                offer_discount:
-                    pricing.savings,
-
-                surprise_freebies:
-                    pricing.surpriseFreebies,
-
-                delivery_charge:
-                    deliveryCharge,
-
-                grand_total:
-                    grandTotal,
-
-                status:
-                    "Pending",
-
-                whatsapp_sent:
-                    true,
-
-                stock_reduced:
-                    false
-
+                customer_name: name,
+                customer_mobile: mobile,
+                customer_address: address,
+                city: city,
+                state: state,
+                pincode: pincode,
+                total_quantity: totalQty,
+                subtotal: pricing.discountedTotal,
+                original_total: pricing.originalTotal,
+                offer_id: pricing.appliedOffer?.id || null,
+                offer_name: pricing.appliedOffer?.title || null,
+                offer_type: pricing.appliedOffer?.offer_type || null,
+                offer_price: pricing.appliedOffer?.offer_price || null,
+                offer_discount: pricing.savings,
+                surprise_freebies: pricing.surpriseFreebies,
+                delivery_charge: deliveryCharge,
+                grand_total: grandTotal,
+                status: "Pending",
+                whatsapp_sent: true,
+                stock_reduced: false
             }])
             .select()
             .single();
 
-        if (orderError)
-            throw orderError;
+        if (orderError) throw orderError;
 
         for (const item of cart) {
+            const { error: itemError } =
+            await supabaseClient
+                .from("order_items")
+                .insert([{
+                    order_id: order.id,
+                    product_id: item.id,
+                    product_name: item.name,
+                    quantity: item.quantity,
+                    price: item.offer_price,
+                    subtotal: item.quantity * item.offer_price
+                }]);
 
-    const {
+            if (itemError) throw itemError;
+        }
 
-        error:itemError
-
-    } =
-
-    await supabaseClient
-        .from("order_items")
-        .insert([{
-
-            order_id:
-                order.id,
-
-            product_id:
-                item.id,
-
-            product_name:
-                item.name,
-
-            quantity:
-                item.quantity,
-
-            price:
-                item.offer_price,
-
-            subtotal:
-                item.quantity *
-                item.offer_price
-
-        }]);
-
-    if(itemError){
-
-        throw itemError;
-    }
-    }
-
-        let message =
-
-`Hi Glimmer,
-
-I would like to place the following order.
-
-Products:
-
-`;
+        let message = `Hi Glimmer,\n\nI would like to place the following order (Order #${order.id}):\n\nProducts:\n\n`;
 
         cart.forEach(item => {
-
-            message +=
-
-`${item.name}
-(${item.quantity} × ₹${item.offer_price})
-Subtotal ₹${item.quantity * item.offer_price}
-
-`;
-
+            message += `${item.name}\n(${item.quantity} × ₹${item.offer_price})\nSubtotal ₹${item.quantity * item.offer_price}\n\n`;
         });
 
         if (pricing.offerApplied) {
-            message += `
-Offer Applied : ${pricing.appliedOffer.name}
-Offer Price : ₹${pricing.appliedOffer.offer_price}
-`;
+            message += `Offer Applied : ${pricing.appliedOffer.name}\nOffer Price : ₹${pricing.appliedOffer.offer_price}\n\n`;
         }
 
-        message +=
+        message += `Delivery Charges : ${deliveryCharge === 0 ? "FREE" : "₹" + deliveryCharge}\n` +
+            `Total Quantity : ${totalQty}\n` +
+            `Order Total : ₹${grandTotal}\n\n` +
+            `Delivery Address:\n` +
+            `Customer Name : ${name}\n` +
+            `Address : ${address}\n` +
+            `City : ${city}\n` +
+            `Pincode : ${pincode}\n` +
+            `State : ${state}\n` +
+            `Mobile : ${mobile}`;
 
-`Delivery Charges ${deliveryCharge === 0 ? "FREE" : "₹" + deliveryCharge}
+        localStorage.removeItem("glimmerCart");
 
-Total Quantity : ${totalQty}
-
-Order Total : ₹${grandTotal}
-
-At below address
-
-Customer Name : ${name}
-
-Address : ${address}
-
-City : ${city}
-
-Pincode : ${pincode}
-
-State : ${state}
-
-Mobile : ${mobile}`;
-
-        localStorage.removeItem(
-            "glimmerCart"
-        );
-
-        window.location.href =
-        `https://wa.me/918999120594?text=${encodeURIComponent(message)}`;
-
+        window.location.href = `https://wa.me/918999120594?text=${encodeURIComponent(message)}`;
+    } catch (error) {
+        console.error("ORDER ERROR:", error);
+        alert(error.message || "An unexpected error occurred while placing your order.");
+    } finally {
+        isPlacingOrder = false;
+        if (orderBtn) {
+            orderBtn.disabled = false;
+            orderBtn.innerText = "Order Via WhatsApp";
+        }
     }
-    catch(error){
-
-    console.error(
-        "ORDER ERROR:",
-        error
-    );
-
-    alert(
-
-        error.message ||
-
-        JSON.stringify(
-            error
-        )
-
-    );
-    }    
-
 }

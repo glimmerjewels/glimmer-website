@@ -16,6 +16,23 @@ let minPriceFilter = null;
 let maxPriceFilter = null;
 
 // ======================================
+// ESCAPE HTML UTILITY (XSS PROTECTION)
+// ======================================
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    }[char]));
+}
+
+// Rate-limiting timestamp for review submissions (anti-spam)
+let lastReviewSubmissionTime = 0;
+
+// ======================================
 // IMAGE TRANSFORMATION HELPER
 // ======================================
 
@@ -1049,110 +1066,81 @@ async function loadReviews(
         return;
     }
 
-    data.forEach(review=>{
+    data.forEach(review => {
+        const safeName = escapeHTML(review.customer_name);
+        const safeReview = escapeHTML(review.review);
+        const safeRating = Math.max(1, Math.min(5, Math.round(Number(review.rating) || 5)));
 
-        container.innerHTML +=
-
-        `
+        container.innerHTML += `
         <div class="review-card">
-
-            <strong>
-            ${review.customer_name}
-            </strong>
-
+            <strong>${safeName}</strong>
             <div>
-
-            ${"⭐".repeat(
-                review.rating
-            )}
-
+            ${"⭐".repeat(safeRating)}
             </div>
-
-            <p>
-            ${review.review}
-            </p>
-
+            <p>${safeReview}</p>
         </div>
         `;
     });
 }
 async function submitReview() {
-
-    const name =
-        document
-        .getElementById(
-            "reviewName"
-        )
-        .value.trim();
-
-    const rating =
-        parseFloat(
-            document
-            .getElementById(
-                "reviewRating"
-            )
-            .value
-        );
-
-    const review =
-        document
-        .getElementById(
-            "reviewComment"
-        )
-        .value.trim();
-
-    if(!name || !review){
-
-        alert(
-            "Please complete review"
-        );
-
+    // Anti-spam cooldown check (10 seconds)
+    const now = Date.now();
+    if (now - lastReviewSubmissionTime < 10000) {
+        alert("Please wait a few seconds before submitting another review.");
         return;
     }
 
-    const { error } =
-        await supabaseClient
-        .from("reviews")
-        .insert([{
+    const nameInput = document.getElementById("reviewName");
+    const reviewInput = document.getElementById("reviewComment");
+    const ratingInput = document.getElementById("reviewRating");
 
-            product_id:
-                currentReviewProductId,
+    const name = nameInput.value.trim();
+    const rating = parseFloat(ratingInput.value);
+    const review = reviewInput.value.trim();
 
-            customer_name:
-                name,
-
-            rating:
-                rating,
-
-            review:
-                review
-
-        }]);
-
-    if(error){
-
-        console.error(error);
-
-        alert(
-            "Unable to save review"
-        );
-
+    // Input bounds validation
+    if (!name || name.length < 2 || name.length > 60) {
+        alert("Please enter a valid name (2 to 60 characters).");
         return;
     }
 
-    document
-    .getElementById(
-        "reviewName"
-    )
-    .value = "";
+    if (!review || review.length < 5 || review.length > 1000) {
+        alert("Please enter a review between 5 and 1,000 characters.");
+        return;
+    }
 
-    document
-    .getElementById(
-        "reviewComment"
-    )
-    .value = "";
+    if (isNaN(rating) || rating < 1 || rating > 5) {
+        alert("Please select a valid rating between 1 and 5 stars.");
+        return;
+    }
 
-    loadReviews(
-        currentReviewProductId
-    );
+    const submitBtn = document.querySelector(".submit-review-btn");
+    if (submitBtn) submitBtn.disabled = true;
+
+    try {
+        const { error } =
+            await supabaseClient
+            .from("reviews")
+            .insert([{
+                product_id: currentReviewProductId,
+                customer_name: name,
+                rating: Math.round(rating),
+                review: review
+            }]);
+
+        if (error) {
+            console.error(error);
+            alert("Unable to save review: " + (error.message || "Security or database error."));
+            return;
+        }
+
+        lastReviewSubmissionTime = Date.now();
+        nameInput.value = "";
+        reviewInput.value = "";
+        alert("Review submitted successfully! Thank you.");
+
+        loadReviews(currentReviewProductId);
+    } finally {
+        if (submitBtn) submitBtn.disabled = false;
+    }
 }

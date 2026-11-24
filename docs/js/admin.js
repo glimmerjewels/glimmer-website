@@ -1,6 +1,27 @@
 // ==============================
-// GLOBALS
+// GLOBALS & SECURITY
 // ==============================
+
+// Authorized administrator email whitelist
+const AUTHORIZED_ADMIN_EMAILS = [
+    "glimmer.jewels2000@gmail.com"
+];
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    }[char]));
+}
+
+function isAuthorizedAdmin(session) {
+    if (!session || !session.user || !session.user.email) return false;
+    const email = session.user.email.toLowerCase().trim();
+    return AUTHORIZED_ADMIN_EMAILS.some(adminEmail => adminEmail.toLowerCase() === email);
+}
 
 let products = [];
 
@@ -27,6 +48,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     } = await supabaseClient.auth.getSession();
 
     if (session) {
+        if (!isAuthorizedAdmin(session)) {
+            console.warn("Unauthorized user attempted admin access:", session.user?.email);
+            await supabaseClient.auth.signOut();
+            alert("Unauthorized: This account does not have administrative privileges.");
+            return;
+        }
 
         showAdminPanel();
 
@@ -82,7 +109,7 @@ async function login() {
 
     errorBox.innerText = "";
 
-    const { error } =
+    const { data, error } =
         await supabaseClient.auth.signInWithPassword({
             email,
             password
@@ -93,6 +120,12 @@ async function login() {
         errorBox.innerText =
             "Invalid Email or Password";
 
+        return;
+    }
+
+    if (!isAuthorizedAdmin(data?.session)) {
+        await supabaseClient.auth.signOut();
+        errorBox.innerText = "Access denied: Unauthorized account";
         return;
     }
 
@@ -443,20 +476,23 @@ async function editProduct(productId) {
 
 async function saveEdit(productId) {
 
-    const actualPrice =
-        document.getElementById(
-            `actual-${productId}`
-        ).value;
+    const actualPrice = Number(
+        document.getElementById(`actual-${productId}`).value
+    );
 
-    const offerPrice =
-        document.getElementById(
-            `offer-${productId}`
-        ).value;
+    const offerPrice = Number(
+        document.getElementById(`offer-${productId}`).value
+    );
 
-    const stock =
-        document.getElementById(
-            `stock-${productId}`
-        ).value;
+    const stock = parseInt(
+        document.getElementById(`stock-${productId}`).value,
+        10
+    );
+
+    if (isNaN(actualPrice) || actualPrice < 0 || isNaN(offerPrice) || offerPrice < 0 || isNaN(stock) || stock < 0) {
+        alert("Please enter valid, non-negative numbers for prices and stock.");
+        return;
+    }
 
     const { error } =
         await supabaseClient
@@ -474,7 +510,7 @@ async function saveEdit(productId) {
 
     if (error) {
 
-        alert("Update failed");
+        alert("Update failed: " + (error.message || "Unauthorized"));
         return;
     }
     inventoryLoading = false;
@@ -566,44 +602,51 @@ async function deleteProduct(productId) {
 async function saveProduct() {
 
     const name =
-        document.getElementById(
-            "productName"
-        ).value;
+        document.getElementById("productName").value.trim();
 
     const category =
-        document.getElementById(
-            "productCategory"
-        ).value;
+        document.getElementById("productCategory").value.trim();
 
     const actualPrice =
-        document.getElementById(
-            "actualPrice"
-        ).value;
+        Number(document.getElementById("actualPrice").value);
 
     const offerPrice =
-        document.getElementById(
-            "offerPrice"
-        ).value;
+        Number(document.getElementById("offerPrice").value);
 
     const description =
-        document.getElementById(
-            "description"
-        ).value;
+        document.getElementById("description").value.trim();
 
     const stock =
-        document.getElementById(
-            "stock"
-        ).value;
+        parseInt(document.getElementById("stock").value, 10);
 
     const imageFiles =
-        document.getElementById(
-            "productImages"
-        ).files;
+        document.getElementById("productImages").files;
 
-    if (!name || imageFiles.length === 0) {
-
-        alert("Complete all fields");
+    if (!name || name.length < 2 || name.length > 150) {
+        alert("Please enter a valid product name (2-150 characters)");
         return;
+    }
+
+    if (isNaN(actualPrice) || actualPrice <= 0 || isNaN(offerPrice) || offerPrice < 0) {
+        alert("Please enter valid prices (Actual price must be > 0)");
+        return;
+    }
+
+    if (isNaN(stock) || stock < 0) {
+        alert("Please enter a valid stock quantity (0 or greater)");
+        return;
+    }
+
+    if (imageFiles.length === 0) {
+        alert("Please select at least one image file");
+        return;
+    }
+
+    for (const file of imageFiles) {
+        if (!file.type.startsWith("image/")) {
+            alert(`File "${file.name}" is not a valid image. Only image uploads are allowed.`);
+            return;
+        }
     }
 
     const productInsert =
@@ -860,7 +903,7 @@ async function viewOrder(orderId) {
     let html = `
 
         <h3>
-            Order #${order.id}
+            Order #${escapeHTML(order.id)}
         </h3>
 
         <hr>
@@ -878,18 +921,18 @@ async function viewOrder(orderId) {
             <div class="order-item">
 
                 <strong>
-                    ${item.product_name}
+                    ${escapeHTML(item.product_name)}
                 </strong>
 
                 <br>
 
-                ${item.quantity}
+                ${escapeHTML(item.quantity)}
                 ×
-                ₹${item.price}
+                ₹${escapeHTML(item.price)}
 
                 =
 
-                ₹${item.subtotal}
+                ₹${escapeHTML(item.subtotal)}
 
             </div>
 
@@ -906,22 +949,22 @@ async function viewOrder(orderId) {
 
         <p>
             Total Quantity :
-            ${order.total_quantity}
+            ${escapeHTML(order.total_quantity)}
         </p>
 
         <p>
             Subtotal :
-            ₹${order.subtotal}
+            ₹${escapeHTML(order.subtotal)}
         </p>
 
         <p>
             Delivery :
-            ₹${order.delivery_charge}
+            ₹${escapeHTML(order.delivery_charge)}
         </p>
 
         <p>
             Grand Total :
-            ₹${order.grand_total}
+            ₹${escapeHTML(order.grand_total)}
         </p>
 
         <hr>
@@ -934,7 +977,7 @@ async function viewOrder(orderId) {
 
             <strong>Name:</strong>
 
-            ${order.customer_name}
+            ${escapeHTML(order.customer_name)}
 
         </p>
 
@@ -942,7 +985,7 @@ async function viewOrder(orderId) {
 
             <strong>Mobile:</strong>
 
-            ${order.customer_mobile}
+            ${escapeHTML(order.customer_mobile)}
 
         </p>
 
@@ -950,7 +993,7 @@ async function viewOrder(orderId) {
 
             <strong>Address:</strong>
 
-            ${order.customer_address}
+            ${escapeHTML(order.customer_address)}
 
         </p>
 
@@ -958,7 +1001,7 @@ async function viewOrder(orderId) {
 
             <strong>City:</strong>
 
-            ${order.city}
+            ${escapeHTML(order.city)}
 
         </p>
 
@@ -966,7 +1009,7 @@ async function viewOrder(orderId) {
 
             <strong>Pincode:</strong>
 
-            ${order.pincode}
+            ${escapeHTML(order.pincode)}
 
         </p>
 
@@ -974,7 +1017,7 @@ async function viewOrder(orderId) {
 
             <strong>State:</strong>
 
-            ${order.state}
+            ${escapeHTML(order.state)}
 
         </p>
 
@@ -984,7 +1027,7 @@ async function viewOrder(orderId) {
 
             <strong>Status:</strong>
 
-            ${order.status}
+            ${escapeHTML(order.status)}
 
         </p>
 
