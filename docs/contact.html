@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; connect-src 'self' https://bwgcnxaedxfoaoivfqlz.supabase.co https://api.postalpincode.in https://glimmer-backend-y9a9.onrender.com https://cdn.jsdelivr.net; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;">
     <title>Contact Us | Glimmer</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/contact.css">
@@ -155,5 +158,37 @@
     <script src="js/offerService.js"></script>
     <script>loadOfferBanner();</script>
     <script src="js/navigation.js"></script>
+    <script>
+    document.getElementById("contactForm")?.addEventListener("submit", function(e) {
+        e.preventDefault();
+        const inputs = this.querySelectorAll("input, textarea");
+        const name = inputs[0].value.trim();
+        const email = inputs[1].value.trim();
+        const mobile = inputs[2].value.trim();
+        const message = inputs[3].value.trim();
+
+        if (!name || name.length < 2 || name.length > 80) {
+            alert("Please enter a valid name (2 to 80 characters).");
+            return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            alert("Please enter a valid email address.");
+            return;
+        }
+        if (!/^[6-9]\d{9}$/.test(mobile)) {
+            alert("Please enter a valid 10-digit mobile number.");
+            return;
+        }
+        if (!message || message.length < 5 || message.length > 1000) {
+            alert("Please enter a message between 5 and 1,000 characters.");
+            return;
+        }
+
+        const text = `Hi Glimmer,\n\nName: ${name}\nEmail: ${email}\nMobile: ${mobile}\n\nMessage:\n${message}`;
+        window.open(`https://wa.me/918999120594?text=${encodeURIComponent(text)}`, "_blank");
+        this.reset();
+        alert("Thank you! Your message is ready to send via WhatsApp.");
+    });
+    </script>
 </body>
 </html>

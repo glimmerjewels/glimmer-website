@@ -1,5 +1,4 @@
 
-
 // ======================================
 // GLOBALS
 // ======================================
@@ -15,6 +14,56 @@ let currentReviewProductId = null;
 let currentCategory = "all";
 let minPriceFilter = null;
 let maxPriceFilter = null;
+
+// ======================================
+// ESCAPE HTML UTILITY (XSS PROTECTION)
+// ======================================
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    }[char]));
+}
+
+// Rate-limiting timestamp for review submissions (anti-spam)
+let lastReviewSubmissionTime = 0;
+
+// ======================================
+// IMAGE TRANSFORMATION HELPER
+// ======================================
+
+/**
+ * Appends Supabase Storage image-transform query params to a URL so we
+ * serve a correctly-sized, compressed image instead of the full original.
+ *
+ * @param {string} url      - The raw Supabase Storage URL (or any fallback URL).
+ * @param {object} opts
+ * @param {number} opts.width   - Desired pixel width.
+ * @param {number} opts.quality - JPEG/WebP quality (1-100).
+ * @returns {string}
+ */
+function getTransformedUrl(url, { width = 400, quality = 75 } = {}) {
+    if (!url || typeof url !== "string") return url;
+
+    // Only apply transforms to Supabase Storage URLs.
+    if (!url.includes(".supabase.co/storage/")) return url;
+
+    try {
+        const u = new URL(url);
+        u.searchParams.set("width", width);
+        u.searchParams.set("quality", quality);
+        // "origin" lets the CDN serve WebP/AVIF based on the browser's
+        // Accept header, with the original format as a fallback.
+        u.searchParams.set("format", "origin");
+        return u.toString();
+    } catch {
+        return url;
+    }
+}
 
 // ======================================
 // PAGE LOAD
@@ -64,10 +113,12 @@ async function loadProducts() {
         )
         .join("");
 
+    // Only select the columns the grid actually uses — avoids downloading
+    // heavy text fields like description that are only needed in the popup.
     const { data, error } =
         await supabaseClient
             .from("products")
-            .select("*")
+            .select("id, name, category, actual_price, offer_price, stock, created_at")
             .order("created_at", {
                 ascending: false
             });
@@ -337,14 +388,17 @@ async function renderProducts(category) {
         return;
     }
 
-    // Fetch images, ratings and Trending status in parallel.
+    // ─── BATCH image fetch (1 query instead of N) ────────────────────────
+    // Previously each product card triggered its own getImages() DB call,
+    // creating an N+1 waterfall.  We now fetch all images for all visible
+    // products in a single query, then build a lookup map.
     const productIds = productsToShow.map(product => product.id);
 
-    const [imageResults, reviewResult, trendingIds] = await Promise.all([
-        Promise.all(productsToShow.map(async product => {
-            const images = await getImages(product.id);
-            return [String(product.id), images[0]?.image_url || "assets/no-image.png"];
-        })),
+    const [imageResult, reviewResult, trendingIds] = await Promise.all([
+        supabaseClient
+            .from("product_images")
+            .select("product_id, image_url")   // only the two columns we need
+            .in("product_id", productIds),
         supabaseClient
             .from("reviews")
             .select("product_id, rating")
@@ -352,9 +406,21 @@ async function renderProducts(category) {
         getTrendingProductIds()
     ]);
 
-    const imageMap = Object.fromEntries(imageResults);
+    // Build a product_id → first image_url map.
+    const imageMap = {};
+    if (imageResult.error) {
+        console.error("Unable to load product images:", imageResult.error);
+    } else {
+        (imageResult.data || []).forEach(row => {
+            const key = String(row.product_id);
+            // Keep the first image for each product (server order = insertion order).
+            if (!imageMap[key]) {
+                // Apply a 400 px wide transform for thumbnail grids.
+                imageMap[key] = getTransformedUrl(row.image_url, { width: 400, quality: 75 });
+            }
+        });
+    }
     const ratingsByProduct = {};
-
     if (reviewResult.error) {
         console.error("Unable to load product ratings:", reviewResult.error);
     } else {
@@ -380,10 +446,12 @@ async function renderProducts(category) {
         "'": "&#39;"
     }[char]));
 
-    grid.innerHTML = productsToShow.map(product => {
+    grid.innerHTML = productsToShow.map((product, index) => {
         const id = String(product.id);
         const name = escapeHTML(product.name);
-        const image = escapeHTML(imageMap[id]);
+        // Fall back to placeholder if no image was returned.
+        const rawImage = imageMap[id] || "assets/no-image.png";
+        const image = escapeHTML(rawImage);
         const offerPrice = Number(product.offer_price);
         const actualPrice = Number(product.actual_price);
         const hasOffer = actualPrice > offerPrice && offerPrice > 0;
@@ -416,12 +484,19 @@ async function renderProducts(category) {
                </button>`
             : '<span class="product-card-out-of-stock">Out of stock</span>';
 
-        
+        // The first 6 cards are likely above the fold — load eagerly and
+        // signal high fetch priority so the browser pre-loads them.
+        // Everything else is lazy-loaded to avoid wasted bandwidth.
+        const isAboveFold = index < 6;
+        const loadingAttr    = isAboveFold ? 'loading="eager"'          : 'loading="lazy"';
+        const priorityAttr   = isAboveFold ? 'fetchpriority="high"'     : 'fetchpriority="low"';
+        const decodingAttr   = isAboveFold ? 'decoding="sync"'          : 'decoding="async"';
+
 return `
     <article class="product-card" onclick="openProductPopup('${id}')">
         <div class="product-image-wrap">
             ${badge}
-            <img src="${image}" alt="${name}" loading="lazy">
+            <img src="${image}" alt="${name}" ${loadingAttr} ${decodingAttr} ${priorityAttr}>
             ${ratingHTML}
         </div>
         <div class="product-card-info">
@@ -476,7 +551,9 @@ async function addProductCardToCart(productId) {
         cart.push({
             id: product.id,
             name: product.name,
-            image: images[0]?.image_url || "",
+            // Store the cart thumbnail at a modest size (200 px) — it's only
+            // shown in the cart sidebar/page, not at full resolution.
+            image: getTransformedUrl(images[0]?.image_url || "", { width: 200, quality: 70 }),
             category: product.category,
             actual_price: product.actual_price,
             offer_price: product.offer_price,
@@ -507,7 +584,7 @@ async function getImages(
     const { data } =
         await supabaseClient
             .from("product_images")
-            .select("*")
+            .select("image_url")   // only the column we need
             .eq(
                 "product_id",
                 productId
@@ -692,8 +769,9 @@ function populatePopup(
 
     if (images.length > 0) {
 
+        // 900 px wide, high quality for the full-size popup view.
         mainImage.src =
-            images[0].image_url;
+            getTransformedUrl(images[0].image_url, { width: 900, quality: 85 });
 
     } else {
 
@@ -709,11 +787,15 @@ function populatePopup(
     strip.innerHTML = "";
 
     images.forEach(img => {
+        // 140 px wide thumbnails — small and fast to load.
+        const thumbUrl = getTransformedUrl(img.image_url, { width: 140, quality: 70 });
 
         strip.innerHTML += `
 
         <img
-        src="${img.image_url}"
+        src="${thumbUrl}"
+        loading="lazy"
+        decoding="async"
         onclick="changeMainImage('${img.image_url}')">
 
         `;
@@ -953,7 +1035,7 @@ async function loadReviews(
     const { data } =
         await supabaseClient
         .from("reviews")
-        .select("*")
+        .select("customer_name, rating, review, created_at")
         .eq(
             "product_id",
             productId
@@ -984,110 +1066,81 @@ async function loadReviews(
         return;
     }
 
-    data.forEach(review=>{
+    data.forEach(review => {
+        const safeName = escapeHTML(review.customer_name);
+        const safeReview = escapeHTML(review.review);
+        const safeRating = Math.max(1, Math.min(5, Math.round(Number(review.rating) || 5)));
 
-        container.innerHTML +=
-
-        `
+        container.innerHTML += `
         <div class="review-card">
-
-            <strong>
-            ${review.customer_name}
-            </strong>
-
+            <strong>${safeName}</strong>
             <div>
-
-            ${"⭐".repeat(
-                review.rating
-            )}
-
+            ${"⭐".repeat(safeRating)}
             </div>
-
-            <p>
-            ${review.review}
-            </p>
-
+            <p>${safeReview}</p>
         </div>
         `;
     });
 }
 async function submitReview() {
-
-    const name =
-        document
-        .getElementById(
-            "reviewName"
-        )
-        .value.trim();
-
-    const rating =
-        parseFloat(
-            document
-            .getElementById(
-                "reviewRating"
-            )
-            .value
-        );
-
-    const review =
-        document
-        .getElementById(
-            "reviewComment"
-        )
-        .value.trim();
-
-    if(!name || !review){
-
-        alert(
-            "Please complete review"
-        );
-
+    // Anti-spam cooldown check (10 seconds)
+    const now = Date.now();
+    if (now - lastReviewSubmissionTime < 10000) {
+        alert("Please wait a few seconds before submitting another review.");
         return;
     }
 
-    const { error } =
-        await supabaseClient
-        .from("reviews")
-        .insert([{
+    const nameInput = document.getElementById("reviewName");
+    const reviewInput = document.getElementById("reviewComment");
+    const ratingInput = document.getElementById("reviewRating");
 
-            product_id:
-                currentReviewProductId,
+    const name = nameInput.value.trim();
+    const rating = parseFloat(ratingInput.value);
+    const review = reviewInput.value.trim();
 
-            customer_name:
-                name,
-
-            rating:
-                rating,
-
-            review:
-                review
-
-        }]);
-
-    if(error){
-
-        console.error(error);
-
-        alert(
-            "Unable to save review"
-        );
-
+    // Input bounds validation
+    if (!name || name.length < 2 || name.length > 60) {
+        alert("Please enter a valid name (2 to 60 characters).");
         return;
     }
 
-    document
-    .getElementById(
-        "reviewName"
-    )
-    .value = "";
+    if (!review || review.length < 5 || review.length > 1000) {
+        alert("Please enter a review between 5 and 1,000 characters.");
+        return;
+    }
 
-    document
-    .getElementById(
-        "reviewComment"
-    )
-    .value = "";
+    if (isNaN(rating) || rating < 1 || rating > 5) {
+        alert("Please select a valid rating between 1 and 5 stars.");
+        return;
+    }
 
-    loadReviews(
-        currentReviewProductId
-    );
+    const submitBtn = document.querySelector(".submit-review-btn");
+    if (submitBtn) submitBtn.disabled = true;
+
+    try {
+        const { error } =
+            await supabaseClient
+            .from("reviews")
+            .insert([{
+                product_id: currentReviewProductId,
+                customer_name: name,
+                rating: Math.round(rating),
+                review: review
+            }]);
+
+        if (error) {
+            console.error(error);
+            alert("Unable to save review: " + (error.message || "Security or database error."));
+            return;
+        }
+
+        lastReviewSubmissionTime = Date.now();
+        nameInput.value = "";
+        reviewInput.value = "";
+        alert("Review submitted successfully! Thank you.");
+
+        loadReviews(currentReviewProductId);
+    } finally {
+        if (submitBtn) submitBtn.disabled = false;
+    }
 }
